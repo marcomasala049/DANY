@@ -1,0 +1,12 @@
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+*.swp
+
+# Files the apps themselves generate/export at runtime
+workspace_state_*.json
+test_report_*.txt
+Report_Procedura_*.txt
+*_aggiornata.csv
+*_aggiornata.xlsx

@@ -1,0 +1,13 @@
+{
+  "name": "dani",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DANI (Data Analysis & Navigation Interface) - a technician's toolkit: an offline engineering command center and a CSV/XLSX test-procedure runner, both plain HTML/CSS/JS with no build step.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18.17"
+  }
+}
