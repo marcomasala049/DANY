@@ -20,6 +20,7 @@ import {
 } from './ui/execution.js';
 import { backFromEnd, forceCloseProcedure } from './ui/end-screen.js';
 import { exportUpdatedCsv, exportUpdatedXlsx, exportReportTxt } from './ui/export.js';
+import { registerServiceWorker } from '../../../shared/js/pwa.js';
 
 Object.assign(window, {
   onUsernameChange,
@@ -52,4 +53,5 @@ initDropZone();
 window.addEventListener('load', () => {
   $('usernameField').value = state.username;
   checkForSavedSession();
+  registerServiceWorker();
 });

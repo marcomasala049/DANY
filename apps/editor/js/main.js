@@ -29,12 +29,13 @@ import {
 import { startSession, logSessionNote, stopSession } from './ui/session.js';
 import { checkThreshold } from './ui/threshold.js';
 import { addProcedureStep, renderProcedure, exportProcedureReport } from './ui/procedure.js';
-import { inspectData, reinspectData, renderData, exportCleanCsv, drawDataChart } from './ui/data-inspector.js';
+import { inspectData, reinspectData, renderData, exportCleanCsv, drawDataChart, initChartResize } from './ui/data-inspector.js';
 import { exportWorkspaceState, importWorkspaceState } from './ui/workspace-state.js';
 import {
   salvaFile, salvaCome, chiudiSalvaCome, selezionaCartellaSalvataggio, confermaSalvaCome,
   loadTargetFile, checkServer, resolveTargetFileFromHash, setTargetFilePath
 } from './ui/file-io.js';
+import { registerServiceWorker, initInstallPrompt } from '../../../shared/js/pwa.js';
 
 Object.assign(window, {
   salvaFile, salvaCome, chiudiSalvaCome, selezionaCartellaSalvataggio, confermaSalvaCome,
@@ -54,11 +55,16 @@ Object.assign(window, {
   exportWorkspaceState, importWorkspaceState
 });
 
+/**
+ * Keeps --app-height in sync with the space actually visible on screen.
+ * Prefers visualViewport, which (unlike window.innerHeight) shrinks when a
+ * mobile on-screen keyboard opens — the CSS uses this instead of 100vh so
+ * panels resize above the keyboard instead of being clipped by it, and so
+ * a mobile browser's toolbar showing/hiding doesn't leave dead space.
+ */
 function adaptWorkspace() {
-  const panel = document.querySelector('.right-panel');
-  if (!panel) return;
-  document.body.style.setProperty('--vh', window.innerHeight + 'px');
-  panel.style.maxHeight = Math.max(240, window.innerHeight - 16) + 'px';
+  const height = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
+  document.documentElement.style.setProperty('--app-height', height + 'px');
 }
 
 function initKeyboardShortcuts() {
@@ -104,9 +110,17 @@ function init() {
   applyWidgetVisibility();
   checkServer();
   checkThreshold();
+
+  registerServiceWorker();
+  initInstallPrompt($('installBtn'));
+  initChartResize();
 }
 
 window.addEventListener('resize', adaptWorkspace);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', adaptWorkspace);
+}
+window.addEventListener('orientationchange', adaptWorkspace);
 window.addEventListener('load', init);
 initKeyboardShortcuts();
 initWidgetManagerKeyboardShortcut();

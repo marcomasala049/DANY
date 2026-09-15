@@ -166,3 +166,22 @@ export function drawDataChart() {
   ctx.strokeStyle = '#2a2a2a';
   ctx.strokeRect(0, 0, w, h);
 }
+
+/**
+ * Redraws the chart when the window is resized/rotated. The canvas' pixel
+ * buffer is sized from its container's clientWidth at draw time (see
+ * drawDataChart above), so without this it would stay stretched to its old
+ * size — deformed rather than responsive — after a resize/orientation change.
+ */
+export function initChartResize() {
+  let pending = null;
+  const scheduleRedraw = () => {
+    if (pending) cancelAnimationFrame(pending);
+    pending = requestAnimationFrame(() => {
+      pending = null;
+      if ($('dataChartCol').value) drawDataChart();
+    });
+  };
+  window.addEventListener('resize', scheduleRedraw);
+  window.addEventListener('orientationchange', scheduleRedraw);
+}

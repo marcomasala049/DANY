@@ -1,7 +1,8 @@
 # DANI — Data Analysis & Navigation Interface
 
-An offline toolkit for engineering/electrical test technicians. Two
-independent, no-build-step web apps plus a small local file server:
+An offline-capable, installable PWA toolkit for engineering/electrical test
+technicians. Two independent, no-build-step web apps plus a small local
+file server:
 
 - **[apps/editor](apps/editor/index.html)** — "Terminal Workspace": a plain-text
   editor (for test notes/logs) surrounded by widgets a technician needs on
@@ -36,6 +37,10 @@ handler for `.txt` files. It starts the local file server on
 ## Project layout
 
 ```
+index.html              redirects "/" to apps/editor/index.html
+manifest.webmanifest     Web App Manifest (name, icons, start_url, ...)
+service-worker.js        app-shell cache — offline support, installability
+icons/                   PWA icons (generated from the app's own ">_" mark)
 apps/
   editor/              Terminal Workspace app
     index.html
@@ -50,10 +55,14 @@ apps/
     index.html
     css/styles.css
     js/                same core / logic / ui split as the editor
-shared/js/              helpers used by both apps (escapeHtml, $ helper)
-server/                 the local file server the editor's launcher starts
+shared/js/              helpers used by both apps (dom-utils, pwa.js)
+server/
+  local-file-server.ps1     used by open_editor.bat (the editor's own /load /save)
+  static-dev-server.mjs     used by START_PWA.bat (local PWA testing only)
 tests/                  node:test suites for every logic/ module
-open_editor.bat         Windows launcher (drag a .txt file onto it)
+open_editor.bat         Windows launcher: opens the editor on one .txt file
+START_PWA.bat           Windows launcher: serves the whole app for local
+                         PWA/offline testing (dev-only, see below)
 ```
 
 Each app keeps its original single-page markup and inline event handlers —
@@ -78,3 +87,49 @@ npm test
 exercised manually in the browser rather than unit tested (they'd need a
 DOM environment like jsdom, which this project intentionally avoids to
 stay dependency-free).
+
+## PWA & deployment
+
+The whole project — `index.html`, `manifest.webmanifest`, `service-worker.js`,
+`icons/`, `apps/`, `shared/` — is a static site with no build step and no
+runtime dependency on anything (no Python, no Node.js, no backend). Publish
+the **repository root** as-is to any static host (GitHub Pages, Cloudflare
+Pages, Netlify, a plain HTTPS server); nothing needs to be built, bundled or
+copied into a separate `dist/` folder first.
+
+Every PWA-related path (the manifest link, icons, the service worker
+registration, its precache list, and the root redirect) is written
+**relative to its own file**, not as `/absolute` paths — so the same files
+work identically whether served from a domain root or a subfolder, e.g.
+`https://user.github.io/DANY/`.
+
+Once published, opening the URL, using the app, and installing it (browser
+menu, or the editor's own "📲 Installa App" button where the browser
+supports it) is all that's needed — no server, no CLI, nothing to install
+beforehand. The app keeps working fully offline after the first successful
+load (both apps' entire JS/CSS, the manifest and the icons are precached).
+
+**Local-only exception:** the editor's "Salva Modifiche" / "Salva come nuovo
+.txt" *without* picking a folder talks to `server/local-file-server.ps1` on
+`127.0.0.1:8080` (via [open_editor.bat](open_editor.bat)). That's a
+Windows-only, local-machine feature by design — it isn't and can't be part
+of a hosted PWA (a web page can't write arbitrary files on its own). When
+used as the published PWA, saving a new file works by picking a folder
+explicitly ("📁 SELEZIONA CARTELLA", File System Access API — Chrome/Edge
+only); without a server or that API, "Salva" will show an error. Every
+other feature (calculators, converter, formulas, TODO, session log,
+threshold monitor, the CSV data inspector, and the whole Test Procedure
+Runner including CSV/XLSX import-export) works fully client-side with no
+such limitation.
+
+### Testing the PWA locally on Windows (developer-only)
+
+[START_PWA.bat](START_PWA.bat) serves the project over `http://localhost`
+so the service worker and manifest (which need a real http(s) origin —
+they don't run from a `file://` page) can be tested before publishing.
+Double-click it: it checks for Node.js, starts
+[server/static-dev-server.mjs](server/static-dev-server.mjs) (built-in
+`node:http`/`node:fs` only, no dependencies) on port 8000 (or the next free
+port), waits for it to respond, and opens the browser automatically. Close
+its window to stop the server. Node.js is only needed for this local dev
+loop — the published site needs none of it.
