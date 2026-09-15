@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<script>try{if(localStorage.getItem('dani_theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Test Procedure Runner</title>
 <meta name="description" content="Esegui una procedura di test CSV/XLSX passo per passo, con firma, salto motivato e rilevazione anomalie.">
@@ -40,6 +41,7 @@
   <div class="tb-field">Operatore: <input id="usernameField" placeholder="nome.cognome" oninput="onUsernameChange()"></div>
   <button class="btn" id="btnExportCsv" style="display:none" onclick="exportUpdatedCsv()">💾 Esporta CSV</button>
   <button class="btn" id="btnExportXlsx" style="display:none" onclick="exportUpdatedXlsx()">📊 Esporta XLSX</button>
+  <button class="btn" id="themeToggleBtn">☀️ Tema Chiaro</button>
   <button class="btn btn-danger" onclick="closeTab()">✕ Chiudi Tab</button>
 </div>
 

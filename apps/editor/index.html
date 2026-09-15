@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<script>try{if(localStorage.getItem('dani_theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Terminal Workspace — Engineering Command Center</title>
 <meta name="description" content="Editor di note di test con calcolatrici, convertitore unità, formule ingegneristiche e monitor soglie.">
@@ -36,7 +37,7 @@
 <div class="left-panel">
 <div class="status-bar" id="status">> File aperto: <span id="file-label">Caricamento in corso...</span></div>
 <textarea id="editor" placeholder="Scrivi qui..."></textarea>
-<div class="controls"><button class="btn-primary" onclick="salvaFile()">Salva Modifiche (Ctrl+S)</button><button class="small-btn" onclick="salvaCome()">Salva come nuovo .txt</button><button class="small-btn" onclick="window.open('../procedure-runner/index.html','_blank')">🧪 Procedure Runner</button><button class="small-btn" onclick="openWidgetManager()">⚙ Widget</button><button class="small-btn" id="installBtn" hidden>📲 Installa App</button><div class="timer-box">TEST TIMER: <span class="timer-value" id="timerDisplay">00:00:00</span><button class="small-btn" onclick="toggleTimer()" id="timerBtn">START</button><button class="small-btn" onclick="resetTimer()">RESET</button></div></div>
+<div class="controls"><button class="btn-primary" onclick="salvaFile()">Salva Modifiche (Ctrl+S)</button><button class="small-btn" onclick="salvaCome()">Salva come nuovo .txt</button><button class="small-btn" onclick="window.open('../procedure-runner/index.html','_blank')">🧪 Procedure Runner</button><button class="small-btn" onclick="openWidgetManager()">⚙ Widget</button><button class="small-btn" id="themeToggleBtn">☀️ Tema Chiaro</button><button class="small-btn" id="installBtn" hidden>📲 Installa App</button><div class="timer-box">TEST TIMER: <span class="timer-value" id="timerDisplay">00:00:00</span><button class="small-btn" onclick="toggleTimer()" id="timerBtn">START</button><button class="small-btn" onclick="resetTimer()">RESET</button></div></div>
 </div>
 <div class="right-panel">
 

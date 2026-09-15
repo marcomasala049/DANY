@@ -36,6 +36,7 @@ import {
   loadTargetFile, checkServer, resolveTargetFileFromHash, setTargetFilePath
 } from './ui/file-io.js';
 import { registerServiceWorker, initInstallPrompt } from '../../../shared/js/pwa.js';
+import { initTheme } from '../../../shared/js/theme.js';
 
 Object.assign(window, {
   salvaFile, salvaCome, chiudiSalvaCome, selezionaCartellaSalvataggio, confermaSalvaCome,
@@ -114,6 +115,7 @@ function init() {
   registerServiceWorker();
   initInstallPrompt($('installBtn'));
   initChartResize();
+  initTheme($('themeToggleBtn'));
 }
 
 window.addEventListener('resize', adaptWorkspace);

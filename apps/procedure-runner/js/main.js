@@ -21,6 +21,7 @@ import {
 import { backFromEnd, forceCloseProcedure } from './ui/end-screen.js';
 import { exportUpdatedCsv, exportUpdatedXlsx, exportReportTxt } from './ui/export.js';
 import { registerServiceWorker } from '../../../shared/js/pwa.js';
+import { initTheme } from '../../../shared/js/theme.js';
 
 Object.assign(window, {
   onUsernameChange,
@@ -54,4 +55,5 @@ window.addEventListener('load', () => {
   $('usernameField').value = state.username;
   checkForSavedSession();
   registerServiceWorker();
+  initTheme($('themeToggleBtn'));
 });
