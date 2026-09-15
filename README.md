@@ -1,4 +1,5 @@
 # DANI — Data Analysis & Navigation Interface
+https://marcomasala049.github.io/DANY/
 
 An offline-capable, installable PWA toolkit for engineering/electrical test
 technicians. Two independent, no-build-step web apps plus a small local
