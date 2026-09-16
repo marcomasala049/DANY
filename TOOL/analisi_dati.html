@@ -5,128 +5,150 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Data Analysis Tool — Engineering Command Center</title>
 <style>
+:root{
+  --bg:#0c0c0c; --panel:#121212; --border:#222; --border-light:#1e1e1e;
+  --text:#00ff66; --text-dim:#888; --text-muted:#666; --text-faint:#555; --text-bright:#ddd; --text-tooltip:#aaa;
+  --accent:#00ff66; --accent-hover:#00cc52; --accent-glow:rgba(0,255,102,.4);
+  --btn-bg:#1a1a1a; --btn-border:#333; --btn-hover:#222;
+  --input-bg:#000; --input-border:#333;
+  --status-ok:#00ff66; --status-ok-border:#1a4d2b;
+  --status-err:#ff5555; --status-err-border:#5c1a1a;
+  --cursor-c1:#ff5555; --cursor-c2:#ffaa00;
+  --axis-right:#67c7ff; --axis-right-dim:#1a2530;
+  --scrollbar-track:#0c0c0c; --scrollbar-thumb:#222; --scrollbar-thumb-hover:#333;
+  --preview-row-hover:#161616;
+}
+html.light, body.light{
+  --bg:#f0f2f5; --panel:#ffffff; --border:#d0d4d9; --border-light:#e5e7eb;
+  --text:#006633; --text-dim:#4b5563; --text-muted:#6b7280; --text-faint:#9ca3af; --text-bright:#111827; --text-tooltip:#374151;
+  --accent:#00a344; --accent-hover:#008a38; --accent-glow:rgba(0,163,68,.25);
+  --btn-bg:#e5e7eb; --btn-border:#cbd0d6; --btn-hover:#d1d5db;
+  --input-bg:#ffffff; --input-border:#cbd0d6;
+  --status-ok:#008a38; --status-ok-border:#86efac;
+  --status-err:#dc2626; --status-err-border:#fca5a5;
+  --cursor-c1:#dc2626; --cursor-c2:#d97706;
+  --axis-right:#2563eb; --axis-right-dim:#dbeafe;
+  --scrollbar-track:#e5e7eb; --scrollbar-thumb:#cbd0d6; --scrollbar-thumb-hover:#9ca3af;
+  --preview-row-hover:#f3f4f6;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;width:100%;background:#0c0c0c;color:#00ff66;font-family:Consolas,'Courier New',monospace;overflow:hidden}
+html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:Consolas,'Courier New',monospace;overflow:hidden}
 body{padding:8px;display:flex;flex-direction:column;gap:8px}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
-input[type=checkbox]{accent-color:#00ff66;width:14px;height:14px;cursor:pointer}
+input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
 
-.topbar{display:flex;align-items:center;gap:10px;background:#121212;border:1px solid #222;border-radius:6px;padding:7px 12px;font-size:.8em;flex-shrink:0}
-.topbar .brand{color:#00ff66;font-weight:bold;letter-spacing:2px;font-size:.95em}
+.topbar{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:7px 12px;font-size:.8em;flex-shrink:0}
+.topbar .brand{color:var(--text);font-weight:bold;letter-spacing:2px;font-size:.95em}
 .topbar .spacer{flex:1}
-.topbar .btn-bar{background:#1a1a1a;color:#00ff66;border:1px solid #333;border-radius:4px;padding:5px 12px;font-size:.85em}
-.topbar .btn-bar:hover{border-color:#00ff66;background:#222}
+.topbar .btn-bar{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);border-radius:4px;padding:5px 12px;font-size:.85em}
+.topbar .btn-bar:hover{border-color:var(--accent);background:var(--btn-hover)}
 
 #mainView{flex:1;display:grid;grid-template-columns:minmax(0,1fr) clamp(380px,42vw,640px);gap:8px;min-height:0}
 #mainView.hidden{display:none}
 .left-col,.right-col{display:flex;flex-direction:column;gap:8px;min-height:0;overflow-y:auto;padding-right:3px}
 .left-col::-webkit-scrollbar,.right-col::-webkit-scrollbar,.preview-wrap::-webkit-scrollbar,.ytable-wrap::-webkit-scrollbar{width:8px;height:8px}
-.left-col::-webkit-scrollbar-track,.right-col::-webkit-scrollbar-track,.preview-wrap::-webkit-scrollbar-track,.ytable-wrap::-webkit-scrollbar-track{background:#0c0c0c}
-.left-col::-webkit-scrollbar-thumb,.right-col::-webkit-scrollbar-thumb,.preview-wrap::-webkit-scrollbar-thumb,.ytable-wrap::-webkit-scrollbar-thumb{background:#222;border-radius:4px}
-.left-col::-webkit-scrollbar-thumb:hover,.right-col::-webkit-scrollbar-thumb:hover,.preview-wrap::-webkit-scrollbar-thumb:hover,.ytable-wrap::-webkit-scrollbar-thumb:hover{background:#333}
+.left-col::-webkit-scrollbar-track,.right-col::-webkit-scrollbar-track,.preview-wrap::-webkit-scrollbar-track,.ytable-wrap::-webkit-scrollbar-track{background:var(--scrollbar-track)}
+.left-col::-webkit-scrollbar-thumb,.right-col::-webkit-scrollbar-thumb,.preview-wrap::-webkit-scrollbar-thumb,.ytable-wrap::-webkit-scrollbar-thumb{background:var(--scrollbar-thumb);border-radius:4px}
+.left-col::-webkit-scrollbar-thumb:hover,.right-col::-webkit-scrollbar-thumb:hover,.preview-wrap::-webkit-scrollbar-thumb:hover,.ytable-wrap::-webkit-scrollbar-thumb:hover{background:var(--scrollbar-thumb-hover)}
 
-.widget{background:#121212;border:1px solid #222;border-radius:6px;padding:9px;flex-shrink:0}
-.widget-title{font-size:.72em;color:#888;text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid #1e1e1e;padding-bottom:6px;margin-bottom:8px;display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
-.widget-title .collapse-arrow{color:#00ff66;font-size:.9em;width:11px;text-align:center;flex:0 0 11px}
+.widget{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:9px;flex-shrink:0}
+.widget-title{font-size:.72em;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid var(--border-light);padding-bottom:6px;margin-bottom:8px;display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none}
+.widget-title .collapse-arrow{color:var(--text);font-size:.9em;width:11px;text-align:center;flex:0 0 11px}
 .widget-title .title-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.widget-title:hover .title-text{color:#00ff66}
+.widget-title:hover .title-text{color:var(--text)}
 .widget-body{display:block}
 .widget.collapsed .widget-body{display:none}
 .widget.collapsed .widget-title{border-bottom:none;padding-bottom:0;margin-bottom:0}
 
 .field-row{display:grid;grid-template-columns:minmax(90px,auto) minmax(0,1fr);gap:8px;align-items:center;margin-bottom:7px;font-size:.76em}
-.field-row label{color:#888}
-.field-row input[type=text],.field-row select{width:100%;background:#000;color:#00ff66;border:1px solid #333;border-radius:4px;padding:6px 8px;outline:none;font-size:.95em}
-.field-row input[type=text]:focus,.field-row select:focus{border-color:#00ff66;box-shadow:0 0 6px rgba(0,255,102,.25)}
+.field-row label{color:var(--text-dim)}
+.field-row input[type=text],.field-row select{width:100%;background:var(--input-bg);color:var(--text);border:1px solid var(--input-border);border-radius:4px;padding:6px 8px;outline:none;font-size:.95em}
+.field-row input[type=text]:focus,.field-row select:focus{border-color:var(--accent);box-shadow:0 0 6px var(--accent-glow)}
 
-.panel-labels-container{margin-top:6px;padding:8px;background:#0a0a0a;border:1px solid #1e1e1e;border-radius:4px}
-.panel-labels-title{font-size:.68em;color:#666;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.panel-labels-container{margin-top:6px;padding:8px;background:var(--input-bg);border:1px solid var(--border-light);border-radius:4px}
+.panel-labels-title{font-size:.68em;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
 .panel-label-row{display:grid;grid-template-columns:60px minmax(0,1fr);gap:8px;align-items:center;margin-bottom:5px;font-size:.72em}
-.panel-label-row label{color:#67c7ff;font-weight:bold}
-.panel-label-row input{width:100%;background:#000;color:#00ff66;border:1px solid #333;border-radius:3px;padding:4px 6px;outline:none;font-size:.9em}
-.panel-label-row input:focus{border-color:#00ff66}
+.panel-label-row label{color:var(--axis-right);font-weight:bold}
+.panel-label-row input{width:100%;background:var(--input-bg);color:var(--text);border:1px solid var(--input-border);border-radius:3px;padding:4px 6px;outline:none;font-size:.9em}
+.panel-label-row input:focus{border-color:var(--accent)}
 
-.btn-primary{display:block;width:100%;padding:10px;border:none;border-radius:4px;background:#00ff66;color:#000;font-weight:bold;font-size:.85em;letter-spacing:1px;margin-top:4px;flex-shrink:0}
-.btn-primary:hover:not(:disabled){background:#00cc52;box-shadow:0 0 12px rgba(0,255,102,.4)}
-.btn-primary:disabled{background:#1a1a1a;color:#444;cursor:not-allowed;border:1px solid #222}
-.btn-ghost{display:block;width:100%;padding:9px;border:1px solid #333;border-radius:4px;background:#1a1a1a;color:#00ff66;font-size:.8em;font-weight:bold;letter-spacing:1px;margin-top:4px;flex-shrink:0}
-.btn-ghost:hover{border-color:#00ff66;background:#222}
-.small-btn{background:#1a1a1a;color:#00ff66;border:1px solid #333;border-radius:4px;padding:5px 10px;font-size:.75em}
-.small-btn:hover{border-color:#00ff66;background:#222}
+.btn-primary{display:block;width:100%;padding:10px;border:none;border-radius:4px;background:var(--accent);color:var(--bg);font-weight:bold;font-size:.85em;letter-spacing:1px;margin-top:4px;flex-shrink:0}
+.btn-primary:hover:not(:disabled){background:var(--accent-hover);box-shadow:0 0 12px var(--accent-glow)}
+.btn-primary:disabled{background:var(--btn-bg);color:var(--text-faint);cursor:not-allowed;border:1px solid var(--border)}
+.btn-ghost{display:block;width:100%;padding:9px;border:1px solid var(--btn-border);border-radius:4px;background:var(--btn-bg);color:var(--text);font-size:.8em;font-weight:bold;letter-spacing:1px;margin-top:4px;flex-shrink:0}
+.btn-ghost:hover{border-color:var(--accent);background:var(--btn-hover)}
+.small-btn{background:var(--btn-bg);color:var(--text);border:1px solid var(--btn-border);border-radius:4px;padding:5px 10px;font-size:.75em}
+.small-btn:hover{border-color:var(--accent);background:var(--btn-hover)}
 
-.status-bar{background:#000;border:1px solid #1e1e1e;border-radius:4px;padding:7px 10px;font-size:.72em;color:#888;min-height:34px;white-space:pre-wrap;line-height:1.4}
-.status-bar.ok{color:#00ff66;border-color:#1a4d2b}
-.status-bar.err{color:#ff5555;border-color:#5c1a1a}
-.file-info{font-size:.7em;color:#666;padding:5px 0;text-align:center}
+.status-bar{background:var(--input-bg);border:1px solid var(--border-light);border-radius:4px;padding:7px 10px;font-size:.72em;color:var(--text-dim);min-height:34px;white-space:pre-wrap;line-height:1.4}
+.status-bar.ok{color:var(--status-ok);border-color:var(--status-ok-border)}
+.status-bar.err{color:var(--status-err);border-color:var(--status-err-border)}
+.file-info{font-size:.7em;color:var(--text-muted);padding:5px 0;text-align:center}
 
-.ytable-wrap{max-height:260px;overflow:auto;border:1px solid #1e1e1e;border-radius:4px;margin-top:4px}
+.ytable-wrap{max-height:260px;overflow:auto;border:1px solid var(--border-light);border-radius:4px;margin-top:4px}
 table.ytable{width:100%;border-collapse:collapse;font-size:.72em}
-table.ytable th{position:sticky;top:0;background:#0c0c0c;color:#666;text-transform:uppercase;font-size:.85em;letter-spacing:1px;border-bottom:1px solid #1e1e1e;padding:7px 6px;text-align:left;z-index:1}
-table.ytable td{padding:5px 6px;border-bottom:1px solid #1a1a1a;color:#aaa;vertical-align:middle}
-table.ytable tr:hover td{background:#161616}
-table.ytable td input[type=text]{width:100%;background:transparent;border:1px solid transparent;border-radius:3px;padding:3px 5px;color:#00ff66;font-size:.95em;font-family:inherit}
-table.ytable td input[type=text]:focus{background:#000;border-color:#00ff66;outline:none}
-table.ytable td select.axis-select{background:#000;color:#00ff66;border:1px solid #333;border-radius:3px;padding:2px 4px;font-size:.9em;font-family:inherit;cursor:pointer;width:100%}
-table.ytable td select.axis-select:focus{border-color:#00ff66;outline:none}
-table.ytable td select.axis-select.right{color:#67c7ff}
+table.ytable th{position:sticky;top:0;background:var(--bg);color:var(--text-muted);text-transform:uppercase;font-size:.85em;letter-spacing:1px;border-bottom:1px solid var(--border-light);padding:7px 6px;text-align:left;z-index:1}
+table.ytable td{padding:5px 6px;border-bottom:1px solid var(--border-light);color:var(--text-dim);vertical-align:middle}
+table.ytable tr:hover td{background:var(--preview-row-hover)}
+table.ytable td input[type=text]{width:100%;background:transparent;border:1px solid transparent;border-radius:3px;padding:3px 5px;color:var(--text);font-size:.95em;font-family:inherit}
+table.ytable td input[type=text]:focus{background:var(--input-bg);border-color:var(--accent);outline:none}
+table.ytable td select.axis-select{background:var(--input-bg);color:var(--text);border:1px solid var(--input-border);border-radius:3px;padding:2px 4px;font-size:.9em;font-family:inherit;cursor:pointer;width:100%}
+table.ytable td select.axis-select:focus{border-color:var(--accent);outline:none}
+table.ytable td select.axis-select.right{color:var(--axis-right)}
+table.ytable .group-badge{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle;box-shadow:0 0 4px currentColor}
 
-.preview-wrap{max-height:calc(100vh - 130px);overflow:auto;border:1px solid #1e1e1e;border-radius:4px;background:#000}
+.preview-wrap{max-height:calc(100vh - 130px);overflow:auto;border:1px solid var(--border-light);border-radius:4px;background:var(--input-bg)}
 table.preview{border-collapse:collapse;width:100%;font-size:.68em}
-table.preview th{position:sticky;top:0;background:#0c0c0c;color:#888;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid #1e1e1e;padding:6px 10px;text-align:left;white-space:nowrap;font-weight:normal;z-index:1}
-table.preview td{border-bottom:1px solid #141414;padding:4px 10px;white-space:nowrap;color:#999}
-table.preview tr:hover td{background:#161616;color:#00ff66}
+table.preview th{position:sticky;top:0;background:var(--bg);color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border-light);padding:6px 10px;text-align:left;white-space:nowrap;font-weight:normal;z-index:1}
+table.preview td{border-bottom:1px solid var(--border-light);padding:4px 10px;white-space:nowrap;color:var(--text-dim)}
+table.preview tr:hover td{background:var(--preview-row-hover);color:var(--text)}
 
 #plotView{flex:1;display:none;flex-direction:column;gap:8px;min-height:0}
 #plotView.visible{display:flex}
 .plot-main{flex:1;display:grid;grid-template-rows:auto minmax(200px,1.6fr) minmax(180px,1fr);gap:8px;min-height:0}
-.plot-container{position:relative;background:#0c0c0c;border:1px solid #222;border-radius:6px;min-height:0;overflow:hidden}
+.plot-container{position:relative;background:var(--bg);border:1px solid var(--border);border-radius:6px;min-height:0;overflow:hidden}
 #plotCanvas{display:block;cursor:crosshair}
 
-.chart-tooltip{position:absolute;background:rgba(0,0,0,.92);border:1px solid #00ff66;border-radius:4px;padding:6px 9px;font-size:.68em;color:#00ff66;pointer-events:none;z-index:20;display:none;font-family:Consolas,monospace;white-space:nowrap;box-shadow:0 4px 16px rgba(0,255,102,.15)}
-.chart-tooltip .tt-row{display:flex;align-items:center;gap:6px;margin-top:2px}
-.chart-tooltip .tt-color{display:inline-block;width:10px;height:2px;border-radius:1px}
-.chart-tooltip .tt-name{color:#ddd;max-width:220px;overflow:hidden;text-overflow:ellipsis}
-
-.cursor-bar{display:flex;align-items:center;gap:8px;background:#121212;border:1px solid #222;border-radius:6px;padding:8px 12px;font-size:.72em;flex-shrink:0;flex-wrap:wrap}
-.cursor-bar-label{color:#888;text-transform:uppercase;letter-spacing:1.5px;flex-shrink:0}
+.cursor-bar{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:.72em;flex-shrink:0;flex-wrap:wrap}
+.cursor-bar-label{color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;flex-shrink:0}
 .cursor-bar .c-label{font-weight:bold;flex-shrink:0}
-.cursor-bar .c-label.c1{color:#ff5555}
-.cursor-bar .c-label.c2{color:#ffaa00}
-.cursor-bar input[type=text]{background:#000;color:#00ff66;border:1px solid #333;border-radius:4px;padding:5px 8px;outline:none;font-size:1em;font-family:inherit;min-width:190px;flex:1}
-.cursor-bar input[type=text]:focus{border-color:#00ff66;box-shadow:0 0 6px rgba(0,255,102,.25)}
-.cursor-bar input.err{border-color:#ff5555;box-shadow:0 0 6px rgba(255,85,85,.4)}
-.cursor-bar select{background:#000;color:#00ff66;border:1px solid #333;border-radius:4px;padding:5px 8px;outline:none;font-size:.95em;font-family:inherit;cursor:pointer}
-.cursor-bar select:focus{border-color:#00ff66}
-.cursor-hint{color:#555;font-size:.9em;flex-shrink:0}
-.cursor-bar .zoom-sep{color:#333;margin:0 4px}
-.cursor-bar .zoom-btn{background:#1a1a1a;color:#67c7ff;border:1px solid #333;border-radius:4px;padding:5px 10px;font-size:.9em;min-width:32px}
-.cursor-bar .zoom-btn:hover{border-color:#67c7ff;background:#222;color:#00ff66}
+.cursor-bar .c-label.c1{color:var(--cursor-c1)}
+.cursor-bar .c-label.c2{color:var(--cursor-c2)}
+.cursor-bar input[type=text]{background:var(--input-bg);color:var(--text);border:1px solid var(--input-border);border-radius:4px;padding:5px 8px;outline:none;font-size:1em;font-family:inherit;min-width:190px;flex:1}
+.cursor-bar input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 6px var(--accent-glow)}
+.cursor-bar input.err{border-color:var(--status-err);box-shadow:0 0 6px rgba(255,85,85,.4)}
+.cursor-bar select{background:var(--input-bg);color:var(--text);border:1px solid var(--input-border);border-radius:4px;padding:5px 8px;outline:none;font-size:.95em;font-family:inherit;cursor:pointer}
+.cursor-bar select:focus{border-color:var(--accent)}
+.cursor-hint{color:var(--text-faint);font-size:.9em;flex-shrink:0}
+.cursor-bar .zoom-sep{color:var(--text-faint);margin:0 4px}
+.cursor-bar .zoom-btn{background:var(--btn-bg);color:var(--axis-right);border:1px solid var(--btn-border);border-radius:4px;padding:5px 10px;font-size:.9em;min-width:32px}
+.cursor-bar .zoom-btn:hover{border-color:var(--axis-right);background:var(--btn-hover);color:var(--text)}
 
-.tabs-container{background:#121212;border:1px solid #222;border-radius:6px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
-.tabs-header{display:flex;background:#0c0c0c;border-bottom:1px solid #1e1e1e}
-.tab-btn{padding:9px 18px;border:none;background:transparent;color:#666;cursor:pointer;font-size:.75em;font-family:inherit;text-transform:uppercase;letter-spacing:1.5px;border-bottom:2px solid transparent}
-.tab-btn.active{color:#00ff66;border-bottom-color:#00ff66;background:#121212}
-.tab-btn:hover{color:#00ff66}
-.tab-btn.tab-action{margin-left:auto;color:#67c7ff;font-size:.7em;padding:9px 14px;border-bottom-color:transparent}
-.tab-btn.tab-action:hover{color:#00ff66;background:#1a1a1a}
+.tabs-container{background:var(--panel);border:1px solid var(--border);border-radius:6px;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.tabs-header{display:flex;background:var(--bg);border-bottom:1px solid var(--border-light)}
+.tab-btn{padding:9px 18px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;font-size:.75em;font-family:inherit;text-transform:uppercase;letter-spacing:1.5px;border-bottom:2px solid transparent}
+.tab-btn.active{color:var(--text);border-bottom-color:var(--accent);background:var(--panel)}
+.tab-btn:hover{color:var(--text)}
+.tab-btn.tab-action{margin-left:auto;color:var(--axis-right);font-size:.7em;padding:9px 14px;border-bottom-color:transparent}
+.tab-btn.tab-action:hover{color:var(--text);background:var(--btn-bg)}
 .tabs-header .tab-actions{margin-left:auto;display:flex}
 .tabs-header .tab-actions .tab-btn{border-bottom-color:transparent;margin-left:0}
 .tab-body{flex:1;position:relative;min-height:0}
 .tab-pane{display:none;height:100%;padding:10px;overflow:auto}
 .tab-pane.active{display:block}
-.tab-pane pre{font-family:Consolas,monospace;font-size:.7em;white-space:pre-wrap;color:#aaa;margin:0;line-height:1.45}
+.tab-pane pre{font-family:Consolas,monospace;font-size:.7em;white-space:pre-wrap;color:var(--text-dim);margin:0;line-height:1.45}
 
 .fft-layout{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;height:100%}
 .fft-layout>pre{overflow:auto;padding-right:4px}
-.fft-chart-wrap{position:relative;background:#0c0c0c;border:1px solid #1e1e1e;border-radius:4px;min-height:150px;overflow:hidden}
+.fft-chart-wrap{position:relative;background:var(--bg);border:1px solid var(--border-light);border-radius:4px;min-height:150px;overflow:hidden}
 #fftCanvasMain{display:block}
 
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;z-index:90;padding:20px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:90;padding:20px}
 .modal.show{display:flex}
-.modal-box{width:min(420px,92vw);background:#111;border:1px solid #00ff66;border-radius:7px;padding:18px;box-shadow:0 20px 80px #000}
-.modal-title{color:#00ff66;font-size:.85em;letter-spacing:1.5px;margin-bottom:12px}
-.modal-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:16px;padding-top:12px;border-top:1px solid #1e1e1e}
+.modal-box{width:min(420px,92vw);background:var(--panel);border:1px solid var(--accent);border-radius:7px;padding:18px;box-shadow:0 20px 80px rgba(0,0,0,.5)}
+.modal-title{color:var(--text);font-size:.85em;letter-spacing:1.5px;margin-bottom:12px}
+.modal-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:16px;padding-top:12px;border-top:1px solid var(--border-light)}
 
 @media(max-width:900px){
   #mainView{grid-template-columns:1fr;overflow-y:auto}
@@ -141,9 +163,11 @@ table.preview tr:hover td{background:#161616;color:#00ff66}
 
 <div class="topbar">
   <span class="brand">📈 DATA ANALYSIS TOOL</span>
+  <span style="color:var(--text-muted);font-size:.85em">— Engineering Command Center · offline</span>
   <span class="spacer"></span>
-  <button class="btn-bar" id="btnMenu">🏠 Reset Tool</button>
-  <button class="btn-bar" id="btnBack" style="display:none">⬅ Torna alla selezione variabili</button>
+  <button class="btn-bar" id="btnTheme" title="Cambia tema" onclick="toggleTheme()">🌙 Dark</button>
+  <button class="btn-bar" id="btnMenu">🏠 Menu Principale</button>
+  <button class="btn-bar" id="btnBack" style="display:none">⬅ Torna alla Configurazione</button>
 </div>
 
 <div id="mainView">
@@ -222,7 +246,7 @@ table.preview tr:hover td{background:#161616;color:#00ff66}
       </div>
     </div>
 
-    <button id="btnPlot" class="btn-primary" disabled>📊 GENERA GRAFICO </button>
+    <button id="btnPlot" class="btn-primary" disabled>📊 GENERA GRAFICO MULTI-TRACCIA ➔</button>
     <div class="status-bar" id="statusLabel">> In attesa di file...</div>
   </div>
 
@@ -255,17 +279,17 @@ table.preview tr:hover td{background:#161616;color:#00ff66}
       <button class="zoom-btn" id="btnZoomOut" title="Zoom out asse X">➖</button>
       <button class="zoom-btn" id="btnZoomReset" title="Reset zoom (o doppio click)">⟲</button>
       <span class="zoom-sep">│</span>
+      <span class="cursor-bar-label">📐 Scala Y</span>
       <select id="yScaleMode" title="Modalità di visualizzazione dell'asse Y">
         <option value="auto">Auto (range comune)</option>
         <option value="normalized">Normalizzata (0–1)</option>
         <option value="log">Logaritmica (log10)</option>
       </select>
-      <span class="cursor-hint" id="cursorHint">Rotella = zoom X · Shift+rotella = zoom Y (sul pannello del mouse) · Drag = box zoom · Doppio click = reset</span>
+      <span class="cursor-hint" id="cursorHint">Rotella = zoom X · Shift+rotella = zoom Y · Drag cursore = sposta · Drag vuoto = box zoom · Doppio click = reset</span>
     </div>
 
     <div class="plot-container" id="plotContainer">
       <canvas id="plotCanvas"></canvas>
-      <div class="chart-tooltip" id="chartTooltip"></div>
     </div>
 
     <div class="tabs-container">
@@ -295,7 +319,7 @@ table.preview tr:hover td{background:#161616;color:#00ff66}
 <div class="modal" id="confirmModal">
   <div class="modal-box">
     <div class="modal-title">&gt; CONFERMA OPERAZIONE</div>
-    <div style="font-size:.78em;color:#bbb;line-height:1.5">Tornare al menu principale? I dati caricati andranno persi.</div>
+    <div style="font-size:.78em;color:var(--text-dim);line-height:1.5">Tornare al menu principale? I dati caricati andranno persi.</div>
     <div class="modal-actions">
       <button class="small-btn" onclick="document.getElementById('confirmModal').classList.remove('show')">ANNULLA</button>
       <button class="btn-primary" style="width:auto;padding:6px 18px;margin:0" onclick="confirmReset()">CONFERMA</button>
@@ -304,39 +328,62 @@ table.preview tr:hover td{background:#161616;color:#00ff66}
 </div>
 
 <script>
+// ==================== THEME ====================
+const THEMES={
+  dark:{
+    bg:'#0c0c0c', panel:'#121212', border:'#222', borderLight:'#1e1e1e',
+    text:'#00ff66', textDim:'#888', textMuted:'#666', textFaint:'#555', textBright:'#ddd', textTooltip:'#aaa',
+    chartBg:'#0c0c0c', chartGrid:'#1e1e1e', chartSubGrid:'#161616', chartAxis:'#222', chartTick:'#888',
+    legendBg:'rgba(12,12,12,0.92)', legendBorder:'#222',
+    cursor1:'#ff5555', cursor2:'#ffaa00',
+    axisLeft:'#00ff66', axisRight:'#67c7ff', axisRightDim:'#1a2530',
+    boxZoom:'#67c7ff', boxZoomFill:'rgba(103,199,255,0.12)',
+    panelPalette:['#00ff66','#67c7ff','#ffb700','#ff5555','#cc66ff','#00ffff','#ff8800','#66ff99'],
+    hidden:'#444'
+  },
+  light:{
+    bg:'#f0f2f5', panel:'#ffffff', border:'#d0d4d9', borderLight:'#e5e7eb',
+    text:'#006633', textDim:'#4b5563', textMuted:'#6b7280', textFaint:'#9ca3af', textBright:'#111827', textTooltip:'#374151',
+    chartBg:'#ffffff', chartGrid:'#e5e7eb', chartSubGrid:'#f3f4f6', chartAxis:'#cbd0d6', chartTick:'#4b5563',
+    legendBg:'rgba(255,255,255,0.95)', legendBorder:'#d0d4d9',
+    cursor1:'#dc2626', cursor2:'#d97706',
+    axisLeft:'#00a344', axisRight:'#2563eb', axisRightDim:'#dbeafe',
+    boxZoom:'#2563eb', boxZoomFill:'rgba(37,99,235,0.12)',
+    panelPalette:['#00a344','#2563eb','#d97706','#dc2626','#7c3aed','#0891b2','#ea580c','#059669'],
+    hidden:'#9ca3af'
+  }
+};
+let currentThemeName='dark';
+let T=THEMES.dark;
+
 // ==================== STATE ====================
 let loadedData=[];
 let currentTracks=[];
 let isDatetimeX=false;
 let cursor1=null, cursor2=null;
-let trackColors=['#00ff66','#67c7ff','#ffb700','#ff5555','#cc66ff','#00ffff','#ff8800','#66ff99'];
+let trackColors=THEMES.dark.panelPalette.slice();
 let lastFFTTraces=[];
 let lastStatsText='';
 let lastFFTText='';
 let popupWindow=null;
 let popupCloseChecker=null;
 
-let plotMode='single'; // 'single' | 'stacked'
+let plotMode='single';
 
-// Zoom: X comune, Y per pannello/asse
 let viewXMin=null, viewXMax=null;
 let viewYMinLeft=null, viewYMaxLeft=null;
 let viewYMinRight=null, viewYMaxRight=null;
-let viewYByPanel={}; // { panelIndex: {min, max} }
+let viewYByPanel={};
 let yScaleMode='auto';
 
-// Interazione
 let mouseDown=false, mouseStartX=0, mouseStartY=0, mouseCurrentX=0, mouseCurrentY=0;
 let isPanning=false;
 let panStartView=null;
 let lastLayout=null;
-
-// Pannello corrente al passaggio del mouse (per zoom Y)
 let hoverPanelIndex=0;
+let draggingCursor=null;
+const CURSOR_HIT_PX=10;
 
-const AXIS_COLOR_LEFT='#00ff66';
-const AXIS_COLOR_RIGHT='#67c7ff';
-const PANEL_COLORS=['#00ff66','#67c7ff','#ffb700','#ff5555','#cc66ff','#00ffff','#ff8800','#66ff99'];
 const MAX_PANELS=6;
 
 // ==================== DOM ====================
@@ -347,7 +394,6 @@ const previewWrap=$('previewWrap');
 const statusLabel=$('statusLabel');
 const plotCanvas=$('plotCanvas');
 const plotContainer=$('plotContainer');
-const chartTooltip=$('chartTooltip');
 const fftCanvasMain=$('fftCanvasMain');
 const statsTextEl=$('statsText');
 const fftTextEl=$('fftText');
@@ -363,10 +409,53 @@ function toggleWidget(el){
   const c=w.classList.toggle('collapsed');
   el.querySelector('.collapse-arrow').textContent=c?'▶':'▼';
 }
+function groupColor(varName){
+  let h=0;
+  for(let i=0;i<varName.length;i++) h=(h*31+varName.charCodeAt(i))>>>0;
+  const palette=['#00ff66','#67c7ff','#ffb700','#ff5555','#cc66ff','#00ffff','#ff8800','#66ff99'];
+  return palette[h%palette.length];
+}
+
+// ==================== THEME ====================
+function refreshTrackColors(){ trackColors=T.panelPalette.slice(); }
+
+function applyTheme(name){
+  currentThemeName=name;
+  T=THEMES[name];
+  document.documentElement.classList.toggle('light', name==='light');
+  document.body.classList.toggle('light', name==='light');
+  try{ localStorage.setItem('daTheme', name); }catch(e){}
+  const btn=$('btnTheme');
+  if(btn) btn.textContent = name==='dark' ? '🌙 Dark' : '☀ Light';
+  refreshTrackColors();
+  if(currentTracks.length) renderChart();
+  if(lastFFTTraces.length){
+    renderFFTChartOn(fftCanvasMain,lastFFTTraces);
+    if(popupWindow && !popupWindow.closed){
+      const pc=popupWindow.document.getElementById('popupFftCanvas');
+      if(pc) renderFFTChartOn(pc,lastFFTTraces);
+    }
+  }
+}
+function toggleTheme(){ applyTheme(currentThemeName==='dark'?'light':'dark'); }
 
 // ==================== PLOT MODE ====================
 $('plotModeSelect').addEventListener('change',(e)=>{
   plotMode=e.target.value;
+  if(plotMode==='stacked'){
+    const varNameToPanel={};
+    let nextPanel=1;
+    yTableBody.querySelectorAll('tr').forEach(tr=>{
+      const v=tr.dataset.varName;
+      if(!varNameToPanel[v]){
+        varNameToPanel[v]=nextPanel;
+        nextPanel=(nextPanel%MAX_PANELS)+1;
+      }
+      tr.dataset.axisValue=String(varNameToPanel[v]);
+    });
+  } else {
+    yTableBody.querySelectorAll('tr').forEach(tr=>{ tr.dataset.axisValue='left'; });
+  }
   applyPlotModeUI();
   updatePanelLabelsFromTable();
 });
@@ -384,7 +473,6 @@ function applyPlotModeUI(){
   rebuildAxisColumn();
 }
 
-// Ricostruisce i select nella colonna Asse/Pannello
 function rebuildAxisColumn(){
   yTableBody.querySelectorAll('tr').forEach(tr=>{
     const cell=tr.querySelector('.axis-cell');
@@ -393,44 +481,44 @@ function rebuildAxisColumn(){
     let html='';
     if(plotMode==='stacked'){
       html='<select class="axis-select panel-select">';
-      for(let i=1;i<=MAX_PANELS;i++){
-        html+='<option value="'+i+'">P'+i+'</option>';
-      }
+      for(let i=1;i<=MAX_PANELS;i++) html+='<option value="'+i+'">P'+i+'</option>';
       html+='</select>';
     } else {
-      html='<select class="axis-select">'+
-        '<option value="left">SX</option>'+
-        '<option value="right">DX</option>'+
-      '</select>';
+      html='<select class="axis-select"><option value="left">SX</option><option value="right">DX</option></select>';
     }
     cell.innerHTML=html;
     const sel=cell.querySelector('select');
     if(plotMode==='stacked'){
       const n=parseInt(prev,10);
-      if(n>=1&&n<=MAX_PANELS) sel.value=String(n);
-      else sel.value='1';
+      sel.value=(n>=1&&n<=MAX_PANELS)?String(n):'1';
       tr.dataset.axisValue=sel.value;
     } else {
-      if(prev==='right') sel.value='right'; else sel.value='left';
+      sel.value=(prev==='right')?'right':'left';
       tr.dataset.axisValue=sel.value;
       sel.classList.toggle('right',sel.value==='right');
     }
     sel.addEventListener('change',()=>{
-      tr.dataset.axisValue=sel.value;
-      if(plotMode==='single'){
-        sel.classList.toggle('right',sel.value==='right');
+      const newVal=sel.value;
+      tr.dataset.axisValue=newVal;
+      if(plotMode==='single') sel.classList.toggle('right',newVal==='right');
+      if(plotMode==='stacked'){
+        const varName=tr.dataset.varName;
+        yTableBody.querySelectorAll('tr').forEach(other=>{
+          if(other===tr) return;
+          if(other.dataset.varName===varName){
+            other.dataset.axisValue=newVal;
+            const otherSel=other.querySelector('.axis-select');
+            if(otherSel) otherSel.value=newVal;
+          }
+        });
       }
       updatePanelLabelsFromTable();
     });
   });
 }
 
-// Aggiorna la lista dei pannelli visibili nel widget labels
 function updatePanelLabelsFromTable(){
-  if(plotMode!=='stacked'){
-    $('panelLabelsList').innerHTML='';
-    return;
-  }
+  if(plotMode!=='stacked'){ $('panelLabelsList').innerHTML=''; return; }
   const usedPanels=new Set();
   yTableBody.querySelectorAll('tr').forEach(tr=>{
     const cb=tr.querySelector('input[type=checkbox]');
@@ -440,21 +528,18 @@ function updatePanelLabelsFromTable(){
   });
   const sorted=[...usedPanels].sort((a,b)=>a-b);
   const list=$('panelLabelsList');
-  const existingInputs={};
-  list.querySelectorAll('input[data-panel]').forEach(inp=>{
-    existingInputs[inp.dataset.panel]=inp.value;
-  });
+  const existing={};
+  list.querySelectorAll('input[data-panel]').forEach(inp=>{existing[inp.dataset.panel]=inp.value;});
   list.innerHTML='';
   if(!sorted.length){
-    list.innerHTML='<div style="color:#555;font-size:.9em;text-align:center">Nessun canale selezionato</div>';
+    list.innerHTML='<div style="color:var(--text-faint);font-size:.9em;text-align:center">Nessun canale selezionato</div>';
     return;
   }
   sorted.forEach((n,i)=>{
     const row=document.createElement('div');
     row.className='panel-label-row';
-    const defaultLabel='Pannello '+n;
-    const val=existingInputs[String(n)]||defaultLabel;
-    row.innerHTML='<label style="color:'+PANEL_COLORS[i%PANEL_COLORS.length]+'">P'+n+'</label>'+
+    const val=existing[String(n)]||('Pannello '+n);
+    row.innerHTML='<label style="color:'+T.panelPalette[i%T.panelPalette.length]+'">P'+n+'</label>'+
       '<input type="text" data-panel="'+n+'" value="'+escapeHtml(val)+'">';
     list.appendChild(row);
   });
@@ -466,18 +551,13 @@ function getPanelLabel(origNumber){
   return 'Pannello '+origNumber;
 }
 
-// Aggiorna le label quando l'utente scrive
 document.addEventListener('input',(e)=>{
   if(e.target.matches('#panelLabelsList input[data-panel]')){
     if(currentTracks.length) renderChart();
   }
 });
-
-// Aggiorna i pannelli quando l'utente spunta una checkbox
 yTableBody.addEventListener('change',(e)=>{
-  if(e.target.matches('input[type=checkbox]')){
-    updatePanelLabelsFromTable();
-  }
+  if(e.target.matches('input[type=checkbox]')) updatePanelLabelsFromTable();
 });
 
 // ==================== FILE LOADING ====================
@@ -516,11 +596,7 @@ $('fileInput').addEventListener('change',async e=>{
 });
 
 function detectDelimiter(line){
-  const c={
-    ',':(line.match(/,/g)||[]).length,
-    ';':(line.match(/;/g)||[]).length,
-    '\t':(line.match(/\t/g)||[]).length
-  };
+  const c={',':(line.match(/,/g)||[]).length,';':(line.match(/;/g)||[]).length,'\t':(line.match(/\t/g)||[]).length};
   let best=',', max=0;
   for(const k of Object.keys(c)) if(c[k]>max){max=c[k];best=k;}
   return best;
@@ -534,10 +610,8 @@ function parseDelimited(text){
   for(let i=0;i<text.length;i++){
     const c=text[i];
     if(inQuote){
-      if(c==='"'){
-        if(text[i+1]==='"'){field+='"';i++;}
-        else inQuote=false;
-      } else field+=c;
+      if(c==='"'){ if(text[i+1]==='"'){field+='"';i++;} else inQuote=false; }
+      else field+=c;
     } else {
       if(c==='"') inQuote=true;
       else if(c===delim){row.push(field);field='';}
@@ -572,28 +646,19 @@ function loadTextFile(file){
 }
 
 async function loadXLSXFile(file){
-  if(typeof DecompressionStream==='undefined'){
-    throw new Error('Browser troppo vecchio per leggere XLSX. Salva come CSV.');
-  }
+  if(typeof DecompressionStream==='undefined') throw new Error('Browser troppo vecchio per leggere XLSX. Salva come CSV.');
   const buf=await file.arrayBuffer();
   const files=await unzipXLSX(buf);
   if(!files['xl/worksheets/sheet1.xml']) throw new Error('Foglio 1 non trovato');
   const sheetXml=decodeText(files['xl/worksheets/sheet1.xml']);
-  const sharedStrings=files['xl/sharedStrings.xml']
-    ? parseSharedStrings(decodeText(files['xl/sharedStrings.xml']))
-    : [];
+  const sharedStrings=files['xl/sharedStrings.xml']?parseSharedStrings(decodeText(files['xl/sharedStrings.xml'])):[];
   return tableFromRows(parseSheetXml(sheetXml, sharedStrings));
 }
-
 function decodeText(bytes){return new TextDecoder('UTF-8').decode(bytes);}
-
 async function unzipXLSX(buf){
-  const view=new DataView(buf);
-  const u8=new Uint8Array(buf);
+  const view=new DataView(buf), u8=new Uint8Array(buf);
   let eocd=-1;
-  for(let i=buf.byteLength-22;i>=0;i--){
-    if(view.getUint32(i,true)===0x06054b50){eocd=i;break;}
-  }
+  for(let i=buf.byteLength-22;i>=0;i--) if(view.getUint32(i,true)===0x06054b50){eocd=i;break;}
   if(eocd<0) throw new Error('File ZIP non valido (XLSX corrotto?)');
   const cdOffset=view.getUint32(eocd+16,true);
   const numEntries=view.getUint16(eocd+10,true);
@@ -621,47 +686,38 @@ async function unzipXLSX(buf){
   }
   return files;
 }
-
 async function inflateRaw(compData){
   const ds=new DecompressionStream('deflate-raw');
   const stream=new Blob([compData]).stream().pipeThrough(ds);
   const result=await new Response(stream).arrayBuffer();
   return new Uint8Array(result);
 }
-
 function parseSharedStrings(xml){
   const strings=[];
   const siRegex=/<si\b[^>]*>([\s\S]*?)<\/si>/g;
   let m;
   while((m=siRegex.exec(xml))){
-    const inner=m[1];
-    let s='';
-    const tRegex=/<t[^>]*>([\s\S]*?)<\/t>/g;
-    let t;
+    const inner=m[1];let s='';
+    const tRegex=/<t[^>]*>([\s\S]*?)<\/t>/g;let t;
     while((t=tRegex.exec(inner))) s+=xmlUnescape(t[1]);
     strings.push(s);
   }
   return strings;
 }
-
 function xmlUnescape(s){
-  return s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"')
-          .replace(/&apos;/g,"'").replace(/&amp;/g,'&');
+  return s.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&apos;/g,"'").replace(/&amp;/g,'&');
 }
-
 function colLetterToNum(letters){
   let n=0;
   for(let i=0;i<letters.length;i++) n=n*26+(letters.charCodeAt(i)-64);
   return n-1;
 }
-
 function parseSheetXml(xml, sharedStrings){
   const rows=[];
   const rowRegex=/<row\b[^>]*>([\s\S]*?)<\/row>/g;
   let rm;
   while((rm=rowRegex.exec(xml))){
-    const cells=[];
-    let lastCol=-1;
+    const cells=[];let lastCol=-1;
     const cellRegex=/<c\b([^>]*)\/>|<c\b([^>]*)>([\s\S]*?)<\/c>/g;
     let cm;
     while((cm=cellRegex.exec(rm[1]))){
@@ -673,8 +729,7 @@ function parseSheetXml(xml, sharedStrings){
       const type=tMatch?tMatch[1]:'';
       let val=null;
       if(type==='inlineStr'){
-        const tRegex=/<t[^>]*>([\s\S]*?)<\/t>/g;
-        let t, parts=[];
+        const tRegex=/<t[^>]*>([\s\S]*?)<\/t>/g;let t,parts=[];
         while((t=tRegex.exec(inner))) parts.push(xmlUnescape(t[1]));
         val=parts.join('');
       } else {
@@ -684,15 +739,11 @@ function parseSheetXml(xml, sharedStrings){
           if(type==='s') val=sharedStrings[parseInt(raw,10)]||'';
           else if(type==='b') val=raw==='1';
           else if(type==='str') val=xmlUnescape(raw);
-          else {
-            const num=Number(raw);
-            val=isNaN(num)?raw:num;
-          }
+          else {const num=Number(raw);val=isNaN(num)?raw:num;}
         }
       }
       while(lastCol+1<col){cells.push(null);lastCol++;}
-      cells.push(val);
-      lastCol=col;
+      cells.push(val);lastCol=col;
     }
     rows.push(cells);
   }
@@ -735,22 +786,32 @@ function populateUiComponents(){
   dd.innerHTML='<option value="__index__">-- Indice campione --</option>'+
     allVars.map(v=>'<option value="'+escapeHtml(v)+'">'+escapeHtml(v)+'</option>').join('');
 
+  const varNameToPanel={};
+  let nextPanel=1;
+  for(const ld of loadedData){
+    for(const v of ld.varNames){
+      if(!varNameToPanel[v]){
+        varNameToPanel[v]=nextPanel;
+        nextPanel=(nextPanel%MAX_PANELS)+1;
+      }
+    }
+  }
+
   yTableBody.innerHTML='';
-  let autoPanel=1;
   for(const ld of loadedData){
     for(const v of ld.varNames){
       const tr=document.createElement('tr');
       tr.dataset.fileName=ld.fileName;
       tr.dataset.varName=v;
-      tr.dataset.axisValue=(plotMode==='stacked')?String(autoPanel):'left';
+      const panel=varNameToPanel[v]||1;
+      tr.dataset.axisValue=(plotMode==='stacked')?String(panel):'left';
       const def=v+' ('+ld.fileName+')';
       tr.innerHTML='<td><input type="checkbox"></td>'+
         '<td class="axis-cell"></td>'+
         '<td>'+escapeHtml(ld.fileName)+'</td>'+
-        '<td style="color:#00ff66">'+escapeHtml(v)+'</td>'+
+        '<td><span class="group-badge" style="background:'+groupColor(v)+';color:'+groupColor(v)+'"></span>'+escapeHtml(v)+'</td>'+
         '<td><input type="text" value="'+escapeHtml(def)+'"></td>';
       yTableBody.appendChild(tr);
-      if(plotMode==='stacked') autoPanel=(autoPanel%MAX_PANELS)+1;
     }
   }
   rebuildAxisColumn();
@@ -862,11 +923,8 @@ function generatePlot(){
         xData:xC,yData:yC,isDatetime:isDtX,visible:true,
         yMin:tYMin,yMax:tYMax
       };
-      if(plotMode==='stacked'){
-        track.panel=parseInt(sel.axisValue,10)||1;
-      } else {
-        track.axis=sel.axisValue||'left';
-      }
+      if(plotMode==='stacked') track.panel=parseInt(sel.axisValue,10)||1;
+      else track.axis=sel.axisValue||'left';
       currentTracks.push(track);
     }
     if(!currentTracks.length) throw new Error('Nessun dato valido rimasto dopo il filtraggio.');
@@ -888,105 +946,80 @@ function generatePlot(){
       syncCursorInputs();
       updateStats();
     }));
-    const modeMsg=(plotMode==='stacked')
+    setStatus(plotMode==='stacked'
       ? '> Grafico a pannelli impilati generato. Rotella/Shift+rotella per zoom.'
-      : '> Grafico singolo con doppio asse Y generato.';
-    setStatus(modeMsg,'ok');
+      : '> Grafico singolo con doppio asse Y generato.','ok');
   }catch(err){
     console.error(err);
     setStatus('> Errore: '+err.message,'err');
   }
 }
 
-// ==================== PANEL COMPUTATION ====================
+// ==================== PANELS ====================
 function computePanelsForRender(){
-  // Ritorna { isStacked, panels: [{ origNumber, index, tracks, color }] }
   if(plotMode==='stacked'){
     const nums=new Set();
     for(const t of currentTracks) nums.add(t.panel||1);
     const sorted=[...nums].sort((a,b)=>a-b);
     const panels=sorted.map((n,i)=>({
-      origNumber:n,
-      index:i,
-      color:PANEL_COLORS[i%PANEL_COLORS.length],
+      origNumber:n, index:i, color:T.panelPalette[i%T.panelPalette.length],
       tracks:currentTracks.filter(t=>(t.panel||1)===n)
     }));
     return {isStacked:true, panels};
-  } else {
-    // Modalità singola: due "pannelli virtuali" SX e DX sovrapposti
-    const leftTracks=currentTracks.filter(t=>t.axis==='left');
-    const rightTracks=currentTracks.filter(t=>t.axis==='right');
-    return {
-      isStacked:false,
-      leftTracks,
-      rightTracks,
-      hasRight:rightTracks.length>0
-    };
   }
+  return {
+    isStacked:false,
+    leftTracks:currentTracks.filter(t=>t.axis==='left'),
+    rightTracks:currentTracks.filter(t=>t.axis==='right'),
+    hasRight:currentTracks.some(t=>t.axis==='right')
+  };
 }
 
-// ==================== RENDER CHART ====================
+// ==================== RENDER ====================
 function renderChart(){
   const container=plotCanvas.parentElement;
   if(!container) return;
-  const W=container.clientWidth;
-  const H=container.clientHeight;
+  const W=container.clientWidth, H=container.clientHeight;
   if(W<=0||H<=0) return;
   const dpr=window.devicePixelRatio||1;
-  plotCanvas.width=W*dpr;
-  plotCanvas.height=H*dpr;
-  plotCanvas.style.width=W+'px';
-  plotCanvas.style.height=H+'px';
+  plotCanvas.width=W*dpr; plotCanvas.height=H*dpr;
+  plotCanvas.style.width=W+'px'; plotCanvas.style.height=H+'px';
   const ctx=plotCanvas.getContext('2d');
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.fillStyle='#0c0c0c';
+  ctx.fillStyle=T.chartBg;
   ctx.fillRect(0,0,W,H);
 
-  if(plotMode==='stacked'){
-    renderStackedChart(ctx,W,H);
-  } else {
-    renderSingleChart(ctx,W,H);
-  }
+  if(plotMode==='stacked') renderStackedChart(ctx,W,H);
+  else renderSingleChart(ctx,W,H);
 }
 
-// ==================== STACKED RENDER ====================
 function renderStackedChart(ctx,W,H){
   const info=computePanelsForRender();
   const panels=info.panels;
   if(!panels.length) return;
 
-  // Margini esterni
   const margin={top:50, right:30, bottom:50, left:90};
   const plotW=W-margin.left-margin.right;
   const plotH=H-margin.top-margin.bottom;
   if(plotW<=0||plotH<=0) return;
 
-  const gap=8;
-  const panelCount=panels.length;
+  const gap=8, panelCount=panels.length;
   const panelH=(plotH-gap*(panelCount-1))/panelCount;
   if(panelH<=0) return;
 
-  // Range X globale
   const xR=getGlobalXRange();
-  let xMin = viewXMin!==null ? viewXMin : xR.min;
-  let xMax = viewXMax!==null ? viewXMax : xR.max;
-  if(viewXMin===null){
-    const pad=(xMax-xMin)*0.02;
-    xMin-=pad;xMax+=pad;
-  }
+  let xMin=viewXMin!==null?viewXMin:xR.min;
+  let xMax=viewXMax!==null?viewXMax:xR.max;
+  if(viewXMin===null){const pad=(xMax-xMin)*0.02;xMin-=pad;xMax+=pad;}
   const xToPx=v=>margin.left+((v-xMin)/(xMax-xMin))*plotW;
 
-  // Calcola range Y per ogni pannello
   const useNormalized=(yScaleMode==='normalized');
   const useLog=(yScaleMode==='log');
 
-  const panelRanges=panels.map((p,i)=>{
+  const panelRanges=panels.map(p=>{
     const saved=viewYByPanel[p.origNumber];
-    if(saved && saved.min!==null && saved.max!==null){
-      return {min:saved.min,max:saved.max};
-    }
+    if(saved && saved.min!==null && saved.max!==null) return {min:saved.min,max:saved.max};
     if(useNormalized) return {min:0,max:1};
-    // Range dati
     let mn=Infinity,mx=-Infinity;
     for(const t of p.tracks){
       if(!t.visible) continue;
@@ -999,10 +1032,7 @@ function renderStackedChart(ctx,W,H){
       for(const t of p.tracks){
         if(!t.visible) continue;
         for(const yv of t.yData){
-          if(yv>0){
-            const lv=Math.log10(yv);
-            if(lv<lMin)lMin=lv; if(lv>lMax)lMax=lv;
-          }
+          if(yv>0){const lv=Math.log10(yv);if(lv<lMin)lMin=lv;if(lv>lMax)lMax=lv;}
         }
       }
       if(!isFinite(lMin)||lMin===lMax){lMin=0;lMax=1;}
@@ -1014,35 +1044,18 @@ function renderStackedChart(ctx,W,H){
   });
 
   function transformY(v,t){
-    if(useNormalized){
-      const r=(t.yMax-t.yMin)||1;
-      return (v-t.yMin)/r;
-    }
-    if(useLog){
-      if(v<=0) return NaN;
-      return Math.log10(v);
-    }
+    if(useNormalized){const r=(t.yMax-t.yMin)||1;return (v-t.yMin)/r;}
+    if(useLog){if(v<=0) return NaN;return Math.log10(v);}
     return v;
   }
 
-  // Salva layout
   const panelBounds=[];
   for(let i=0;i<panelCount;i++){
     const py0=margin.top+i*(panelH+gap);
-    panelBounds.push({y0:py0, y1:py0+panelH});
+    panelBounds.push({y0:py0,y1:py0+panelH});
   }
-  lastLayout={
-    isStacked:true,
-    margin,plotW,plotH,panelH,gap,
-    panels,panelBounds,panelRanges,
-    xMin,xMax,xToPx,
-    useNormalized,useLog
-  };
+  lastLayout={isStacked:true,margin,plotW,plotH,panelH,gap,panels,panelBounds,panelRanges,xMin,xMax,xToPx,useNormalized,useLog};
 
-  // Font
-  ctx.font='11px Consolas, monospace';
-
-  // Cursori (attraversano tutti i pannelli)
   const cursorLines=[];
   for(const c of [cursor1,cursor2]){
     if(!c) continue;
@@ -1050,22 +1063,17 @@ function renderStackedChart(ctx,W,H){
     if(!isFinite(cv)) continue;
     const px=xToPx(cv);
     if(px<margin.left||px>margin.left+plotW) continue;
-    cursorLines.push({x:px,cursor:c,color:c===cursor1?'#ff5555':'#ffaa00',label:c===cursor1?'C1':'C2'});
+    cursorLines.push({x:px,cursor:c,color:c===cursor1?T.cursor1:T.cursor2});
   }
 
-  // Disegna ciascun pannello
   for(let i=0;i<panelCount;i++){
     const panel=panels[i];
     const range=panelRanges[i];
     const b=panelBounds[i];
-    const py0=b.y0;
-    const py1=b.y1;
-    const pH=py1-py0;
-
+    const py0=b.y0, py1=b.y1, pH=py1-py0;
     const yToPxRaw=v=>py1-((v-range.min)/(range.max-range.min))*pH;
 
-    // Griglia Y orizzontale
-    ctx.strokeStyle='#1e1e1e';
+    ctx.strokeStyle=T.chartGrid;
     ctx.lineWidth=1;
     const yTicks=niceTicks(range.min,range.max,5);
     ctx.textAlign='right';
@@ -1073,41 +1081,29 @@ function renderStackedChart(ctx,W,H){
     for(const tv of yTicks){
       const py=yToPxRaw(tv);
       if(py<py0-1||py>py1+1) continue;
-      ctx.beginPath();
-      ctx.moveTo(margin.left,py);
-      ctx.lineTo(margin.left+plotW,py);
-      ctx.stroke();
+      ctx.beginPath();ctx.moveTo(margin.left,py);ctx.lineTo(margin.left+plotW,py);ctx.stroke();
       ctx.fillStyle=panel.color;
       ctx.font='10px Consolas, monospace';
       const label=useLog?'1e'+tv.toFixed(2):formatNum(tv);
       ctx.fillText(label,margin.left-8,py);
     }
 
-    // Griglia X verticale
     const xTicks=isDatetimeX?datetimeTicks(xMin,xMax):niceTicks(xMin,xMax,8);
-    ctx.strokeStyle='#161616';
+    ctx.strokeStyle=T.chartSubGrid;
     for(const tv of xTicks){
       const px=xToPx(tv);
       if(px<margin.left-1||px>margin.left+plotW+1) continue;
-      ctx.beginPath();
-      ctx.moveTo(px,py0);
-      ctx.lineTo(px,py1);
-      ctx.stroke();
+      ctx.beginPath();ctx.moveTo(px,py0);ctx.lineTo(px,py1);ctx.stroke();
     }
 
-    // Bordo
     ctx.strokeStyle=panel.color;
     ctx.globalAlpha=0.5;
     ctx.lineWidth=1.2;
     ctx.strokeRect(margin.left,py0,plotW,pH);
     ctx.globalAlpha=1;
 
-    // Tracce del pannello (clip)
     ctx.save();
-    ctx.beginPath();
-    ctx.rect(margin.left,py0,plotW,pH);
-    ctx.clip();
-
+    ctx.beginPath();ctx.rect(margin.left,py0,plotW,pH);ctx.clip();
     for(const t of panel.tracks){
       if(!t.visible) continue;
       const globalIdx=currentTracks.indexOf(t);
@@ -1129,7 +1125,6 @@ function renderStackedChart(ctx,W,H){
     }
     ctx.restore();
 
-    // Label Y del pannello (ruotata a sinistra, verticale fuori dall'area)
     const panelLabel=getPanelLabel(panel.origNumber);
     ctx.save();
     ctx.translate(22,py0+pH/2);
@@ -1141,14 +1136,12 @@ function renderStackedChart(ctx,W,H){
     ctx.fillText(panelLabel,0,0);
     ctx.restore();
 
-    // Numero pannello nell'angolo
     ctx.fillStyle=panel.color;
     ctx.font='bold 10px Consolas, monospace';
     ctx.textAlign='left';
     ctx.textBaseline='top';
     ctx.fillText('P'+panel.origNumber,margin.left+6,py0+4);
 
-    // Legenda pannello (solo nome)
     const legendItems=panel.tracks.map(t=>({
       name:t.legendName,
       color:trackColors[currentTracks.indexOf(t)%trackColors.length],
@@ -1165,47 +1158,37 @@ function renderStackedChart(ctx,W,H){
       const lh=legendItems.length*16+8;
       const lx=margin.left+plotW-lw-8;
       const ly=py0+6;
-      ctx.fillStyle='rgba(12,12,12,0.9)';
-      ctx.strokeStyle='#222';
+      ctx.fillStyle=T.legendBg;
+      ctx.strokeStyle=T.legendBorder;
       ctx.fillRect(lx,ly,lw,lh);
       ctx.strokeRect(lx,ly,lw,lh);
       for(let k=0;k<legendItems.length;k++){
         const it=legendItems[k];
         const iy=ly+10+k*16;
-        ctx.fillStyle=it.visible?it.color:'#444';
+        ctx.fillStyle=it.visible?it.color:T.hidden;
         ctx.fillRect(lx+6,iy-1,12,3);
-        ctx.fillStyle=it.visible?'#ddd':'#555';
+        ctx.fillStyle=it.visible?T.textBright:T.textFaint;
         ctx.fillText(it.name,lx+24,iy);
-        legendHits.push({
-          x:lx,y:ly+4+k*16,w:lw,h:16,
-          trackIndex:currentTracks.indexOf(it.track),
-          panelIndex:i
-        });
+        legendHits.push({x:lx,y:ly+4+k*16,w:lw,h:16,trackIndex:currentTracks.indexOf(it.track),panelIndex:i});
       }
     }
   }
 
-  // Bordo di separazione fra pannelli: bordo superiore area plot
-  ctx.strokeStyle='#333';
+  ctx.strokeStyle=T.chartAxis;
   ctx.lineWidth=1;
   ctx.beginPath();
-  ctx.moveTo(margin.left,margin.top);
-  ctx.lineTo(margin.left,margin.top+plotH);
-  ctx.moveTo(margin.left+plotW,margin.top);
-  ctx.lineTo(margin.left+plotW,margin.top+plotH);
+  ctx.moveTo(margin.left,margin.top);ctx.lineTo(margin.left,margin.top+plotH);
+  ctx.moveTo(margin.left+plotW,margin.top);ctx.lineTo(margin.left+plotW,margin.top+plotH);
   ctx.stroke();
 
-  // Asse X in fondo (ultimo pannello)
   const lastPanel=panelBounds[panelCount-1];
   const xAxisY=lastPanel.y1;
-  ctx.strokeStyle='#333';
+  ctx.strokeStyle=T.chartAxis;
   ctx.beginPath();
-  ctx.moveTo(margin.left,xAxisY);
-  ctx.lineTo(margin.left+plotW,xAxisY);
-  ctx.stroke();
+  ctx.moveTo(margin.left,xAxisY);ctx.lineTo(margin.left+plotW,xAxisY);ctx.stroke();
 
   const xTicksBottom=isDatetimeX?datetimeTicks(xMin,xMax):niceTicks(xMin,xMax,8);
-  ctx.fillStyle='#888';
+  ctx.fillStyle=T.chartTick;
   ctx.font='11px Consolas, monospace';
   ctx.textAlign='center';
   ctx.textBaseline='top';
@@ -1215,40 +1198,24 @@ function renderStackedChart(ctx,W,H){
     ctx.fillText(isDatetimeX?formatDateTick(tv,xMax-xMin):formatNum(tv),px,xAxisY+8);
   }
 
-  // Etichetta asse X
-  ctx.fillStyle='#888';
+  ctx.fillStyle=T.textDim;
   ctx.fillText($('editXLabel').value,margin.left+plotW/2,H-15);
 
-  // Cursori sopra tutto
   for(const cl of cursorLines){
     ctx.save();
     ctx.strokeStyle=cl.color;
     ctx.lineWidth=1.8;
     ctx.setLineDash([7,4]);
     ctx.beginPath();
-    ctx.moveTo(cl.x,margin.top);
-    ctx.lineTo(cl.x,lastPanel.y1);
+    ctx.moveTo(cl.x,margin.top);ctx.lineTo(cl.x,lastPanel.y1);
     ctx.stroke();
     ctx.restore();
-
-    ctx.fillStyle=cl.color;
-    ctx.font='bold 11px Consolas, monospace';
-    ctx.textAlign='center';
-    ctx.textBaseline='bottom';
-    ctx.fillText(cl.label,cl.x,margin.top-14);
-
-    const valTxt=isDatetimeX?formatCursorValue(cl.cursor.value):formatNum(cl.cursor.value instanceof Date?cl.cursor.value.getTime():cl.cursor.value);
-    ctx.font='10px Consolas, monospace';
-    ctx.textBaseline='top';
-    ctx.fillStyle=cl.color;
-    ctx.fillText(valTxt,cl.x,margin.top-12);
   }
 
-  // Box zoom
   if(mouseDown && !isPanning && mouseStartX!==mouseCurrentX){
     ctx.save();
-    ctx.strokeStyle='#67c7ff';
-    ctx.fillStyle='rgba(103,199,255,0.12)';
+    ctx.strokeStyle=T.boxZoom;
+    ctx.fillStyle=T.boxZoomFill;
     ctx.lineWidth=1.5;
     ctx.setLineDash([4,3]);
     const rx=Math.min(mouseStartX,mouseCurrentX);
@@ -1258,15 +1225,13 @@ function renderStackedChart(ctx,W,H){
     ctx.restore();
   }
 
-  // Titolo
-  ctx.fillStyle='#00ff66';
+  ctx.fillStyle=T.text;
   ctx.font='bold 13px Consolas, monospace';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
   ctx.fillText($('editTitle').value,W/2,20);
 }
 
-// ==================== SINGLE RENDER (con SX/DX) ====================
 function renderSingleChart(ctx,W,H){
   const hasRightAxis=currentTracks.some(t=>t.axis==='right' && t.visible);
   const margin={top:50, right:hasRightAxis?85:30, bottom:50, left:80};
@@ -1275,25 +1240,21 @@ function renderSingleChart(ctx,W,H){
   if(plotW<=0||plotH<=0) return;
 
   const xR=getGlobalXRange();
-  let xMin = viewXMin!==null ? viewXMin : xR.min;
-  let xMax = viewXMax!==null ? viewXMax : xR.max;
-  if(viewXMin===null){
-    const pad=(xMax-xMin)*0.02;
-    xMin-=pad;xMax+=pad;
-  }
+  let xMin=viewXMin!==null?viewXMin:xR.min;
+  let xMax=viewXMax!==null?viewXMax:xR.max;
+  if(viewXMin===null){const pad=(xMax-xMin)*0.02;xMin-=pad;xMax+=pad;}
 
   function getRangeYForAxis(axis){
     let mn=Infinity,mx=-Infinity;
     for(const t of currentTracks){
       if(!t.visible) continue;
       if(t.axis!==axis) continue;
-      for(const yv of t.yData){if(yv<mn)mn=yv; if(yv>mx)mx=yv;}
+      for(const yv of t.yData){if(yv<mn)mn=yv;if(yv>mx)mx=yv;}
     }
     if(!isFinite(mn)||!isFinite(mx)) return null;
     if(mn===mx){mn-=1;mx+=1;}
     return {min:mn,max:mx};
   }
-
   const rangeLeft=getRangeYForAxis('left');
   const rangeRight=getRangeYForAxis('right');
   const useNormalized=(yScaleMode==='normalized');
@@ -1308,10 +1269,7 @@ function renderSingleChart(ctx,W,H){
       for(const t of tracksOfAxis){
         if(!t.visible) continue;
         for(const yv of t.yData){
-          if(yv>0){
-            const lv=Math.log10(yv);
-            if(lv<lMin)lMin=lv; if(lv>lMax)lMax=lv;
-          }
+          if(yv>0){const lv=Math.log10(yv);if(lv<lMin)lMin=lv;if(lv>lMax)lMax=lv;}
         }
       }
       if(!isFinite(lMin)||lMin===lMax){lMin=0;lMax=1;}
@@ -1321,7 +1279,6 @@ function renderSingleChart(ctx,W,H){
     const pad=(range.max-range.min)*0.05;
     return {min:range.min-pad,max:range.max+pad};
   }
-
   const tracksLeft=currentTracks.filter(t=>t.axis==='left');
   const tracksRight=currentTracks.filter(t=>t.axis==='right');
   const yRangeLeft=computeAxisRange(rangeLeft,viewYMinLeft,viewYMaxLeft,tracksLeft);
@@ -1337,14 +1294,9 @@ function renderSingleChart(ctx,W,H){
     return v;
   }
 
-  lastLayout={
-    isStacked:false,
-    margin,plotW,plotH,xMin,xMax,
-    yRangeLeft,yRangeRight,
-    xToPx,hasRightAxis,useNormalized,useLog
-  };
+  lastLayout={isStacked:false,margin,plotW,plotH,xMin,xMax,yRangeLeft,yRangeRight,xToPx,hasRightAxis,useNormalized,useLog};
 
-  ctx.strokeStyle='#1e1e1e';
+  ctx.strokeStyle=T.chartGrid;
   ctx.lineWidth=1;
   ctx.font='11px Consolas, monospace';
 
@@ -1355,7 +1307,7 @@ function renderSingleChart(ctx,W,H){
     const px=xToPx(tv);
     if(px<margin.left-1||px>margin.left+plotW+1) continue;
     ctx.beginPath();ctx.moveTo(px,margin.top);ctx.lineTo(px,margin.top+plotH);ctx.stroke();
-    ctx.fillStyle='#888';
+    ctx.fillStyle=T.chartTick;
     ctx.fillText(isDatetimeX?formatDateTick(tv,xMax-xMin):formatNum(tv),px,margin.top+plotH+8);
   }
 
@@ -1366,43 +1318,40 @@ function renderSingleChart(ctx,W,H){
     const py=yToPxLeftRaw(tv);
     if(py<margin.top-1||py>margin.top+plotH+1) continue;
     ctx.beginPath();ctx.moveTo(margin.left,py);ctx.lineTo(margin.left+plotW,py);ctx.stroke();
-    ctx.fillStyle=AXIS_COLOR_LEFT;
+    ctx.fillStyle=T.axisLeft;
     ctx.fillText(useLog?'1e'+tv.toFixed(2):formatNum(tv),margin.left-8,py);
   }
 
   if(hasRightAxis){
     ctx.save();
     ctx.setLineDash([3,4]);
-    ctx.strokeStyle='#1a2530';
+    ctx.strokeStyle=T.axisRightDim;
     const yTicksRight=niceTicks(yRangeRight.min,yRangeRight.max,8);
     ctx.textAlign='left';
     for(const tv of yTicksRight){
       const py=yToPxRightRaw(tv);
       if(py<margin.top-1||py>margin.top+plotH+1) continue;
       ctx.beginPath();ctx.moveTo(margin.left,py);ctx.lineTo(margin.left+plotW,py);ctx.stroke();
-      ctx.fillStyle=AXIS_COLOR_RIGHT;
+      ctx.fillStyle=T.axisRight;
       ctx.fillText(useLog?'1e'+tv.toFixed(2):formatNum(tv),margin.left+plotW+8,py);
     }
     ctx.restore();
   }
 
-  ctx.strokeStyle='#222';
+  ctx.strokeStyle=T.chartAxis;
   ctx.strokeRect(margin.left,margin.top,plotW,plotH);
 
   if(hasRightAxis){
-    ctx.strokeStyle=AXIS_COLOR_RIGHT;
+    ctx.strokeStyle=T.axisRight;
     ctx.lineWidth=1.5;
     ctx.beginPath();ctx.moveTo(margin.left+plotW,margin.top);ctx.lineTo(margin.left+plotW,margin.top+plotH);ctx.stroke();
   }
-  ctx.strokeStyle=AXIS_COLOR_LEFT;
+  ctx.strokeStyle=T.axisLeft;
   ctx.lineWidth=1.5;
   ctx.beginPath();ctx.moveTo(margin.left,margin.top);ctx.lineTo(margin.left,margin.top+plotH);ctx.stroke();
 
   ctx.save();
-  ctx.beginPath();
-  ctx.rect(margin.left,margin.top,plotW,plotH);
-  ctx.clip();
-
+  ctx.beginPath();ctx.rect(margin.left,margin.top,plotW,plotH);ctx.clip();
   for(let ti=0;ti<currentTracks.length;ti++){
     const t=currentTracks[ti];
     if(!t.visible) continue;
@@ -1425,13 +1374,13 @@ function renderSingleChart(ctx,W,H){
   }
   ctx.restore();
 
-  drawCursorLine(ctx,cursor1,'#ff5555','C1',margin,plotW,plotH,xToPx,isDatetimeX);
-  drawCursorLine(ctx,cursor2,'#ffaa00','C2',margin,plotW,plotH,xToPx,isDatetimeX);
+  drawCursorLine(ctx,cursor1,T.cursor1,margin,plotW,plotH,xToPx);
+  drawCursorLine(ctx,cursor2,T.cursor2,margin,plotW,plotH,xToPx);
 
   if(mouseDown && !isPanning && mouseStartX!==mouseCurrentX){
     ctx.save();
-    ctx.strokeStyle='#67c7ff';
-    ctx.fillStyle='rgba(103,199,255,0.12)';
+    ctx.strokeStyle=T.boxZoom;
+    ctx.fillStyle=T.boxZoomFill;
     ctx.lineWidth=1.5;
     ctx.setLineDash([4,3]);
     const rx=Math.min(mouseStartX,mouseCurrentX);
@@ -1441,20 +1390,20 @@ function renderSingleChart(ctx,W,H){
     ctx.restore();
   }
 
-  ctx.fillStyle='#00ff66';
+  ctx.fillStyle=T.text;
   ctx.font='bold 13px Consolas, monospace';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
   ctx.fillText($('editTitle').value,W/2,20);
 
   ctx.font='11px Consolas, monospace';
-  ctx.fillStyle='#888';
+  ctx.fillStyle=T.textDim;
   ctx.fillText($('editXLabel').value,margin.left+plotW/2,H-15);
 
   ctx.save();
   ctx.translate(15,margin.top+plotH/2);
   ctx.rotate(-Math.PI/2);
-  ctx.fillStyle=AXIS_COLOR_LEFT;
+  ctx.fillStyle=T.axisLeft;
   let yLabelLeft=$('editYLabel').value;
   if(useNormalized) yLabelLeft+=' (norm. 0–1)';
   else if(useLog) yLabelLeft+=' (log10)';
@@ -1465,7 +1414,7 @@ function renderSingleChart(ctx,W,H){
     ctx.save();
     ctx.translate(W-15,margin.top+plotH/2);
     ctx.rotate(Math.PI/2);
-    ctx.fillStyle=AXIS_COLOR_RIGHT;
+    ctx.fillStyle=T.axisRight;
     let yLabelRight=$('editYLabelRight').value;
     if(useNormalized) yLabelRight+=' (norm. 0–1)';
     else if(useLog) yLabelRight+=' (log10)';
@@ -1477,15 +1426,9 @@ function renderSingleChart(ctx,W,H){
   ctx.font='10px Consolas, monospace';
   ctx.textAlign='left';
   ctx.textBaseline='middle';
-
   const legendItems=currentTracks.map((t,i)=>({
-    name:t.legendName,
-    color:trackColors[i%trackColors.length],
-    visible:t.visible,
-    index:i,
-    axis:t.axis
+    name:t.legendName, color:trackColors[i%trackColors.length], visible:t.visible, index:i, axis:t.axis
   }));
-
   let maxLabelW=0;
   for(const it of legendItems){
     const prefix=(it.axis==='right'?'▸DX ':'▸SX ');
@@ -1496,34 +1439,28 @@ function renderSingleChart(ctx,W,H){
   const legendH=legendItems.length*lineH+12;
   const legendX=margin.left+plotW-Math.min(legendW,plotW*0.55)-10;
   const legendY=margin.top+10;
-
   if(legendItems.length){
-    ctx.fillStyle='rgba(12,12,12,0.92)';
-    ctx.strokeStyle='#222';
+    ctx.fillStyle=T.legendBg;
+    ctx.strokeStyle=T.legendBorder;
     ctx.fillRect(legendX,legendY,Math.min(legendW,plotW*0.55),legendH);
     ctx.strokeRect(legendX,legendY,Math.min(legendW,plotW*0.55),legendH);
     for(let i=0;i<legendItems.length;i++){
       const it=legendItems[i];
       const iy=legendY+12+i*lineH;
-      const axisColor=(it.axis==='right')?AXIS_COLOR_RIGHT:AXIS_COLOR_LEFT;
-      ctx.fillStyle=it.visible?it.color:'#444';
+      const axisColor=(it.axis==='right')?T.axisRight:T.axisLeft;
+      ctx.fillStyle=it.visible?it.color:T.hidden;
       ctx.fillRect(legendX+8,iy-1,14,3);
       ctx.font='bold 9px Consolas, monospace';
-      ctx.fillStyle=it.visible?axisColor:'#444';
+      ctx.fillStyle=it.visible?axisColor:T.hidden;
       ctx.fillText(it.axis==='right'?'DX':'SX',legendX+26,iy);
       ctx.font='10px Consolas, monospace';
-      ctx.fillStyle=it.visible?'#ddd':'#555';
+      ctx.fillStyle=it.visible?T.textBright:T.textFaint;
       ctx.fillText(it.name,legendX+48,iy);
-      legendHits.push({
-        x:legendX,y:legendY+6+i*lineH,w:Math.min(legendW,plotW*0.55),h:lineH,
-        trackIndex:it.index,
-        panelIndex:0
-      });
+      legendHits.push({x:legendX,y:legendY+6+i*lineH,w:Math.min(legendW,plotW*0.55),h:lineH,trackIndex:it.index,panelIndex:0});
     }
   }
 }
 
-// ==================== HELPERS COMUNI ====================
 function getGlobalXRange(){
   let mn=Infinity,mx=-Infinity,any=false;
   for(const t of currentTracks){
@@ -1539,39 +1476,21 @@ function getGlobalXRange(){
   for(const c of [cursor1,cursor2]){
     if(!c) continue;
     const cv=c.value instanceof Date?c.value.getTime():c.value;
-    if(isFinite(cv)){if(cv<mn)mn=cv; if(cv>mx)mx=cv;}
+    if(isFinite(cv)){if(cv<mn)mn=cv;if(cv>mx)mx=cv;}
   }
   return {min:mn,max:mx};
 }
 
-function drawCursorLine(ctx,cursor,color,label,margin,plotW,plotH,xToPx,isDt){
+function drawCursorLine(ctx,cursor,color,margin,plotW,plotH,xToPx){
   if(!cursor) return;
   const xv=cursor.value instanceof Date?cursor.value.getTime():cursor.value;
   if(!isFinite(xv)) return;
   const px=xToPx(xv);
   if(px<margin.left||px>margin.left+plotW) return;
-
   ctx.save();
-  ctx.strokeStyle=color;
-  ctx.lineWidth=1.8;
-  ctx.setLineDash([7,4]);
-  ctx.beginPath();
-  ctx.moveTo(px,margin.top);
-  ctx.lineTo(px,margin.top+plotH);
-  ctx.stroke();
+  ctx.strokeStyle=color;ctx.lineWidth=1.8;ctx.setLineDash([7,4]);
+  ctx.beginPath();ctx.moveTo(px,margin.top);ctx.lineTo(px,margin.top+plotH);ctx.stroke();
   ctx.restore();
-
-  ctx.fillStyle=color;
-  ctx.font='bold 11px Consolas, monospace';
-  ctx.textAlign='center';
-  ctx.textBaseline='bottom';
-  ctx.fillText(label,px,margin.top-14);
-
-  const valTxt=isDt?formatCursorValue(cursor.value):formatNum(xv);
-  ctx.font='10px Consolas, monospace';
-  ctx.textBaseline='top';
-  ctx.fillStyle=color;
-  ctx.fillText(valTxt,px,margin.top-12);
 }
 
 function niceTicks(min,max,count){
@@ -1590,16 +1509,9 @@ function niceTicks(min,max,count){
   for(let v=first;v<=max+step*0.001;v+=step) ticks.push(v);
   return ticks;
 }
-
 function datetimeTicks(minMs,maxMs){
   const span=maxMs-minMs;
-  const candidates=[
-    1,2,5,10,20,50,100,200,500,
-    1000,2000,5000,10000,30000,
-    60000,120000,300000,600000,1800000,
-    3600000,7200000,21600000,43200000,
-    86400000,172800000,604800000
-  ];
+  const candidates=[1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,30000,60000,120000,300000,600000,1800000,3600000,7200000,21600000,43200000,86400000,172800000,604800000];
   let step=candidates[candidates.length-1];
   for(const c of candidates){if(span/c<=10){step=c;break;}}
   const first=Math.ceil(minMs/step)*step;
@@ -1607,14 +1519,12 @@ function datetimeTicks(minMs,maxMs){
   for(let v=first;v<=maxMs;v+=step) ticks.push(v);
   return ticks;
 }
-
 function formatNum(v){
   if(v===0) return '0';
   const abs=Math.abs(v);
   if(abs>=1e6||abs<1e-3) return v.toExponential(2);
   return Number(v.toPrecision(6)).toString();
 }
-
 function formatDateTick(ms,span){
   const d=new Date(ms);
   const pad=(n,l=2)=>String(n).padStart(l,'0');
@@ -1625,11 +1535,9 @@ function formatDateTick(ms,span){
   return pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
 }
 
-// Legenda click
 plotCanvas.addEventListener('click',(e)=>{
   const rect=plotCanvas.getBoundingClientRect();
-  const x=e.clientX-rect.left;
-  const y=e.clientY-rect.top;
+  const x=e.clientX-rect.left, y=e.clientY-rect.top;
   for(const hit of legendHits){
     if(x>=hit.x&&x<=hit.x+hit.w&&y>=hit.y&&y<=hit.y+hit.h){
       currentTracks[hit.trackIndex].visible=!currentTracks[hit.trackIndex].visible;
@@ -1640,10 +1548,22 @@ plotCanvas.addEventListener('click',(e)=>{
   }
 });
 
-// ==================== ZOOM / PAN / HOVER ====================
+// ==================== ZOOM / PAN / DRAG CURSORE ====================
 function getMouseXY(e){
   const rect=plotCanvas.getBoundingClientRect();
-  return {x:e.clientX-rect.left, y:e.clientY-rect.top, clientX:e.clientX, clientY:e.clientY};
+  return {x:e.clientX-rect.left,y:e.clientY-rect.top};
+}
+
+function hitTestCursor(xPx){
+  const L=lastLayout;
+  if(!L||!cursor1||!cursor2) return null;
+  const px1=L.xToPx(cursor1.value instanceof Date?cursor1.value.getTime():cursor1.value);
+  const px2=L.xToPx(cursor2.value instanceof Date?cursor2.value.getTime():cursor2.value);
+  const d1=isFinite(px1)?Math.abs(xPx-px1):Infinity;
+  const d2=isFinite(px2)?Math.abs(xPx-px2):Infinity;
+  if(d1<=CURSOR_HIT_PX && d1<=d2) return 'c1';
+  if(d2<=CURSOR_HIT_PX) return 'c2';
+  return null;
 }
 
 plotCanvas.addEventListener('wheel',(e)=>{
@@ -1652,22 +1572,18 @@ plotCanvas.addEventListener('wheel',(e)=>{
   const {x,y}=getMouseXY(e);
   const L=lastLayout;
   if(x<L.margin.left||x>L.margin.left+L.plotW) return;
-
   const zoomFactor=e.deltaY<0?0.85:1/0.85;
-
   if(e.shiftKey){
     if(L.isStacked){
-      // Trova il pannello sotto il mouse
       let pIdx=-1;
       for(let i=0;i<L.panelBounds.length;i++){
-        if(y>=L.panelBounds[i].y0 && y<=L.panelBounds[i].y1){pIdx=i;break;}
+        if(y>=L.panelBounds[i].y0&&y<=L.panelBounds[i].y1){pIdx=i;break;}
       }
       if(pIdx<0) return;
       const range=L.panelRanges[pIdx];
       const yc=(range.min+range.max)/2;
       const half=(range.max-range.min)/2*zoomFactor;
-      const orig=L.panels[pIdx].origNumber;
-      viewYByPanel[orig]={min:yc-half, max:yc+half};
+      viewYByPanel[L.panels[pIdx].origNumber]={min:yc-half,max:yc+half};
     } else {
       const centerX=L.margin.left+L.plotW/2;
       const useRight=L.hasRightAxis && x>centerX;
@@ -1694,7 +1610,19 @@ plotCanvas.addEventListener('mousedown',(e)=>{
   if(x<L.margin.left||x>L.margin.left+L.plotW) return;
   if(y<L.margin.top||y>L.margin.top+L.plotH) return;
 
-  if(e.button===2 || e.ctrlKey || e.metaKey){
+  if(e.button===0 && !e.ctrlKey && !e.metaKey && !e.shiftKey){
+    const hit=hitTestCursor(x);
+    if(hit){
+      draggingCursor=hit;
+      mouseDown=false;
+      isPanning=false;
+      plotCanvas.style.cursor='ew-resize';
+      e.preventDefault();
+      return;
+    }
+  }
+
+  if(e.button===2||e.ctrlKey||e.metaKey){
     isPanning=true;
     const start={xMin:L.xMin,xMax:L.xMax,mouseX:x,mouseY:y,isStacked:L.isStacked};
     if(L.isStacked){
@@ -1713,30 +1641,46 @@ plotCanvas.addEventListener('mousedown',(e)=>{
     return;
   }
   if(e.button!==0) return;
-
-  mouseDown=true;
-  mouseStartX=x;mouseStartY=y;
-  mouseCurrentX=x;mouseCurrentY=y;
+  mouseDown=true;mouseStartX=x;mouseStartY=y;mouseCurrentX=x;mouseCurrentY=y;
 });
 
 plotCanvas.addEventListener('mousemove',(e)=>{
   if(!lastLayout) return;
-  const {x,y,clientX,clientY}=getMouseXY(e);
+  const {x,y}=getMouseXY(e);
   const L=lastLayout;
 
+  // === DRAG CURSORE ===
+  if(draggingCursor){
+    const px=Math.max(L.margin.left,Math.min(L.margin.left+L.plotW,x));
+    const xv=L.xMin+((px-L.margin.left)/L.plotW)*(L.xMax-L.xMin);
+    const newVal=isDatetimeX?new Date(xv):xv;
+    if(draggingCursor==='c1') cursor1.value=newVal;
+    else cursor2.value=newVal;
+    renderChart();
+    syncCursorInputs();
+    updateStats();
+    return;
+  }
+
+  // === HOVER: cursore del mouse ===
+  if(!isPanning && !mouseDown &&
+     x>=L.margin.left && x<=L.margin.left+L.plotW &&
+     y>=L.margin.top && y<=L.margin.top+L.plotH){
+    const hit=hitTestCursor(x);
+    plotCanvas.style.cursor=hit?'ew-resize':'crosshair';
+  }
+
   if(isPanning && panStartView){
-    const dx=x-panStartView.mouseX;
-    const dy=y-panStartView.mouseY;
+    const dx=x-panStartView.mouseX, dy=y-panStartView.mouseY;
     const dxData=(dx/L.plotW)*(panStartView.xMax-panStartView.xMin);
     viewXMin=panStartView.xMin-dxData;
     viewXMax=panStartView.xMax-dxData;
-
     if(L.isStacked){
       for(const origStr of Object.keys(panStartView.yByPanel)){
         const orig=parseInt(origStr,10);
         const s=panStartView.yByPanel[origStr];
         const dyData=(dy/L.plotH)*(s.max-s.min);
-        viewYByPanel[orig]={min:s.min+dyData, max:s.max+dyData};
+        viewYByPanel[orig]={min:s.min+dyData,max:s.max+dyData};
       }
     } else {
       const dyDataL=(dy/L.plotH)*(panStartView.yMaxL-panStartView.yMinL);
@@ -1750,37 +1694,21 @@ plotCanvas.addEventListener('mousemove',(e)=>{
     return;
   }
 
-  if(mouseDown){
-    mouseCurrentX=x;mouseCurrentY=y;
-    renderChart();
-    return;
-  }
-
-  if(x>=L.margin.left && x<=L.margin.left+L.plotW &&
-     y>=L.margin.top && y<=L.margin.top+L.plotH){
-    if(L.isStacked){
-      hoverPanelIndex=0;
-      for(let i=0;i<L.panelBounds.length;i++){
-        if(y>=L.panelBounds[i].y0 && y<=L.panelBounds[i].y1){hoverPanelIndex=i;break;}
-      }
-    }
-    showTooltip(clientX,clientY,L,x);
-  } else {
-    chartTooltip.style.display='none';
-  }
+  if(mouseDown){mouseCurrentX=x;mouseCurrentY=y;renderChart();return;}
 });
 
 window.addEventListener('mouseup',(e)=>{
-  if(isPanning){
-    isPanning=false;
-    panStartView=null;
+  if(draggingCursor){
+    draggingCursor=null;
     plotCanvas.style.cursor='crosshair';
+    setStatus('> Cursore spostato.','ok');
     return;
   }
+  if(isPanning){isPanning=false;panStartView=null;plotCanvas.style.cursor='crosshair';return;}
   if(mouseDown){
     const L=lastLayout;
     mouseDown=false;
-    if(L && Math.abs(mouseCurrentX-mouseStartX)>5){
+    if(L&&Math.abs(mouseCurrentX-mouseStartX)>5){
       const x1=L.xMin+((Math.min(mouseStartX,mouseCurrentX)-L.margin.left)/L.plotW)*(L.xMax-L.xMin);
       const x2=L.xMin+((Math.max(mouseStartX,mouseCurrentX)-L.margin.left)/L.plotW)*(L.xMax-L.xMin);
       viewXMin=x1;viewXMax=x2;
@@ -1801,61 +1729,7 @@ plotCanvas.addEventListener('dblclick',(e)=>{
 });
 
 plotCanvas.addEventListener('contextmenu',(e)=>e.preventDefault());
-plotCanvas.addEventListener('mouseleave',()=>{
-  chartTooltip.style.display='none';
-});
 
-// ==================== TOOLTIP ====================
-function showTooltip(clientX,clientY,L,xPx){
-  if(!currentTracks.length){chartTooltip.style.display='none';return;}
-  const xVal=L.xMin+((xPx-L.margin.left)/L.plotW)*(L.xMax-L.xMin);
-
-  const tracksToShow=[];
-  if(L.isStacked){
-    const panel=L.panels[hoverPanelIndex];
-    if(panel){
-      for(const t of panel.tracks) tracksToShow.push(t);
-    }
-  } else {
-    for(const t of currentTracks) tracksToShow.push(t);
-  }
-
-  const lines=[];
-  for(const t of tracksToShow){
-    if(!t.visible) continue;
-    let bestIdx=-1,bestDist=Infinity;
-    for(let i=0;i<t.xData.length;i++){
-      const xv=t.xData[i] instanceof Date?t.xData[i].getTime():t.xData[i];
-      const d=Math.abs(xv-xVal);
-      if(d<bestDist){bestDist=d;bestIdx=i;}
-    }
-    if(bestIdx<0) continue;
-    lines.push({name:t.legendName,color:trackColors[currentTracks.indexOf(t)%trackColors.length]});
-  }
-  if(!lines.length){chartTooltip.style.display='none';return;}
-
-  let html='';
-  for(const l of lines){
-    html+='<div class="tt-row">'+
-      '<span class="tt-color" style="background:'+l.color+'"></span>'+
-      '<span class="tt-name">'+escapeHtml(l.name)+'</span>'+
-    '</div>';
-  }
-  chartTooltip.innerHTML=html;
-  chartTooltip.style.display='block';
-
-  const contRect=plotContainer.getBoundingClientRect();
-  let ttX=clientX-contRect.left+15;
-  let ttY=clientY-contRect.top+15;
-  const ttW=chartTooltip.offsetWidth;
-  const ttH=chartTooltip.offsetHeight;
-  if(ttX+ttW>contRect.width) ttX=clientX-contRect.left-ttW-15;
-  if(ttY+ttH>contRect.height) ttY=clientY-contRect.top-ttH-15;
-  chartTooltip.style.left=ttX+'px';
-  chartTooltip.style.top=ttY+'px';
-}
-
-// ==================== ZOOM BUTTONS ====================
 function zoomByFactor(f){
   if(!lastLayout) return;
   const L=lastLayout;
@@ -1890,15 +1764,13 @@ $('yScaleMode').addEventListener('change',(e)=>{
 function formatCursorValue(v){
   if(v instanceof Date){
     const pad=(n,l=2)=>String(n).padStart(l,'0');
-    return v.getFullYear()+'-'+pad(v.getMonth()+1)+'-'+pad(v.getDate())+' '+
-           pad(v.getHours())+':'+pad(v.getMinutes())+':'+pad(v.getSeconds())+'.'+pad(v.getMilliseconds(),3);
+    return v.getFullYear()+'-'+pad(v.getMonth()+1)+'-'+pad(v.getDate())+' '+pad(v.getHours())+':'+pad(v.getMinutes())+':'+pad(v.getSeconds())+'.'+pad(v.getMilliseconds(),3);
   }
   const num=Number(v);
   if(!isFinite(num)) return '';
   if(Number.isInteger(num)) return String(num);
   return String(Number(num.toPrecision(10)));
 }
-
 function parseCursorValue(s){
   s=String(s).trim();
   if(!s) return null;
@@ -1911,20 +1783,16 @@ function parseCursorValue(s){
   const n=Number(s.replace(',','.'));
   return isNaN(n)?null:n;
 }
-
 function syncCursorInputs(){
   if(!cursor1||!cursor2) return;
   $('cursorInput1').value=formatCursorValue(cursor1.value);
   $('cursorInput2').value=formatCursorValue(cursor2.value);
 }
-
 function applyCursorInputs(){
   if(!cursor1||!cursor2) return;
   const i1=$('cursorInput1'), i2=$('cursorInput2');
-  i1.classList.remove('err');
-  i2.classList.remove('err');
-  const v1=parseCursorValue(i1.value);
-  const v2=parseCursorValue(i2.value);
+  i1.classList.remove('err');i2.classList.remove('err');
+  const v1=parseCursorValue(i1.value), v2=parseCursorValue(i2.value);
   let ok=true;
   if(v1===null){i1.classList.add('err');ok=false;}
   if(v2===null){i2.classList.add('err');ok=false;}
@@ -1932,25 +1800,19 @@ function applyCursorInputs(){
     setStatus('> ⚠ Valore cursore non valido. '+(isDatetimeX?'Formato: YYYY-MM-DD HH:mm:ss.SSS':'Atteso un numero.'),'err');
     return;
   }
-  cursor1.value=v1;
-  cursor2.value=v2;
-  renderChart();
-  updateStats();
+  cursor1.value=v1;cursor2.value=v2;
+  renderChart();updateStats();
   setStatus('> Cursori aggiornati.','ok');
 }
-
 function resetCursors(){
   if(!currentTracks||!currentTracks.length) return;
   const first=currentTracks[0];
   const n=first.xData.length;
   cursor1.value=first.xData[Math.max(0,Math.floor(n*0.25))];
   cursor2.value=first.xData[Math.max(0,Math.floor(n*0.75))];
-  syncCursorInputs();
-  renderChart();
-  updateStats();
+  syncCursorInputs();renderChart();updateStats();
   setStatus('> Cursori reimpostati (25% / 75%).','ok');
 }
-
 $('btnApplyCursor').addEventListener('click',applyCursorInputs);
 $('btnResetCursor').addEventListener('click',resetCursors);
 $('cursorInput1').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();applyCursorInputs();}});
@@ -1958,21 +1820,16 @@ $('cursorInput2').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDe
 $('cursorInput1').addEventListener('change',applyCursorInputs);
 $('cursorInput2').addEventListener('change',applyCursorInputs);
 
-// ==================== STATISTICS + FFT ====================
+// ==================== STATS + FFT ====================
 function updateStats(){
   if(!cursor1||!cursor2) return;
-
   let v1=cursor1.value,v2=cursor2.value;
   let t1=v1 instanceof Date?v1.getTime():v1;
   let t2=v2 instanceof Date?v2.getTime():v2;
   if(t1>t2){[v1,v2]=[v2,v1];[t1,t2]=[t2,t1];}
-
   let header;
-  if(isDatetimeX){
-    header='=== REPORT MULTI-FILE TEMPORALE ===\nDurata Intervallo (ΔX): '+formatDuration((t2-t1)/1000)+'\n';
-  }else{
-    header='=== REPORT MULTI-FILE NUMERICO ===\nDistanza Campioni (ΔX): '+(t2-t1).toFixed(3)+'\n';
-  }
+  if(isDatetimeX) header='=== REPORT MULTI-FILE TEMPORALE ===\nDurata Intervallo (ΔX): '+formatDuration((t2-t1)/1000)+'\n';
+  else header='=== REPORT MULTI-FILE NUMERICO ===\nDistanza Campioni (ΔX): '+(t2-t1).toFixed(3)+'\n';
   header+='='.repeat(65)+'\n\n';
 
   let statsTxt=header;
@@ -1989,19 +1846,16 @@ function updateStats(){
       if(xt>=t1&&xt<=t2){xSel.push(xt);ySel.push(track.yData[i]);}
     }
     if(!ySel.length) continue;
-
     const mean=avg(ySel);
     const rms=Math.sqrt(avg(ySel.map(v=>v*v)));
     const std=stdDev(ySel,mean);
     const maxV=Math.max(...ySel);
     const minV=Math.min(...ySel);
     const dY=ySel[ySel.length-1]-ySel[0];
-
     let xNum;
     if(track.isDatetime) xNum=xSel.map(v=>(v-xSel[0])/1000);
     else xNum=xSel.slice();
     const integral=trapz(xNum,ySel);
-
     let modeTag='';
     if(plotMode==='stacked') modeTag=' [P'+track.panel+']';
     else modeTag=(track.axis==='right')?' [asse DX]':' [asse SX]';
@@ -2019,21 +1873,13 @@ function updateStats(){
       const dt=dtSum/(xNum.length-1);
       let fs=1/(dt+1e-12);
       if(dt<=0) fs=1;
-
       const yDetrend=ySel.map(v=>v-mean);
       const {f,P1}=computeFFT(yDetrend,fs,N);
-
-      fftTraces.push({
-        f:Array.from(f),P1:Array.from(P1),
-        name:track.legendName,
-        color:trackColors[ti%trackColors.length]
-      });
-
+      fftTraces.push({f:Array.from(f),P1:Array.from(P1),name:track.legendName,color:trackColors[ti%trackColors.length]});
       const validIdx=[];
       for(let i=0;i<f.length;i++) if(f[i]>0) validIdx.push(i);
       validIdx.sort((a,b)=>P1[b]-P1[a]);
       const numPeaks=Math.min(5,validIdx.length);
-
       fftTxt+='  [Fs: '+fs.toFixed(2)+' Hz | Campioni: '+N+']\n';
       for(let k=0;k<numPeaks;k++){
         const idx=validIdx[k];
@@ -2045,10 +1891,7 @@ function updateStats(){
     fftTxt+='-'.repeat(60)+'\n';
   }
 
-  lastStatsText=statsTxt;
-  lastFFTText=fftTxt;
-  lastFFTTraces=fftTraces;
-
+  lastStatsText=statsTxt;lastFFTText=fftTxt;lastFFTTraces=fftTraces;
   statsTextEl.textContent=statsTxt;
   fftTextEl.textContent=fftTxt;
 
@@ -2061,7 +1904,6 @@ function updateStats(){
       if(pFft) pFft.textContent=fftTxt;
     }catch(e){}
   }
-
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     renderFFTChartOn(fftCanvasMain,lastFFTTraces);
     if(popupWindow && !popupWindow.closed){
@@ -2075,33 +1917,26 @@ function renderFFTChartOn(canvas,traces){
   if(!canvas) return;
   const container=canvas.parentElement;
   if(!container) return;
-  const W=container.clientWidth;
-  const H=container.clientHeight;
+  const W=container.clientWidth, H=container.clientHeight;
   if(W<10||H<10) return;
   const dpr=window.devicePixelRatio||1;
-  canvas.width=W*dpr;
-  canvas.height=H*dpr;
-  canvas.style.width=W+'px';
-  canvas.style.height=H+'px';
+  canvas.width=W*dpr;canvas.height=H*dpr;
+  canvas.style.width=W+'px';canvas.style.height=H+'px';
   const ctx=canvas.getContext('2d');
   ctx.setTransform(dpr,0,0,dpr,0,0);
-  ctx.fillStyle='#0c0c0c';
+  ctx.fillStyle=T.chartBg;
   ctx.fillRect(0,0,W,H);
-
   if(!traces||!traces.length){
-    ctx.fillStyle='#555';
+    ctx.fillStyle=T.textFaint;
     ctx.font='11px Consolas, monospace';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
+    ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText('Nessun dato FFT disponibile',W/2,H/2);
     return;
   }
-
   const margin={top:35,right:20,bottom:35,left:55};
   const plotW=W-margin.left-margin.right;
   const plotH=H-margin.top-margin.bottom;
   if(plotW<=0||plotH<=0) return;
-
   let fMin=Infinity,fMax=-Infinity,aMax=-Infinity;
   for(const t of traces){
     for(let i=0;i<t.f.length;i++){
@@ -2116,33 +1951,29 @@ function renderFFTChartOn(canvas,traces){
   aMax*=1.05;
   const fToPx=v=>margin.left+((v-fMin)/(fMax-fMin))*plotW;
   const aToPx=v=>margin.top+plotH-(v/aMax)*plotH;
-
-  ctx.strokeStyle='#1e1e1e';
+  ctx.strokeStyle=T.chartGrid;
   ctx.lineWidth=1;
   ctx.font='10px Consolas, monospace';
   const fTicks=niceTicks(fMin,fMax,7);
-  ctx.textAlign='center';
-  ctx.textBaseline='top';
+  ctx.textAlign='center';ctx.textBaseline='top';
   for(const tv of fTicks){
     const px=fToPx(tv);
     if(px<margin.left-1||px>margin.left+plotW+1) continue;
     ctx.beginPath();ctx.moveTo(px,margin.top);ctx.lineTo(px,margin.top+plotH);ctx.stroke();
-    ctx.fillStyle='#888';
+    ctx.fillStyle=T.chartTick;
     ctx.fillText(formatNum(tv),px,margin.top+plotH+6);
   }
   const aTicks=niceTicks(0,aMax,6);
-  ctx.textAlign='right';
-  ctx.textBaseline='middle';
+  ctx.textAlign='right';ctx.textBaseline='middle';
   for(const tv of aTicks){
     const py=aToPx(tv);
     if(py<margin.top-1||py>margin.top+plotH+1) continue;
     ctx.beginPath();ctx.moveTo(margin.left,py);ctx.lineTo(margin.left+plotW,py);ctx.stroke();
-    ctx.fillStyle='#888';
+    ctx.fillStyle=T.chartTick;
     ctx.fillText(formatNum(tv),margin.left-6,py);
   }
-  ctx.strokeStyle='#222';
+  ctx.strokeStyle=T.chartAxis;
   ctx.strokeRect(margin.left,margin.top,plotW,plotH);
-
   for(const t of traces){
     ctx.strokeStyle=t.color;
     ctx.lineWidth=1.4;
@@ -2150,21 +1981,17 @@ function renderFFTChartOn(canvas,traces){
     let started=false;
     for(let i=0;i<t.f.length;i++){
       if(t.f[i]<=0) continue;
-      const px=fToPx(t.f[i]);
-      const py=aToPx(t.P1[i]);
+      const px=fToPx(t.f[i]), py=aToPx(t.P1[i]);
       if(!started){ctx.moveTo(px,py);started=true;}
       else ctx.lineTo(px,py);
     }
     ctx.stroke();
   }
-
-  ctx.fillStyle='#00ff66';
+  ctx.fillStyle=T.text;
   ctx.font='bold 11px Consolas, monospace';
-  ctx.textAlign='center';
-  ctx.textBaseline='middle';
+  ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText('Spettro di Frequenza Comparativo (FFT)',W/2,14);
-
-  ctx.fillStyle='#888';
+  ctx.fillStyle=T.textDim;
   ctx.font='10px Consolas, monospace';
   ctx.fillText('Frequenza [Hz]',margin.left+plotW/2,H-8);
   ctx.save();
@@ -2172,25 +1999,23 @@ function renderFFTChartOn(canvas,traces){
   ctx.rotate(-Math.PI/2);
   ctx.fillText('Ampiezza',0,0);
   ctx.restore();
-
   ctx.font='9px Consolas, monospace';
-  ctx.textAlign='left';
-  ctx.textBaseline='middle';
+  ctx.textAlign='left';ctx.textBaseline='middle';
   let maxLabelW=0;
   for(const t of traces) maxLabelW=Math.max(maxLabelW,ctx.measureText(t.name).width);
   const legendW=maxLabelW+28;
   const legendH=traces.length*14+10;
   const legendX=margin.left+plotW-legendW-6;
   const legendY=margin.top+6;
-  ctx.fillStyle='rgba(12,12,12,0.85)';
-  ctx.strokeStyle='#222';
+  ctx.fillStyle=T.legendBg;
+  ctx.strokeStyle=T.legendBorder;
   ctx.fillRect(legendX,legendY,legendW,legendH);
   ctx.strokeRect(legendX,legendY,legendW,legendH);
   for(let i=0;i<traces.length;i++){
     const iy=legendY+10+i*14;
     ctx.fillStyle=traces[i].color;
     ctx.fillRect(legendX+6,iy-1,10,2.5);
-    ctx.fillStyle='#aaa';
+    ctx.fillStyle=T.textTooltip;
     ctx.fillText(traces[i].name,legendX+22,iy);
   }
 }
@@ -2206,7 +2031,6 @@ function formatDuration(s){
   return (s/3600).toFixed(2)+' ore';
 }
 
-// ==================== FFT ====================
 function computeFFT(y,fs,Norig){
   const N=y.length;
   let Np=1; while(Np<N) Np<<=1;
@@ -2224,7 +2048,6 @@ function computeFFT(y,fs,Norig){
   for(let i=0;i<half;i++) f[i]=fs*i/Np;
   return {f,P1};
 }
-
 function fftInPlace(re,im){
   const n=re.length;
   let j=0;
@@ -2253,7 +2076,7 @@ function fftInPlace(re,im){
   }
 }
 
-// ==================== EXPORT REPORT ====================
+// ==================== EXPORT ====================
 $('btnExportReport').addEventListener('click',()=>{
   if(!currentTracks||!currentTracks.length){
     setStatus('> ⚠ Nessun dato da esportare. Genera prima il grafico.','err');
@@ -2261,13 +2084,12 @@ $('btnExportReport').addEventListener('click',()=>{
   }
   const now=new Date();
   const pad=(n,l=2)=>String(n).padStart(l,'0');
-  const ts=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+'_'+
-           pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds());
-
+  const ts=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate())+'_'+pad(now.getHours())+pad(now.getMinutes())+pad(now.getSeconds());
   let out='';
   out+='╔'+'═'.repeat(72)+'╗\n';
   out+='║  DATA ANALYSIS TOOL — REPORT DI ANALISI\n';
   out+='║  Data: '+now.toLocaleString('it-IT')+'\n';
+  out+='║  Tema: '+currentThemeName+'\n';
   out+='║  Titolo grafico: '+$('editTitle').value+'\n';
   out+='║  Modalità: '+(plotMode==='stacked'?'Impilato (multi-pannello)':'Singolo (SX/DX)')+'\n';
   out+='║  Asse X: '+$('editXLabel').value+'\n';
@@ -2279,31 +2101,22 @@ $('btnExportReport').addEventListener('click',()=>{
   }
   out+='║  Scala Y: '+$('yScaleMode').value+'\n';
   out+='╚'+'═'.repeat(72)+'╝\n\n';
-
   out+='── CONFIGURAZIONE CURSORI ──────────────────────────────────────\n';
   out+='C1: '+(cursor1?(cursor1.value instanceof Date?formatCursorValue(cursor1.value):formatNum(cursor1.value)):'-')+'\n';
   out+='C2: '+(cursor2?(cursor2.value instanceof Date?formatCursorValue(cursor2.value):formatNum(cursor2.value)):'-')+'\n\n';
-
-  out+='\n';
-  out+=lastStatsText||'(nessuna statistica)\n';
-  out+='\n\n';
+  out+='\n'+lastStatsText+'\n\n';
   out+='────────────────────────────────────────────────────────────────\n';
   out+='SPETTRO FFT — PICCHI DOMINANTI\n';
   out+='────────────────────────────────────────────────────────────────\n';
-  out+=lastFFTText||'(nessun dato FFT)\n';
-
-  out+='\n\n';
+  out+=lastFFTText+'\n\n';
   out+='── TRACCE INCLUSE ─────────────────────────────────────────────\n';
   for(let i=0;i<currentTracks.length;i++){
     const t=currentTracks[i];
-    let tag='';
-    if(plotMode==='stacked') tag='[P'+t.panel+']';
-    else tag='['+(t.axis==='right'?'DX':'SX')+']';
+    let tag=plotMode==='stacked'?'[P'+t.panel+']':'['+(t.axis==='right'?'DX':'SX')+']';
     out+=(i+1)+'. '+tag+' '+t.legendName+' | File: '+t.fileName+' | Canale: '+t.varName+
       ' | Y-range: '+formatNum(t.yMin)+' … '+formatNum(t.yMax)+
       ' | '+(t.visible?'VISIBILE':'nascosta')+' | '+t.xData.length+' campioni\n';
   }
-
   const blob=new Blob([out],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
@@ -2319,76 +2132,64 @@ $('btnExportReport').addEventListener('click',()=>{
 $('btnPopupTabs').addEventListener('click',togglePopup);
 
 function togglePopup(){
-  if(popupWindow && !popupWindow.closed){
-    popupWindow.close();
-    return;
-  }
+  if(popupWindow && !popupWindow.closed){popupWindow.close();return;}
   openPopup();
 }
 
 function openPopup(){
-  const popup=window.open('','daTabsPopup',
-    'width=1200,height=700,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no');
+  const popup=window.open('','daTabsPopup','width=1200,height=700,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no');
   if(!popup){
     alert('La finestra popup è stata bloccata dal browser.\nConsenti i popup per questa pagina e riprova.');
     return;
   }
   popupWindow=popup;
-
+  const isLight=(currentThemeName==='light');
+  const pt=isLight?{
+    bg:'#f0f2f5',panel:'#ffffff',border:'#d0d4d9',borderLight:'#e5e7eb',
+    text:'#006633',textDim:'#4b5563',textMuted:'#6b7280',
+    btnBg:'#e5e7eb',btnBorder:'#cbd0d6',btnHover:'#d1d5db'
+  }:{
+    bg:'#0c0c0c',panel:'#121212',border:'#222',borderLight:'#1e1e1e',
+    text:'#00ff66',textDim:'#888',textMuted:'#666',
+    btnBg:'#1a1a1a',btnBorder:'#333',btnHover:'#222'
+  };
   const popupHtml=
-    '<!DOCTYPE html>'+
-    '<html lang="it"><head><meta charset="UTF-8">'+
-    '<title>Analisi Avanzata — Data Analysis Tool</title>'+
+    '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Analisi Avanzata — Data Analysis Tool</title>'+
     '<style>'+
     '*{box-sizing:border-box;margin:0;padding:0}'+
-    'html,body{height:100%;width:100%;background:#0c0c0c;color:#00ff66;font-family:Consolas,"Courier New",monospace;overflow:hidden}'+
+    'html,body{height:100%;width:100%;background:'+pt.bg+';color:'+pt.text+';font-family:Consolas,"Courier New",monospace;overflow:hidden}'+
     'body{padding:8px;display:flex;flex-direction:column;gap:8px}'+
     'button{font:inherit;cursor:pointer}'+
-    '.popup-header{display:flex;align-items:center;gap:10px;background:#121212;border:1px solid #222;border-radius:6px;padding:7px 12px;font-size:.8em;flex-shrink:0}'+
-    '.popup-title{color:#00ff66;font-weight:bold;letter-spacing:2px;text-transform:uppercase;font-size:.95em}'+
+    '.popup-header{display:flex;align-items:center;gap:10px;background:'+pt.panel+';border:1px solid '+pt.border+';border-radius:6px;padding:7px 12px;font-size:.8em;flex-shrink:0}'+
+    '.popup-title{color:'+pt.text+';font-weight:bold;letter-spacing:2px;text-transform:uppercase;font-size:.95em}'+
     '.popup-spacer{flex:1}'+
-    '.popup-btn{background:#1a1a1a;color:#00ff66;border:1px solid #333;border-radius:4px;padding:6px 14px;font-size:.85em}'+
-    '.popup-btn:hover{border-color:#00ff66;background:#222}'+
-    '.popup-tabs-container{background:#121212;border:1px solid #222;border-radius:6px;display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}'+
-    '.popup-tabs{display:flex;background:#0c0c0c;border-bottom:1px solid #1e1e1e;flex-shrink:0}'+
-    '.popup-tab{padding:9px 18px;border:none;background:transparent;color:#666;cursor:pointer;font-size:.75em;font-family:inherit;text-transform:uppercase;letter-spacing:1.5px;border-bottom:2px solid transparent}'+
-    '.popup-tab.active{color:#00ff66;border-bottom-color:#00ff66;background:#121212}'+
-    '.popup-tab:hover{color:#00ff66}'+
+    '.popup-btn{background:'+pt.btnBg+';color:'+pt.text+';border:1px solid '+pt.btnBorder+';border-radius:4px;padding:6px 14px;font-size:.85em}'+
+    '.popup-btn:hover{border-color:'+pt.text+';background:'+pt.btnHover+'}'+
+    '.popup-tabs-container{background:'+pt.panel+';border:1px solid '+pt.border+';border-radius:6px;display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}'+
+    '.popup-tabs{display:flex;background:'+pt.bg+';border-bottom:1px solid '+pt.borderLight+';flex-shrink:0}'+
+    '.popup-tab{padding:9px 18px;border:none;background:transparent;color:'+pt.textMuted+';cursor:pointer;font-size:.75em;font-family:inherit;text-transform:uppercase;letter-spacing:1.5px;border-bottom:2px solid transparent}'+
+    '.popup-tab.active{color:'+pt.text+';border-bottom-color:'+pt.text+';background:'+pt.panel+'}'+
+    '.popup-tab:hover{color:'+pt.text+'}'+
     '.popup-tab-body{flex:1;position:relative;min-height:0}'+
     '.popup-tab-pane{display:none;height:100%;padding:10px;overflow:auto}'+
     '.popup-tab-pane.active{display:block}'+
-    '.popup-tab-pane pre{font-family:Consolas,monospace;font-size:.7em;white-space:pre-wrap;color:#aaa;margin:0;line-height:1.45}'+
+    '.popup-tab-pane pre{font-family:Consolas,monospace;font-size:.7em;white-space:pre-wrap;color:'+pt.textDim+';margin:0;line-height:1.45}'+
     '.popup-fft-layout{display:grid;grid-template-columns:1fr 1.4fr;gap:10px;height:100%}'+
     '.popup-fft-layout>pre{overflow:auto;padding-right:4px}'+
-    '.popup-fft-chart{position:relative;background:#0c0c0c;border:1px solid #1e1e1e;border-radius:4px;min-height:150px;overflow:hidden}'+
+    '.popup-fft-chart{position:relative;background:'+pt.bg+';border:1px solid '+pt.borderLight+';border-radius:4px;min-height:150px;overflow:hidden}'+
     '.popup-fft-chart canvas{display:block}'+
     '</style></head><body>'+
-    '<div class="popup-header">'+
-      '<span class="popup-title">📊 Analisi Avanzata</span>'+
-      '<span class="popup-spacer"></span>'+
-      '<button class="popup-btn" id="popupRedock">⇲ REINTEGRA</button>'+
-    '</div>'+
-    '<div class="popup-tabs-container">'+
-      '<div class="popup-tabs">'+
-        '<button class="popup-tab active" data-tab="stats">📊 Statistiche Temporali</button>'+
-        '<button class="popup-tab" data-tab="fft">📈 Analisi FFT</button>'+
-      '</div>'+
-      '<div class="popup-tab-body">'+
-        '<div class="popup-tab-pane active" id="popupStatsPane"><pre id="popupStatsText"></pre></div>'+
-        '<div class="popup-tab-pane" id="popupFftPane">'+
-          '<div class="popup-fft-layout">'+
-            '<pre id="popupFftText"></pre>'+
-            '<div class="popup-fft-chart"><canvas id="popupFftCanvas"></canvas></div>'+
-          '</div>'+
-        '</div>'+
-      '</div>'+
-    '</div>'+
-    '</body></html>';
-
+    '<div class="popup-header"><span class="popup-title">📊 Analisi Avanzata</span><span class="popup-spacer"></span><button class="popup-btn" id="popupRedock">⇲ REINTEGRA</button></div>'+
+    '<div class="popup-tabs-container"><div class="popup-tabs">'+
+    '<button class="popup-tab active" data-tab="stats">📊 Statistiche Temporali</button>'+
+    '<button class="popup-tab" data-tab="fft">📈 Analisi FFT</button></div>'+
+    '<div class="popup-tab-body">'+
+    '<div class="popup-tab-pane active" id="popupStatsPane"><pre id="popupStatsText"></pre></div>'+
+    '<div class="popup-tab-pane" id="popupFftPane"><div class="popup-fft-layout"><pre id="popupFftText"></pre><div class="popup-fft-chart"><canvas id="popupFftCanvas"></canvas></div></div></div>'+
+    '</div></div></body></html>';
   popup.document.open();
   popup.document.write(popupHtml);
   popup.document.close();
-
   const doc=popup.document;
   doc.querySelectorAll('.popup-tab').forEach(btn=>{
     btn.addEventListener('click',()=>{
@@ -2410,10 +2211,8 @@ function openPopup(){
     const pc=doc.getElementById('popupFftCanvas');
     if(pc && pc.parentElement.clientWidth>0) renderFFTChartOn(pc,lastFFTTraces);
   });
-
   $('btnPopupTabs').textContent='⇲ CHIUDI POPUP';
   $('btnPopupTabs').title='Chiudi la finestra separata';
-
   if(popupCloseChecker) clearInterval(popupCloseChecker);
   popupCloseChecker=setInterval(()=>{
     if(popupWindow && popupWindow.closed){
@@ -2424,7 +2223,6 @@ function openPopup(){
       $('btnPopupTabs').title='Apri pannello in finestra separata';
     }
   },500);
-
   setTimeout(()=>{
     const pStats=doc.getElementById('popupStatsText');
     const pFft=doc.getElementById('popupFftText');
@@ -2481,9 +2279,7 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     $(btn.dataset.tab+'Pane').classList.add('active');
     if(btn.dataset.tab==='fft'){
       setTimeout(()=>{
-        if(fftCanvasMain.parentElement.clientWidth>0){
-          renderFFTChartOn(fftCanvasMain,lastFFTTraces);
-        }
+        if(fftCanvasMain.parentElement.clientWidth>0) renderFFTChartOn(fftCanvasMain,lastFFTTraces);
       },40);
     }
   });
@@ -2500,8 +2296,12 @@ window.addEventListener('resize',()=>{
   }
 });
 
-// Init
+// ==================== INIT ====================
 applyPlotModeUI();
+try{
+  const saved=localStorage.getItem('daTheme');
+  applyTheme(saved==='light'?'light':'dark');
+}catch(e){ applyTheme('dark'); }
 </script>
 </body>
 </html>
