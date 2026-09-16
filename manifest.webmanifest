@@ -3,7 +3,7 @@
   "name": "DANI — Data Analysis & Navigation Interface",
   "short_name": "DANI",
   "description": "Toolkit da banco per tecnici: editor di note di test con calcolatrici, formule ingegneristiche, monitor soglie, un runner di procedure di test CSV/XLSX e un tool di analisi dati con grafici e FFT.",
-  "start_url": "apps/editor/index.html",
+  "start_url": "index.html",
   "scope": "./",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui", "browser"],

@@ -2,18 +2,107 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="refresh" content="0; url=apps/editor/index.html">
+<script>try{if(localStorage.getItem('dani_theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, interactive-widget=resizes-content">
 <title>DANI</title>
+<meta name="description" content="Toolkit da banco per tecnici: blocco note di test, runner di procedure CSV/XLSX e analisi dati con grafici e FFT.">
+
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/favicon.ico" sizes="any">
+<meta name="theme-color" content="#0c0c0c">
+<meta name="color-scheme" content="dark">
+
+<!-- iOS / iPadOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DANI">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+<!-- Android / Chrome -->
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- Windows -->
+<meta name="msapplication-TileColor" content="#0c0c0c">
+<meta name="msapplication-TileImage" content="icons/icon-192.png">
+<meta name="msapplication-tap-highlight" content="no">
+
+<!-- Favicons -->
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16.png">
+<link rel="shortcut icon" href="icons/favicon.ico">
+
 <style>
-html,body{height:100%;margin:0;background:#0c0c0c;color:#00ff66;font-family:Consolas,'Courier New',monospace;display:flex;align-items:center;justify-content:center;text-align:center}
-a{color:#00ff66}
+:root{--well-bg:#000;--page-bg:#0c0c0c;--elevated-bg:#111;--panel-bg:#121212;--table-head-bg:#151515;--row-hover-bg:#161616;--button-alt-bg:#171717;--button-bg:#1a1a1a;--divider-bg:#1c1c1c;--group-divider:#1e1e1e;--border:#222;--button-hover-bg:#252525;--border-strong:#333;--drop-drag-bg:#141f18;--text:#00ff66;--text-dim:#555;--text-tertiary:#666;--text-quaternary:#777;--text-secondary:#888;--text-bright-1:#aaa;--text-bright-2:#bbb;--text-mint:#c8ffe0;--accent-fill:#00ff66;--accent-fill-hover:#00cc52;--danger:#ff5555;--warning:#ffb700;--info:#67c7ff;--success-bg:#0d2b17;--success-border:#1a4d2b;--success-bg-2:#081a10;--success-bg-3:#0d1a11;--danger-bg:#2b0d0d;--danger-border:#5c1a1a;--danger-border-2:#5a1a1a;--warning-bg:#2b230d;--warning-bg-2:#1a1500;--warning-border:#3a2f00;--warning-border-2:#4a3900;--warning-border-3:#5a4200;--info-bg:#0d1a2b;--info-border:#1a3a5a;--scrim:rgba(0,0,0,.8);--selection-bg:#00ff6633;color-scheme:dark}
+:root[data-theme="light"]{--well-bg:#ffffff;--page-bg:#eef1ef;--elevated-bg:#ffffff;--panel-bg:#ffffff;--table-head-bg:#f4f6f5;--row-hover-bg:#eef1ef;--button-alt-bg:#eef0ee;--button-bg:#eef0ee;--divider-bg:#e7ebe8;--group-divider:#dfe4e0;--border:#d7dbd8;--button-hover-bg:#e2e6e3;--border-strong:#c7cdc8;--drop-drag-bg:#e5efe9;--text:#008535;--text-dim:#b7b7b7;--text-tertiary:#a3a3a3;--text-quaternary:#8c8c8c;--text-secondary:#757575;--text-bright-1:#575757;--text-bright-2:#474747;--text-mint:#00bf53;--accent-fill:#00ff66;--accent-fill-hover:#00cc52;--danger:#8f0000;--warning:#855f00;--info:#005f96;--success-bg:#dfece3;--success-border:#e3eee6;--success-bg-2:#dfece5;--success-bg-3:#e1eae4;--danger-bg:#ecdfdf;--danger-border:#f0e5e5;--danger-border-2:#f0e4e4;--warning-bg:#ece9df;--warning-bg-2:#f2edd9;--warning-border:#f2edd9;--warning-border-2:#f2ecd9;--warning-border-3:#f3ecda;--info-bg:#dfe5ec;--info-border:#e4eaf0;--scrim:rgba(0,0,0,.6);--selection-bg:#00853533;color-scheme:light}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%}
+body{background:var(--page-bg);color:var(--text);font-family:Consolas,'Courier New',monospace;display:flex;flex-direction:column;min-height:100%}
+button{font:inherit;cursor:pointer}
+::selection{background:var(--selection-bg)}
+
+.topbar{display:flex;align-items:center;gap:10px;padding:8px 14px;background:var(--panel-bg);border-bottom:1px solid var(--border);flex-wrap:wrap;padding-top:max(8px,env(safe-area-inset-top));padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+.topbar .brand{font-size:.95em;color:var(--text);letter-spacing:1px;white-space:nowrap;display:flex;align-items:center;gap:8px;font-weight:bold}
+.brand-logo{width:22px;height:22px;border-radius:5px;flex:0 0 auto}
+.topbar .spacer{flex:1}
+.btn-bar{background:var(--button-bg);color:var(--text);border:1px solid var(--border-strong);border-radius:4px;padding:6px 12px;font-size:.8em}
+.btn-bar:hover{border-color:var(--text);background:var(--border)}
+
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 18px;text-align:center;gap:8px}
+main h1{font-size:2em;letter-spacing:3px;color:var(--text)}
+main .tagline{color:var(--text-secondary);font-size:.85em;max-width:520px;line-height:1.5;margin-bottom:28px}
+
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,220px));gap:16px;width:100%;max-width:760px}
+@media(max-width:720px){.cards{grid-template-columns:minmax(0,1fr)}}
+
+.card{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--panel-bg);border:1px solid var(--border);border-radius:10px;padding:26px 18px;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+.card:hover,.card:focus-visible{border-color:var(--text);transform:translateY(-2px);outline:none}
+.card-icon{font-size:2.2em}
+.card-title{font-size:.95em;font-weight:bold;color:var(--text);letter-spacing:.5px}
+.card-desc{font-size:.72em;color:var(--text-secondary);line-height:1.5}
+
+footer{padding:14px;text-align:center;font-size:.68em;color:var(--text-dim);padding-bottom:max(14px,env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
-<p>Apertura di DANI… se non succede nulla, <a href="apps/editor/index.html">clicca qui</a>.</p>
-<script>location.replace('apps/editor/index.html');</script>
+
+<div class="topbar">
+  <span class="brand"><img src="icons/icon-192.png" alt="" class="brand-logo">DANI</span>
+  <span class="spacer"></span>
+  <button class="btn-bar" id="themeToggleBtn">☀️ Tema Chiaro</button>
+  <button class="btn-bar" id="installBtn" hidden>📲 Installa App</button>
+</div>
+
+<main>
+  <h1>DANI</h1>
+  <p class="tagline">Data Analysis &amp; Navigation Interface — toolkit da banco per tecnici, funziona offline.</p>
+  <nav class="cards">
+    <a class="card" href="apps/editor/index.html">
+      <span class="card-icon">📝</span>
+      <span class="card-title">Blocco Note</span>
+      <span class="card-desc">Note di test, calcolatrici, formule e monitor soglie</span>
+    </a>
+    <a class="card" href="apps/procedure-runner/index.html">
+      <span class="card-icon">🧪</span>
+      <span class="card-title">Procedure Runner</span>
+      <span class="card-desc">Esegui una procedura di test CSV/XLSX passo per passo</span>
+    </a>
+    <a class="card" href="apps/data-analysis/index.html">
+      <span class="card-icon">📈</span>
+      <span class="card-title">Analisi Dati</span>
+      <span class="card-desc">Grafici multi-file, cursori, zoom e analisi FFT</span>
+    </a>
+  </nav>
+</main>
+
+<footer>DANI — funziona offline dopo il primo caricamento</footer>
+
+<script type="module">
+import { registerServiceWorker, initInstallPrompt } from './shared/js/pwa.js';
+import { initTheme } from './shared/js/theme.js';
+
+registerServiceWorker();
+initInstallPrompt(document.getElementById('installBtn'));
+initTheme(document.getElementById('themeToggleBtn'));
+</script>
 </body>
 </html>

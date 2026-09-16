@@ -33,9 +33,11 @@ file server:
 
 ## Running it
 
-Both apps are static HTML — open `apps/editor/index.html` or
-`apps/procedure-runner/index.html` directly in a browser, no server or
-build step required.
+Open `index.html` (the repo root) — a small home screen with a button for
+each of the three apps below. Every app is also plain static HTML on its
+own, so `apps/editor/index.html`, `apps/procedure-runner/index.html` and
+`apps/data-analysis/index.html` can each be opened directly too; no server
+or build step required either way.
 
 To use the editor the way it's meant to be used on Windows (opened on a
 specific `.txt` file, with load/save wired up), drag a `.txt` file onto
@@ -46,7 +48,7 @@ handler for `.txt` files. It starts the local file server on
 ## Project layout
 
 ```
-index.html              redirects "/" to apps/editor/index.html
+index.html              home screen — buttons to each of the 3 apps below
 manifest.webmanifest     Web App Manifest (name, icons, start_url, ...)
 service-worker.js        app-shell cache — offline support, installability
 icons/                   PWA icons (generated from the app's own ">_" mark)

@@ -12,7 +12,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v5';
+const CACHE_VERSION = 'dani-v6';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 
@@ -21,6 +21,7 @@ const SCOPE = self.registration.scope;
 // the service worker must stay out of their way entirely.
 const LOCAL_FILE_SERVER_ORIGIN = 'http://127.0.0.1:8080';
 
+const HOME_URL = new URL('index.html', SCOPE).href;
 const EDITOR_URL = new URL('apps/editor/index.html', SCOPE).href;
 const PROCEDURE_RUNNER_URL = new URL('apps/procedure-runner/index.html', SCOPE).href;
 const DATA_ANALYSIS_URL = new URL('apps/data-analysis/index.html', SCOPE).href;
@@ -28,6 +29,7 @@ const DATA_ANALYSIS_URL = new URL('apps/data-analysis/index.html', SCOPE).href;
 // Paths are relative to SCOPE (the directory this script itself lives in).
 const PRECACHE_PATHS = [
   '',
+  'index.html',
   'manifest.webmanifest',
 
   // Icons
@@ -191,7 +193,9 @@ self.addEventListener('fetch', event => {
           ? PROCEDURE_RUNNER_URL
           : url.pathname.includes('/data-analysis/')
             ? DATA_ANALYSIS_URL
-            : EDITOR_URL;
+            : url.pathname.includes('/editor/')
+              ? EDITOR_URL
+              : HOME_URL;
         const fallback = await caches.match(fallbackUrl);
         return fallback || Response.error();
       })
