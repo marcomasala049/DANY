@@ -110,6 +110,11 @@
   </div>
 
   <div class="pane active" id="paneExec">
+    <div id="linkedSkipAlert" style="display:none">
+      <div class="lsa-title">⚠️ STEP ARRETRATO/I DA ESEGUIRE ORA</div>
+      <div id="linkedSkipSteps"></div>
+    </div>
+
     <div class="exec-head">
       <h2 id="stepTitle">STEP N° —</h2>
       <button class="btn btn-accent" onclick="openCorrectionModal()">📝 Proponi Modifica Testo</button>
@@ -185,9 +190,13 @@
 
 <div class="modal" id="modalSkip">
   <div class="modal-box">
-    <div class="modal-title">⏭ Salta Passaggio</div>
-    <div class="modal-text">Motiva perché stai saltando questo step (obbligatorio):</div>
+    <div class="modal-title" id="skipModalTitle">⏭ Salta Passaggio</div>
+    <div class="modal-text" id="skipModalText">Motiva perché stai saltando questo step (obbligatorio):</div>
     <input type="text" class="field-input" id="skipReasonInput" placeholder="Motivazione tecnica del salto...">
+    <div class="modal-text" style="margin-top:12px">Da eseguire prima dello Step (opzionale):</div>
+    <select class="field-input" id="skipTargetStepSelect">
+      <option value="">-- Nessun vincolo di riposizionamento --</option>
+    </select>
     <div class="modal-actions">
       <button class="btn" onclick="closeModal('modalSkip')">Annulla</button>
       <button class="btn btn-warn" onclick="confirmSkip()">Conferma Salto Step</button>

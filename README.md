@@ -10,13 +10,21 @@ file server:
   the bench — clock, unit converter, scientific + quick calculators, motor /
   gearbox / voltage-drop / electrical / thermal formulas, a scientific
   formula library, a TODO list, pinned values, a test-session logger, a
-  threshold monitor, a lightweight test-procedure checklist and a mini CSV
-  data inspector (stats + chart).
+  threshold monitor, a lightweight test-procedure checklist, a mini CSV
+  data inspector (stats + chart), live editor stats (lines/words/chars +
+  modified/saved status), a Find & Replace widget (Ctrl/Cmd+F), a
+  collapsible widget panel (Ctrl/Cmd+B) and drag-and-drop widget reordering.
 - **[apps/procedure-runner](apps/procedure-runner/index.html)** — "Test
   Procedure Runner": loads a structured test procedure from CSV or XLSX,
   walks an operator through it step by step (sign-off, skip with a reason,
   ±5% tolerance anomaly detection, text-correction proposals, reference
-  images), and exports the completed run back to CSV, XLSX or a text report.
+  images), lets a skipped step be repositioned to reappear as a banner
+  right before whichever step it needs to run ahead of (sign, re-skip or
+  jump to it inline, with a summary badge and a report line once resolved),
+  and exports the completed run back to CSV, XLSX or a text report. Its
+  built-in Procedure Builder also keeps an autosaved browser-local draft,
+  supports reordering/importing/exporting steps (CSV/XLSX, with images) on
+  top of defining and starting a procedure directly.
 - **[apps/data-analysis](apps/data-analysis/index.html)** — "Data Analysis
   Tool": loads several CSV/TXT/XLSX files at once and plots their channels
   either as a single chart with independent left/right Y axes or as
@@ -140,7 +148,7 @@ Once published, opening the URL, using the app, and installing it (browser
 menu, or the editor's own "📲 Installa App" button where the browser
 supports it) is all that's needed — no server, no CLI, nothing to install
 beforehand. The app keeps working fully offline after the first successful
-load (both apps' entire JS/CSS, the manifest and the icons are precached).
+load (all three apps' entire JS/CSS, the manifest and the icons are precached).
 
 **Local-only exception:** the editor's "Salva Modifiche" / "Salva come nuovo
 .txt" *without* picking a folder talks to `server/local-file-server.ps1` on

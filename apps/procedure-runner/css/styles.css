@@ -113,6 +113,17 @@ table.summary-table tr.selected{background:var(--success-bg-3)}
 .builder-up:hover:not(:disabled),.builder-down:hover:not(:disabled){color:var(--text);border-color:var(--text)}
 .builder-up:disabled,.builder-down:disabled{opacity:.3;cursor:not-allowed}
 .builder-del{background:none;border:none;color:var(--danger);font-size:1.1em}
+#linkedSkipAlert{background:var(--warning-bg);border:1px solid var(--warning);color:var(--warning);border-radius:6px;padding:14px;margin-bottom:14px;font-size:.82em}
+#linkedSkipAlert .lsa-title{font-weight:bold;font-size:1em;margin-bottom:8px}
+.linked-step-block{background:var(--warning-bg-2);border:1px solid var(--warning-border-2);border-radius:6px;padding:12px;margin-top:10px;text-align:left}
+.linked-step-block .lsb-title{color:var(--warning);font-weight:bold;font-size:.95em;margin-bottom:10px;letter-spacing:.5px}
+.linked-step-block .lsb-panel{background:var(--well-bg);border:1px solid var(--border-strong);border-radius:4px;padding:8px 10px;margin-bottom:8px}
+.linked-step-block .lsb-panel-title{font-size:.68em;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.linked-step-block .lsb-panel-body{font-size:.82em;line-height:1.5;color:var(--text-mint);white-space:pre-wrap}
+.linked-step-block .lsb-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.badge-repositioned{display:inline-block;font-size:.72em;padding:2px 7px;border-radius:10px;margin-left:5px;border:1px solid;white-space:nowrap;letter-spacing:.3px}
+.badge-repositioned.pending{color:var(--warning);border-color:var(--warning-border-2);background:var(--warning-bg-2)}
+.badge-repositioned.executed{color:var(--info);border-color:var(--info-border);background:var(--info-bg)}
 .builder-draft-info{font-size:.68em;color:var(--text-tertiary);text-align:center;margin-top:12px}
 .builder-draft-info b{color:var(--text-secondary)}
 .builder-proc-name{display:flex;align-items:center;gap:8px;margin-bottom:10px}

@@ -28,6 +28,8 @@ let mouseDown=false, mouseStartX=0, mouseStartY=0, mouseCurrentX=0, mouseCurrent
 let isPanning=false;
 let panStartView=null;
 let lastLayout=null;
+let draggingCursor=null; // 'c1' | 'c2' | null — trascinamento diretto del cursore sulla linea
+const CURSOR_HIT_PX=10;
 
 // Pannello corrente al passaggio del mouse (per zoom Y)
 let hoverPanelIndex=0;
@@ -60,9 +62,32 @@ function toggleWidget(el){
   el.querySelector('.collapse-arrow').textContent=c?'▶':'▼';
 }
 
+/** Stable badge color for a variable name (same name always gets the same dot color). */
+function groupColor(varName){
+  let h=0;
+  for(let i=0;i<varName.length;i++) h=(h*31+varName.charCodeAt(i))>>>0;
+  return PANEL_COLORS[h%PANEL_COLORS.length];
+}
+
 // ==================== PLOT MODE ====================
 $('plotModeSelect').addEventListener('change',(e)=>{
   plotMode=e.target.value;
+  if(plotMode==='stacked'){
+    // Riassegna i pannelli per nome variabile, cosi' lo stesso canale
+    // proveniente da file diversi finisce sempre sullo stesso pannello.
+    const varNameToPanel={};
+    let nextPanel=1;
+    yTableBody.querySelectorAll('tr').forEach(tr=>{
+      const v=tr.dataset.varName;
+      if(!varNameToPanel[v]){
+        varNameToPanel[v]=nextPanel;
+        nextPanel=(nextPanel%MAX_PANELS)+1;
+      }
+      tr.dataset.axisValue=String(varNameToPanel[v]);
+    });
+  } else {
+    yTableBody.querySelectorAll('tr').forEach(tr=>{ tr.dataset.axisValue='left'; });
+  }
   applyPlotModeUI();
   updatePanelLabelsFromTable();
 });
@@ -112,9 +137,22 @@ function rebuildAxisColumn(){
       sel.classList.toggle('right',sel.value==='right');
     }
     sel.addEventListener('change',()=>{
-      tr.dataset.axisValue=sel.value;
+      const newVal=sel.value;
+      tr.dataset.axisValue=newVal;
       if(plotMode==='single'){
-        sel.classList.toggle('right',sel.value==='right');
+        sel.classList.toggle('right',newVal==='right');
+      }
+      if(plotMode==='stacked'){
+        // Stessa variabile su piu' file: tienile sullo stesso pannello.
+        const varName=tr.dataset.varName;
+        yTableBody.querySelectorAll('tr').forEach(other=>{
+          if(other===tr) return;
+          if(other.dataset.varName===varName){
+            other.dataset.axisValue=newVal;
+            const otherSel=other.querySelector('.axis-select');
+            if(otherSel) otherSel.value=newVal;
+          }
+        });
       }
       updatePanelLabelsFromTable();
     });
@@ -431,22 +469,34 @@ function populateUiComponents(){
   dd.innerHTML='<option value="__index__">-- Indice campione --</option>'+
     allVars.map(v=>'<option value="'+escapeHtml(v)+'">'+escapeHtml(v)+'</option>').join('');
 
+  // Stessa variabile (nome uguale) da file diversi -> stesso pannello di default.
+  const varNameToPanel={};
+  let nextPanel=1;
+  for(const ld of loadedData){
+    for(const v of ld.varNames){
+      if(!varNameToPanel[v]){
+        varNameToPanel[v]=nextPanel;
+        nextPanel=(nextPanel%MAX_PANELS)+1;
+      }
+    }
+  }
+
   yTableBody.innerHTML='';
-  let autoPanel=1;
   for(const ld of loadedData){
     for(const v of ld.varNames){
       const tr=document.createElement('tr');
       tr.dataset.fileName=ld.fileName;
       tr.dataset.varName=v;
-      tr.dataset.axisValue=(plotMode==='stacked')?String(autoPanel):'left';
+      const panel=varNameToPanel[v]||1;
+      tr.dataset.axisValue=(plotMode==='stacked')?String(panel):'left';
       const def=v+' ('+ld.fileName+')';
+      const badgeColor=groupColor(v);
       tr.innerHTML='<td><input type="checkbox"></td>'+
         '<td class="axis-cell"></td>'+
         '<td>'+escapeHtml(ld.fileName)+'</td>'+
-        '<td style="color:#00ff66">'+escapeHtml(v)+'</td>'+
+        '<td><span class="group-badge" style="background:'+badgeColor+';color:'+badgeColor+'"></span>'+escapeHtml(v)+'</td>'+
         '<td><input type="text" value="'+escapeHtml(def)+'"></td>';
       yTableBody.appendChild(tr);
-      if(plotMode==='stacked') autoPanel=(autoPanel%MAX_PANELS)+1;
     }
   }
   rebuildAxisColumn();
@@ -1342,6 +1392,19 @@ function getMouseXY(e){
   return {x:e.clientX-rect.left, y:e.clientY-rect.top, clientX:e.clientX, clientY:e.clientY};
 }
 
+/** Returns 'c1'/'c2' when xPx (canvas coords) is within CURSOR_HIT_PX of that cursor's line, else null. */
+function hitTestCursor(xPx){
+  const L=lastLayout;
+  if(!L||!cursor1||!cursor2) return null;
+  const px1=L.xToPx(cursor1.value instanceof Date?cursor1.value.getTime():cursor1.value);
+  const px2=L.xToPx(cursor2.value instanceof Date?cursor2.value.getTime():cursor2.value);
+  const d1=isFinite(px1)?Math.abs(xPx-px1):Infinity;
+  const d2=isFinite(px2)?Math.abs(xPx-px2):Infinity;
+  if(d1<=CURSOR_HIT_PX && d1<=d2) return 'c1';
+  if(d2<=CURSOR_HIT_PX) return 'c2';
+  return null;
+}
+
 plotCanvas.addEventListener('wheel',(e)=>{
   if(!lastLayout) return;
   e.preventDefault();
@@ -1390,6 +1453,18 @@ plotCanvas.addEventListener('mousedown',(e)=>{
   if(x<L.margin.left||x>L.margin.left+L.plotW) return;
   if(y<L.margin.top||y>L.margin.top+L.plotH) return;
 
+  if(e.button===0 && !e.ctrlKey && !e.metaKey && !e.shiftKey){
+    const hit=hitTestCursor(x);
+    if(hit){
+      draggingCursor=hit;
+      mouseDown=false;
+      isPanning=false;
+      plotCanvas.style.cursor='ew-resize';
+      e.preventDefault();
+      return;
+    }
+  }
+
   if(e.button===2 || e.ctrlKey || e.metaKey){
     isPanning=true;
     const start={xMin:L.xMin,xMax:L.xMax,mouseX:x,mouseY:y,isStacked:L.isStacked};
@@ -1419,6 +1494,18 @@ plotCanvas.addEventListener('mousemove',(e)=>{
   if(!lastLayout) return;
   const {x,y,clientX,clientY}=getMouseXY(e);
   const L=lastLayout;
+
+  if(draggingCursor){
+    const px=Math.max(L.margin.left,Math.min(L.margin.left+L.plotW,x));
+    const xv=L.xMin+((px-L.margin.left)/L.plotW)*(L.xMax-L.xMin);
+    const newVal=isDatetimeX?new Date(xv):xv;
+    if(draggingCursor==='c1') cursor1.value=newVal;
+    else cursor2.value=newVal;
+    renderChart();
+    syncCursorInputs();
+    updateStats();
+    return;
+  }
 
   if(isPanning && panStartView){
     const dx=x-panStartView.mouseX;
@@ -1454,6 +1541,7 @@ plotCanvas.addEventListener('mousemove',(e)=>{
 
   if(x>=L.margin.left && x<=L.margin.left+L.plotW &&
      y>=L.margin.top && y<=L.margin.top+L.plotH){
+    plotCanvas.style.cursor=hitTestCursor(x)?'ew-resize':'crosshair';
     if(L.isStacked){
       hoverPanelIndex=0;
       for(let i=0;i<L.panelBounds.length;i++){
@@ -1467,6 +1555,12 @@ plotCanvas.addEventListener('mousemove',(e)=>{
 });
 
 window.addEventListener('mouseup',(e)=>{
+  if(draggingCursor){
+    draggingCursor=null;
+    plotCanvas.style.cursor='crosshair';
+    setStatus('> Cursore spostato.','ok');
+    return;
+  }
   if(isPanning){
     isPanning=false;
     panStartView=null;

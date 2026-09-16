@@ -58,3 +58,17 @@ test('buildFullReportText notes when nothing was skipped or modified', () => {
   assert.match(text, /Nessun passo è stato saltato/);
   assert.match(text, /Nessuna proposta di modifica/);
 });
+
+test('buildFullReportText adds a RIPOSIZIONAMENTO block for a repositioned step', () => {
+  const repositioned = [{
+    step: '2', desc: 'Misura corrente', skipReason: '[ts] SALTATO: motivo (In realtà da eseguire prima dello STEP 5)',
+    repositionedTo: '5', repositionedAt: '2026-01-01 10:00'
+  }];
+  const text = buildFullReportText(repositioned, { username: 'op', sourceName: 'f.csv', generatedAt: 'now' });
+  assert.match(text, />> RIPOSIZIONAMENTO:\s+Eseguito in anticipo prima dello STEP N° 5 \(assegnato il 2026-01-01 10:00\)/);
+});
+
+test('buildFullReportText omits the RIPOSIZIONAMENTO block for an ordinary step', () => {
+  const text = buildFullReportText(steps, { username: 'op', sourceName: 'f.csv', generatedAt: 'now' });
+  assert.doesNotMatch(text, />> RIPOSIZIONAMENTO/);
+});

@@ -3,6 +3,7 @@
  * returns the exact string the UI then downloads as a .txt file or shows in
  * the end-of-run screen — no Date.now(), no DOM, deterministic for tests.
  */
+import { repositionTargetOf } from './steps.js';
 
 /** Short summary shown in the "Fine Controlli Procedura" screen. */
 export function buildEndScreenReport({ skippedList, modifiedList }) {
@@ -94,6 +95,14 @@ export function buildFullReportText(steps, { username, sourceName, generatedAt }
     if (s.expected) out += ' >> ATTESO:\n    ' + s.expected + '\n';
     if (s.measured) out += ' >> MISURATO:\n    ' + s.measured + '\n';
     if (s.notes && s.notes.trim()) out += ' >> NOTE OPERATORE:\n    ' + s.notes.replace(/\n/g, '\n    ') + '\n';
+
+    const repositionTarget = repositionTargetOf(s);
+    if (repositionTarget) {
+      out += ' >> RIPOSIZIONAMENTO:\n    Eseguito in anticipo prima dello STEP N° ' + repositionTarget;
+      if (s.repositionedAt) out += ' (assegnato il ' + s.repositionedAt + ')';
+      out += '\n';
+    }
+
     if (s.correction && s.correction.trim()) out += ' >> PROPOSTA MODIFICA TESTO:\n    ' + s.correction + '\n';
     if (s.anomaly && s.anomaly.trim()) out += ' >> ANOMALIA:\n    ' + s.anomaly + '\n';
     if (s.skipReason && s.skipReason.trim()) out += ' >> MOTIVO SALTO:\n    ' + s.skipReason + '\n';

@@ -44,6 +44,67 @@ export function evaluateMeasurement(expectedRaw, measuredRaw) {
   return { kind: isAnomaly ? 'anomaly' : 'ok', expectedNum, measuredNum };
 }
 
+/** Appends `line` to `notes` (newline-separated), or returns `line` alone when notes is empty. */
+export function appendNoteLine(notes, line) {
+  return notes && notes.trim() ? notes + '\n' + line : line;
+}
+
+/** Formats the skipReason stored on a step, optionally recording a recovery target step. */
+export function buildSkipReason(timestamp, reason, targetStep) {
+  let text = '[' + timestamp + '] SALTATO: ' + reason;
+  if (targetStep) text += ' (In realtà da eseguire prima dello STEP ' + targetStep + ')';
+  return text;
+}
+
+/**
+ * Recovers the free-text reason an operator typed from a stored skipReason —
+ * strips the timestamp/"SALTATO:" prefix and the recovery-target suffix —
+ * so a re-skip can re-populate the reason field with just their own words.
+ */
+export function extractSkipReasonText(skipReason) {
+  let text = skipReason || '';
+  text = text.replace(/^\[.*?\]\s*SALTATO:\s*/, '');
+  text = text.replace(/\s*\(In realtà da eseguire prima dello STEP [^)]+\)\s*$/, '');
+  return text.trim();
+}
+
+/** Steps eligible as a skip's recovery target: every step except those at `excludeIndexes`. */
+export function skipTargetOptions(steps, excludeIndexes) {
+  const excluded = new Set(excludeIndexes);
+  return steps
+    .map((s, idx) => ({ step: s.step, desc: s.desc, idx }))
+    .filter(o => !excluded.has(o.idx));
+}
+
+/** {stepData, originalIndex} for every step currently skipped-and-waiting-to-run before `targetStep`. */
+export function findPendingRepositioned(steps, targetStep) {
+  return steps
+    .map((stepData, originalIndex) => ({ stepData, originalIndex }))
+    .filter(({ stepData }) => stepStatus(stepData) === 'skipped' && String(stepData.repositionedTo || '') === String(targetStep));
+}
+
+/**
+ * The recovery-target step id for a step, read from the explicit field or —
+ * for data saved/imported before repositionedTo existed, or round-tripped
+ * through a CSV/XLSX export that only carries the skipReason text — parsed
+ * back out of that text. Returns null when the step was never repositioned.
+ */
+export function repositionTargetOf(step) {
+  if (step.repositionedTo) return String(step.repositionedTo);
+  const m = (step.skipReason || '').match(/\(In realtà da eseguire prima dello STEP ([^)]+)\)/);
+  return m ? m[1] : null;
+}
+
+/** {kind:'executed'|'pending', target} badge info for the summary table, or null if not repositioned. */
+export function getRepositionBadge(step) {
+  const target = repositionTargetOf(step);
+  if (!target) return null;
+  const status = stepStatus(step);
+  if (status === 'signed') return { kind: 'executed', target };
+  if (status === 'skipped') return { kind: 'pending', target };
+  return null;
+}
+
 /** Aggregates sign/skip/correction counts for the end-of-run summary and reports. */
 export function summarizeSteps(steps) {
   let countSigned = 0;

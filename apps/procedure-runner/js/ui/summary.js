@@ -1,6 +1,6 @@
 import { $ } from '../core/dom-helpers.js';
 import { escapeHtml } from '../../../../shared/js/dom-utils.js';
-import { stepStatus } from '../logic/steps.js';
+import { stepStatus, getRepositionBadge } from '../logic/steps.js';
 import { state } from './state.js';
 import { openModal } from './modal.js';
 
@@ -19,6 +19,13 @@ export function renderSummary() {
     if (st === 'skipped') statusHtml = '<span class="status-skipped">⏭ SKIPPED</span>';
     else if (st === 'signed') statusHtml = '<span class="status-signed">✓ ' + escapeHtml(s.signature) + '</span>';
     else statusHtml = '<span class="status-pending">❌ Da compilare</span>';
+
+    const badge = getRepositionBadge(s);
+    if (badge) {
+      statusHtml += badge.kind === 'executed'
+        ? ' <span class="badge-repositioned executed" title="Step originariamente saltato e firmato prima dello Step ' + escapeHtml(badge.target) + '">🔀 eseguito prima di Step ' + escapeHtml(badge.target) + '</span>'
+        : ' <span class="badge-repositioned pending" title="Da eseguire prima dello Step ' + escapeHtml(badge.target) + '">🔀 da eseguire prima di Step ' + escapeHtml(badge.target) + '</span>';
+    }
 
     if (s.correction && s.correction.trim()) statusHtml += ' <span class="status-modified">📝</span>';
 
