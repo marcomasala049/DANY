@@ -175,16 +175,20 @@
 .title-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ==========================================================================
-   Modal shell — supports both display patterns already in use:
-   `.modal.show{display:flex}` (runner/data-analysis) and
-   `.modal[hidden]` (incoming_report_tool).
+   Modal shell. Visibility itself stays app-owned (`.modal.show{display:flex}`
+   in procedure-runner/data-analysis; incoming_report_tool toggles the
+   `hidden` attribute instead and adds its own small local
+   `.modal:not([hidden]){display:flex}` override for that — see its
+   css/style.css — since a shared `[hidden]`-based rule here would force
+   every `.modal` in the `.show`-based apps permanently open, as they never
+   set `hidden` in the first place). This shell only supplies the shared
+   look once an app's own rule decides an instance is visible.
    ========================================================================== */
 .modal{
   position:fixed;inset:0;background:rgba(4,6,5,.72);backdrop-filter:blur(4px);
   display:none;align-items:center;justify-content:center;z-index:90;padding:20px;
 }
 .modal.show{display:flex}
-.modal:not([hidden]).modal-open{display:flex}
 .modal-box{
   width:min(560px,92vw);background:var(--elevated-bg);border:1px solid var(--border-strong);
   border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow);
