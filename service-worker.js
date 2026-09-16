@@ -1,7 +1,7 @@
 /**
- * DANI service worker — app-shell cache for the editor and procedure-runner
- * apps, so both keep working (and can be launched) offline after the first
- * successful online visit.
+ * DANI service worker — app-shell cache for the editor, procedure-runner
+ * and data-analysis apps, so all three keep working (and can be launched)
+ * offline after the first successful online visit.
  *
  * Bump CACHE_VERSION whenever the precached file list changes — activate()
  * deletes every cache that doesn't match it, so a stale version can never
@@ -12,7 +12,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v4';
+const CACHE_VERSION = 'dani-v5';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 
@@ -23,6 +23,7 @@ const LOCAL_FILE_SERVER_ORIGIN = 'http://127.0.0.1:8080';
 
 const EDITOR_URL = new URL('apps/editor/index.html', SCOPE).href;
 const PROCEDURE_RUNNER_URL = new URL('apps/procedure-runner/index.html', SCOPE).href;
+const DATA_ANALYSIS_URL = new URL('apps/data-analysis/index.html', SCOPE).href;
 
 // Paths are relative to SCOPE (the directory this script itself lives in).
 const PRECACHE_PATHS = [
@@ -91,6 +92,11 @@ const PRECACHE_PATHS = [
   'apps/procedure-runner/js/ui/summary.js',
   'apps/procedure-runner/js/ui/username.js',
   'apps/procedure-runner/js/ui/xlsx-io.js',
+
+  // Data Analysis Tool app shell
+  'apps/data-analysis/index.html',
+  'apps/data-analysis/css/styles.css',
+  'apps/data-analysis/js/main.js',
 
   // Shared helpers
   'shared/js/dom-utils.js',
@@ -177,13 +183,16 @@ self.addEventListener('fetch', event => {
   }
 
   // HTML navigations: prefer the freshest copy, fall back to the cached
-  // app shell when offline so both apps still launch.
+  // app shell when offline so all three apps still launch.
   if (request.mode === 'navigate') {
     event.respondWith(
       networkFirst(request, CACHE_VERSION).catch(async () => {
-        const fallback = await caches.match(
-          url.pathname.includes('/procedure-runner/') ? PROCEDURE_RUNNER_URL : EDITOR_URL
-        );
+        const fallbackUrl = url.pathname.includes('/procedure-runner/')
+          ? PROCEDURE_RUNNER_URL
+          : url.pathname.includes('/data-analysis/')
+            ? DATA_ANALYSIS_URL
+            : EDITOR_URL;
+        const fallback = await caches.match(fallbackUrl);
         return fallback || Response.error();
       })
     );

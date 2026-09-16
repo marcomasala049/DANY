@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<script>try{if(localStorage.getItem('dani_theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Data Analysis Tool — DANI</title>
+<meta name="description" content="Analisi multi-file CSV/XLSX: grafico a doppio asse o a pannelli impilati, cursori, zoom, statistiche e FFT.">
+
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0c0c0c">
+<meta name="color-scheme" content="dark">
+
+<!-- iOS / iPadOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DANI">
+<link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png">
+
+<!-- Android / Chrome -->
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- Windows -->
+<meta name="msapplication-TileColor" content="#0c0c0c">
+<meta name="msapplication-TileImage" content="../../icons/icon-192.png">
+<meta name="msapplication-tap-highlight" content="no">
+
+<!-- Favicons -->
+<link rel="icon" type="image/png" sizes="32x32" href="../../icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../../icons/favicon-16.png">
+<link rel="shortcut icon" href="../../icons/favicon.ico">
+
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <span class="brand"><img src="../../icons/icon-192.png" alt="" class="brand-logo">📈 DATA ANALYSIS TOOL</span>
+  <span class="spacer"></span>
+  <button class="btn-bar" id="btnMenu">🏠 Reset Tool</button>
+  <button class="btn-bar" id="btnBack" style="display:none">⬅ Torna alla selezione variabili</button>
+  <button class="btn-bar" id="themeToggleBtn">☀️ Tema Chiaro</button>
+  <button class="btn-bar" id="installBtn" hidden>📲 Installa App</button>
+  <button class="btn-bar" id="btnCloseTab">✕ Chiudi Tab</button>
+</div>
+
+<div id="mainView">
+  <div class="left-col">
+    <div class="widget">
+      <div class="widget-title" onclick="toggleWidget(this)">
+        <span class="collapse-arrow">▼</span>
+        <span class="title-text">📂 Caricamento File</span>
+      </div>
+      <div class="widget-body">
+        <button class="btn-ghost" id="btnLoad">📂 CARICA FILE MULTIPLI (CSV/TXT/XLSX) ➔</button>
+        <div class="file-info" id="fileInfo">Nessun file caricato.</div>
+      </div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-title" onclick="toggleWidget(this)">
+        <span class="collapse-arrow">▼</span>
+        <span class="title-text">⚙ Configurazione Grafico</span>
+      </div>
+      <div class="widget-body">
+        <div class="field-row">
+          <label>Modalità</label>
+          <select id="plotModeSelect">
+            <option value="single">Singolo (assi SX/DX)</option>
+            <option value="stacked">Impilato (multi-pannello)</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <label>Asse X</label>
+          <select id="xDropdown"><option value="__index__">-- Indice campione --</option></select>
+        </div>
+        <div class="field-row">
+          <label>Titolo</label>
+          <input type="text" id="editTitle" value="Analisi Comparativa Banco Prova">
+        </div>
+        <div class="field-row">
+          <label>Label X</label>
+          <input type="text" id="editXLabel" value="Indice campione">
+        </div>
+        <div id="singleAxisLabels">
+          <div class="field-row">
+            <label>Label Y SX</label>
+            <input type="text" id="editYLabel" value="Valore Canale (SX)">
+          </div>
+          <div class="field-row">
+            <label>Label Y DX</label>
+            <input type="text" id="editYLabelRight" value="Valore Canale (DX)">
+          </div>
+        </div>
+        <div id="stackedPanelLabels" class="panel-labels-container" style="display:none">
+          <div class="panel-labels-title">Label Y per pannello</div>
+          <div id="panelLabelsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="widget" style="flex:1;min-height:260px;display:flex;flex-direction:column">
+      <div class="widget-title" onclick="toggleWidget(this)">
+        <span class="collapse-arrow">▼</span>
+        <span class="title-text">🎛 Canali Y — Scegli asse/pannello e spunta</span>
+      </div>
+      <div class="widget-body" style="flex:1;display:flex;flex-direction:column;min-height:0">
+        <div class="ytable-wrap" style="flex:1">
+          <table class="ytable" id="yTable">
+            <thead><tr>
+              <th style="width:42px">Plot</th>
+              <th style="width:70px" id="thAxisPanel">Asse</th>
+              <th>File</th>
+              <th>Canale</th>
+              <th>Nome Legenda</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <button id="btnPlot" class="btn-primary" disabled>📊 GENERA GRAFICO </button>
+    <div class="status-bar" id="statusLabel">&gt; In attesa di file...</div>
+  </div>
+
+  <div class="right-col">
+    <div class="widget" style="flex:1;display:flex;flex-direction:column;min-height:0">
+      <div class="widget-title" onclick="toggleWidget(this)">
+        <span class="collapse-arrow">▼</span>
+        <span class="title-text">🔍 Anteprima File (Primi 50 campioni)</span>
+      </div>
+      <div class="widget-body" style="flex:1;display:flex;flex-direction:column;min-height:0">
+        <div class="preview-wrap" id="previewWrap" style="flex:1"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="plotView">
+  <div class="plot-main">
+    <div class="cursor-bar">
+      <span class="cursor-bar-label">🎯 Cursori</span>
+      <span class="c-label c1">C1</span>
+      <input type="text" id="cursorInput1" placeholder="posizione X del cursore 1">
+      <span class="c-label c2">C2</span>
+      <input type="text" id="cursorInput2" placeholder="posizione X del cursore 2">
+      <button class="small-btn" id="btnApplyCursor">APPLICA</button>
+      <button class="small-btn" id="btnResetCursor">RESET</button>
+      <span class="zoom-sep">│</span>
+      <span class="cursor-bar-label">🔍 Zoom</span>
+      <button class="zoom-btn" id="btnZoomIn" title="Zoom in asse X">➕</button>
+      <button class="zoom-btn" id="btnZoomOut" title="Zoom out asse X">➖</button>
+      <button class="zoom-btn" id="btnZoomReset" title="Reset zoom (o doppio click)">⟲</button>
+      <span class="zoom-sep">│</span>
+      <select id="yScaleMode" title="Modalità di visualizzazione dell'asse Y">
+        <option value="auto">Auto (range comune)</option>
+        <option value="normalized">Normalizzata (0–1)</option>
+        <option value="log">Logaritmica (log10)</option>
+      </select>
+      <span class="cursor-hint" id="cursorHint">Rotella = zoom X · Shift+rotella = zoom Y (sul pannello del mouse) · Drag = box zoom · Doppio click = reset</span>
+    </div>
+
+    <div class="plot-container" id="plotContainer">
+      <canvas id="plotCanvas"></canvas>
+      <div class="chart-tooltip" id="chartTooltip"></div>
+    </div>
+
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="stats">📊 Statistiche Temporali</button>
+        <button class="tab-btn" data-tab="fft">📈 Analisi FFT</button>
+        <div class="tab-actions">
+          <button class="tab-btn tab-action" id="btnExportReport" title="Esporta report in .txt">📥 EXPORT</button>
+          <button class="tab-btn tab-action" id="btnPopupTabs" title="Apri pannello in finestra separata">⇱ FINESTRA</button>
+        </div>
+      </div>
+      <div class="tab-body">
+        <div class="tab-pane active" id="statsPane"><pre id="statsText"></pre></div>
+        <div class="tab-pane" id="fftPane">
+          <div class="fft-layout">
+            <pre id="fftText"></pre>
+            <div class="fft-chart-wrap"><canvas id="fftCanvasMain"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" multiple accept=".csv,.txt,.dat,.xlsx" style="display:none">
+
+<div class="modal" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-title">&gt; CONFERMA OPERAZIONE</div>
+    <div style="font-size:.78em;color:var(--text-bright-2);line-height:1.5">Tornare al menu principale? I dati caricati andranno persi.</div>
+    <div class="modal-actions">
+      <button class="small-btn" onclick="document.getElementById('confirmModal').classList.remove('show')">ANNULLA</button>
+      <button class="btn-primary" style="width:auto;padding:6px 18px;margin:0" onclick="confirmReset()">CONFERMA</button>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

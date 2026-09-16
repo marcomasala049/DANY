@@ -2,7 +2,7 @@
 https://marcomasala049.github.io/DANY/
 
 An offline-capable, installable PWA toolkit for engineering/electrical test
-technicians. Two independent, no-build-step web apps plus a small local
+technicians. Three independent, no-build-step web apps plus a small local
 file server:
 
 - **[apps/editor](apps/editor/index.html)** — "Terminal Workspace": a plain-text
@@ -17,6 +17,14 @@ file server:
   walks an operator through it step by step (sign-off, skip with a reason,
   ±5% tolerance anomaly detection, text-correction proposals, reference
   images), and exports the completed run back to CSV, XLSX or a text report.
+- **[apps/data-analysis](apps/data-analysis/index.html)** — "Data Analysis
+  Tool": loads several CSV/TXT/XLSX files at once and plots their channels
+  either as a single chart with independent left/right Y axes or as
+  stacked multi-panel views, with datetime-aware X axis, pan/zoom (wheel,
+  box-zoom, per-panel Y zoom), two draggable/typed cursors, an auto /
+  normalized / log10 Y-scale mode, per-interval statistics (mean, RMS, σ,
+  min/max, integral) and an FFT spectrum per channel, a report export to
+  `.txt`, and a detached popup window for the stats/FFT panel.
 - **[server/local-file-server.ps1](server/local-file-server.ps1)** — a
   minimal loopback-only HTTP server (started by
   [open_editor.bat](open_editor.bat)) that lets the editor `GET /load` and
@@ -56,7 +64,14 @@ apps/
     index.html
     css/styles.css
     js/                same core / logic / ui split as the editor
-shared/js/              helpers used by both apps (dom-utils, pwa.js)
+  data-analysis/       Data Analysis Tool app
+    index.html
+    css/styles.css
+    js/main.js         single module — parsing, plotting, FFT and UI
+                        wiring; kept as one file to track the source tool
+                        in TOOL/ (see below) with minimal drift
+shared/js/              helpers used by all three apps (dom-utils, pwa.js,
+                        theme.js)
 server/
   local-file-server.ps1     used by open_editor.bat (the editor's own /load /save)
   static-dev-server.mjs     used by START_PWA.bat (local PWA testing only)
@@ -66,11 +81,26 @@ START_PWA.bat           Windows launcher: serves the whole app for local
                          PWA/offline testing (dev-only, see below)
 ```
 
-Each app keeps its original single-page markup and inline event handlers —
-this was a reorganization, not a rewrite — but every piece of behavior now
-lives in its own small module: pure calculations and parsers under
-`logic/` (no DOM, fully unit-testable), DOM rendering and event handling
-under `ui/`, one file per widget/screen.
+The editor and procedure-runner keep their original single-page markup and
+inline event handlers — this was a reorganization, not a rewrite — but
+every piece of behavior now lives in its own small module: pure
+calculations and parsers under `logic/` (no DOM, fully unit-testable), DOM
+rendering and event handling under `ui/`, one file per widget/screen.
+data-analysis is intentionally not split the same way (see below).
+
+## The TOOL/ folder
+
+[TOOL/](TOOL/) is not part of the published app — it's a drop box for a
+collaborator to hand over new tool versions outside of git collaboration
+on this repo directly. When something new lands there, it gets read,
+diffed against the matching app here, and the new/changed behavior gets
+folded into the real app under `apps/` (styled with this project's shared
+CSS variables/theme, wired into the manifest, service worker and tests
+where it makes sense) — TOOL/ itself is never linked from the app or
+shipped. `apps/data-analysis` started this way, from `TOOL/analisi_dati.html`;
+its `js/main.js` is deliberately kept as one file (not split into
+`logic/`/`ui/` like the other two apps) specifically so future drops in
+TOOL/ stay easy to diff and re-integrate.
 
 ## Tests
 

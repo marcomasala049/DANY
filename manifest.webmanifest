@@ -2,7 +2,7 @@
   "id": ".",
   "name": "DANI — Data Analysis & Navigation Interface",
   "short_name": "DANI",
-  "description": "Toolkit da banco per tecnici: editor di note di test con calcolatrici, formule ingegneristiche, monitor soglie e un runner di procedure di test CSV/XLSX.",
+  "description": "Toolkit da banco per tecnici: editor di note di test con calcolatrici, formule ingegneristiche, monitor soglie, un runner di procedure di test CSV/XLSX e un tool di analisi dati con grafici e FFT.",
   "start_url": "apps/editor/index.html",
   "scope": "./",
   "display": "standalone",
@@ -25,6 +25,13 @@
       "short_name": "Procedure Runner",
       "description": "Apri direttamente il runner di procedure di test CSV/XLSX",
       "url": "apps/procedure-runner/index.html",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Data Analysis Tool",
+      "short_name": "Analisi Dati",
+      "description": "Apri direttamente il tool di analisi dati multi-file (grafici, FFT)",
+      "url": "apps/data-analysis/index.html",
       "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
