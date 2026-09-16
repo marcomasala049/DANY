@@ -83,8 +83,6 @@
 
   /* ---------- Init ---------- */
   document.addEventListener('DOMContentLoaded', async () => {
-    Theme.init();
-
     FormUI.buildInfoForm();
     FormUI.buildHWRadios();
     FormUI.buildDecisionRadios();

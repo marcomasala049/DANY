@@ -1,31 +1,13 @@
 /* ============================================================
-   Incoming Report Tool — stile terminal / engineering
-   Ispirato a editor.html (tema verde su nero + variante light)
+   Incoming Report Tool — stile elegante DANI (vetro + pillole)
+   Le variabili di colore/tipografia/raggio vengono da
+   shared/css/dani-theme.css (caricato prima di questo file).
+   Qui restano solo layout e regole specifiche di questo tool.
    ============================================================ */
-:root{
-  --bg:#0c0c0c; --panel:#121212; --panel-2:#1a1a1a; --panel-hover:#252525;
-  --border:#222; --border-2:#333; --input-bg:#000;
-  --text:#00ff66; --accent:#00ff66;
-  --text-muted:#888; --text-subtle:#666; --text-ghost:#444; --text-field:#aaa;
-  --btn-primary-bg:#00ff66; --btn-primary-fg:#000;
-  --result-bg:#081a10; --result-border:#1a4d2b;
-  --error:#ff5555; --warn:#ffb700; --blue:#67c7ff;
-  --overlay:rgba(0,0,0,.82);
-}
-:root.theme-light{
-  --bg:#f4f4ef; --panel:#ffffff; --panel-2:#e8e8e0; --panel-hover:#d8d8cc;
-  --border:#d8d8d0; --border-2:#c0c0b8; --input-bg:#fafaf5;
-  --text:#1a1a1a; --accent:#007733;
-  --text-muted:#666; --text-subtle:#888; --text-ghost:#ccc; --text-field:#444;
-  --btn-primary-bg:#008a3a; --btn-primary-fg:#fff;
-  --result-bg:#e8f5ec; --result-border:#a8d8b8;
-  --error:#c62828; --warn:#a06800; --blue:#1565c0;
-  --overlay:rgba(0,0,0,.4);
-}
 
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;background:var(--bg);color:var(--text);
-  font-family:Consolas,'Courier New',monospace;overflow-x:hidden}
+html,body{height:100%;background:var(--page-bg);color:var(--text-primary);
+  font-family:var(--font-body);overflow-x:hidden}
 body{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:100vh;
   transition:background .15s,color .15s}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -33,51 +15,46 @@ button{cursor:pointer}
 
 /* ---------- Topbar ---------- */
 .topbar{
-  display:flex;align-items:center;gap:12px;
-  background:var(--panel);border:1px solid var(--border);border-radius:6px;
-  padding:8px 12px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--panel-glass);border:1px solid var(--border-strong);border-radius:var(--radius-md);
+  padding:10px 16px;backdrop-filter:blur(14px);box-shadow:var(--shadow);
 }
-.brand{font-weight:bold;letter-spacing:2px;color:var(--accent);font-size:.9em}
 .status-bar{
-  margin-left:auto;font-size:.75em;color:var(--text-muted);
+  margin-left:auto;font-size:.75em;color:var(--text-secondary);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;
 }
 .status-ok{color:var(--accent)}
-.status-error{color:var(--error)}
+.status-error{color:var(--danger)}
 
 /* ---------- Tabs ---------- */
-.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--border);
-  border-radius:6px;padding:4px;flex-wrap:wrap}
-.tab{background:transparent;color:var(--text-muted);border:1px solid transparent;
-  border-radius:4px;padding:8px 14px;font-size:.8em;transition:.12s}
-.tab:hover{color:var(--accent);background:var(--panel-2)}
-.tab.active{color:var(--btn-primary-fg);background:var(--btn-primary-bg);
-  border-color:var(--btn-primary-bg);font-weight:bold}
+.tabs{display:flex;gap:4px;background:var(--panel-glass);border:1px solid var(--border-strong);
+  border-radius:var(--radius-md);padding:4px;flex-wrap:wrap}
+.tab{background:transparent;color:var(--text-secondary);border:1px solid transparent;
+  border-radius:999px;padding:8px 16px;font-size:.8em;font-family:var(--font-body);transition:.12s}
+.tab:hover{color:var(--accent);background:var(--panel-glass-hover)}
+.tab.active{color:#04150c;background:var(--accent);
+  border-color:var(--accent);font-weight:700}
 
 /* ---------- Panels ---------- */
 main{flex:1;min-height:0;position:relative}
-.tab-panel{display:none;padding:14px;background:var(--panel);
-  border:1px solid var(--border);border-radius:6px;height:100%;overflow:auto}
+.tab-panel{display:none;padding:16px;background:var(--panel-glass);
+  border:1px solid var(--border-strong);border-radius:var(--radius-md);height:100%;overflow:auto;
+  box-shadow:var(--shadow)}
 .tab-panel.active{display:block}
 
 /* ---------- Form anagrafica ---------- */
-#infoForm{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:16px}
+#infoForm{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px}
 .field-row{display:grid;grid-template-columns:240px 1fr;gap:12px;align-items:center}
-.field-row label{color:var(--text-field);font-size:.82em}
-.field-row input{
-  width:100%;background:var(--input-bg);color:var(--text);
-  border:1px solid var(--border-2);border-radius:4px;padding:7px 9px;
-  outline:none;font-size:.85em;
-}
-.field-row input:focus{border-color:var(--accent)}
+.field-row label{color:var(--text-secondary);font-size:.82em}
+.field-row input{width:100%;font-size:.85em}
 
 /* ---------- Fieldset / radio ---------- */
-fieldset{border:1px solid var(--border-2);border-radius:6px;
-  padding:12px 14px;background:var(--panel-2);margin-top:12px}
+fieldset{border:1px solid var(--border-strong);border-radius:var(--radius-md);
+  padding:14px 16px;background:var(--panel-glass);margin-top:14px}
 fieldset legend{padding:0 8px;color:var(--accent);font-size:.8em;
-  letter-spacing:1px;font-weight:bold}
+  letter-spacing:1px;font-weight:700;font-family:var(--font-body)}
 .radio-item{display:inline-flex;align-items:center;gap:6px;margin-right:22px;
-  font-size:.85em;cursor:pointer;color:var(--text-field)}
+  font-size:.85em;cursor:pointer;color:var(--text-secondary)}
 .radio-item input{accent-color:var(--accent)}
 .radio-item:hover{color:var(--accent)}
 .radio-item.compact{margin-right:8px;font-size:.78em}
@@ -85,73 +62,58 @@ fieldset legend{padding:0 8px;color:var(--accent);font-size:.8em;
 
 /* ---------- Checklist ---------- */
 .checklist-header{display:grid;grid-template-columns:1fr 240px;gap:12px;
-  padding:6px 8px;border-bottom:1px solid var(--border);
-  font-size:.72em;letter-spacing:1.5px;color:var(--text-subtle);text-transform:uppercase}
+  padding:8px;border-bottom:1px solid var(--border);
+  font-size:.72em;letter-spacing:1.5px;color:var(--text-tertiary);text-transform:uppercase}
 .checklist-row{display:grid;grid-template-columns:1fr 240px;gap:12px;
-  align-items:center;padding:10px 8px;border-bottom:1px solid var(--border)}
-.checklist-row:hover{background:var(--panel-2)}
-.checklist-text{font-size:.85em;color:var(--text-field);line-height:1.4}
+  align-items:center;padding:12px 8px;border-bottom:1px solid var(--border)}
+.checklist-row:hover{background:var(--panel-glass-hover)}
+.checklist-text{font-size:.85em;color:var(--text-secondary);line-height:1.4}
 .checklist-opts{display:flex;gap:4px;flex-wrap:wrap}
 
 /* ---------- Comments ---------- */
 .field-block{display:flex;flex-direction:column;gap:6px;margin-top:6px}
-.field-block > span{color:var(--accent);font-size:.8em;font-weight:bold;letter-spacing:1px}
-.field-block textarea{
-  background:var(--input-bg);color:var(--text);border:1px solid var(--border-2);
-  border-radius:4px;padding:10px;outline:none;font-size:.85em;
-  resize:vertical;min-height:220px;font-family:inherit;
-}
-.field-block textarea:focus{border-color:var(--accent)}
+.field-block > span{color:var(--accent);font-size:.8em;font-weight:700;letter-spacing:1px}
+.field-block textarea{resize:vertical;min-height:220px;font-size:.85em}
 
 /* ---------- Action tab ---------- */
-.action-card{background:var(--panel-2);border:1px solid var(--border);
-  border-radius:6px;padding:16px;margin-bottom:12px}
+.action-card{padding:18px;margin-bottom:12px}
 .action-card h3{color:var(--accent);font-size:.85em;letter-spacing:1.5px;
-  text-transform:uppercase;margin-bottom:10px}
-.action-card p{color:var(--text-field);font-size:.82em;line-height:1.55;margin-bottom:10px}
-.action-card code{background:var(--input-bg);border:1px solid var(--border-2);
-  border-radius:3px;padding:1px 5px;color:var(--accent);font-size:.95em}
-.hint{color:var(--text-subtle)!important;font-size:.72em!important}
+  text-transform:uppercase;margin-bottom:10px;font-family:var(--font-body)}
+.action-card p{color:var(--text-secondary);font-size:.82em;line-height:1.55;margin-bottom:10px}
+.action-card code{background:var(--well-bg);border:1px solid var(--border-strong);
+  border-radius:var(--radius-sm);padding:1px 6px;color:var(--accent);font-size:.9em;font-family:var(--font-mono)}
+.hint{color:var(--text-tertiary)!important;font-size:.72em!important}
 
 input[type=file]{
-  display:block;width:100%;background:var(--input-bg);color:var(--text-field);
-  border:1px dashed var(--border-2);border-radius:4px;padding:10px;font-size:.78em;
+  display:block;width:100%;background:var(--well-bg);color:var(--text-secondary);
+  border:1px dashed var(--border-strong);border-radius:var(--radius-sm);padding:12px;font-size:.78em;
   cursor:pointer;
 }
 input[type=file]:hover{border-color:var(--accent)}
 
 .tags-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:4px;margin-top:6px}
-.tag-chip{background:var(--input-bg);border:1px solid var(--border);
-  border-radius:3px;padding:4px 8px;font-size:.7em;color:var(--accent);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  gap:6px;margin-top:6px}
+.tag-chip{background:var(--well-bg);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:5px 9px;font-size:.7em;color:var(--accent);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--font-mono)}
 
-/* ---------- Buttons ---------- */
-.btn-primary{background:var(--btn-primary-bg);color:var(--btn-primary-fg);
-  border:none;border-radius:4px;padding:8px 16px;font-weight:bold;transition:.12s}
-.btn-primary:hover{filter:brightness(.9)}
+/* ---------- Buttons ----------
+   .small-btn / .btn-primary come dalla famiglia di bottoni condivisa
+   (shared/css/dani-theme.css): qui resta solo il modificatore "big". */
 .btn-primary.big{font-size:.95em;padding:14px 22px;width:100%}
 
-.small-btn{background:var(--panel-2);color:var(--text);
-  border:1px solid var(--border-2);border-radius:4px;padding:6px 12px;
-  font-size:.78em;transition:.12s}
-.small-btn:hover{border-color:var(--accent);background:var(--panel-hover)}
-
-/* ---------- Modal ---------- */
-.modal{position:fixed;inset:0;background:var(--overlay);display:flex;
-  align-items:center;justify-content:center;z-index:80;padding:20px}
-.modal[hidden]{display:none}
-.modal-box{width:min(560px,92vw);background:var(--panel);
-  border:1px solid var(--accent);border-radius:7px;padding:18px;
-  box-shadow:0 20px 80px rgba(0,0,0,.5);max-height:80vh;overflow:auto}
-.modal-title{color:var(--accent);font-size:.9em;margin-bottom:10px;letter-spacing:1px}
-.modal-text{color:var(--text-field);font-size:.82em;line-height:1.6;
-  white-space:pre-line;margin-bottom:14px}
+/* ---------- Modal ----------
+   shared/css/dani-theme.css definisce .modal{display:none} di base e lo
+   mostra solo con .show oppure .modal-open; questo tool alterna invece
+   l'attributo [hidden] sul nodo .modal (main.js), quindi serve questa
+   regola locale di compatibilità per farlo comparire senza aggiungere
+   classi extra al markup. */
+.modal:not([hidden]){display:flex}
 
 /* ---------- Responsive ---------- */
 @media(max-width:700px){
   .field-row{grid-template-columns:1fr}
   .checklist-header,.checklist-row{grid-template-columns:1fr}
   .status-bar{max-width:100%;font-size:.68em}
-  .brand{font-size:.75em;letter-spacing:1px}
+  .brand-word{font-size:.85em;letter-spacing:.5px}
 }

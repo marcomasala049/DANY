@@ -2,20 +2,49 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<script>try{if(localStorage.getItem('dani_theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Incoming Inspection Report — Engineering Tool</title>
+<meta name="description" content="Report di ispezione in ingresso: anagrafica, checklist qualità e generazione automatica del documento Word.">
+
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#0c0c0c">
+<meta name="color-scheme" content="dark">
+
+<!-- iOS / iPadOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DANI">
+<link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png">
+
+<!-- Android / Chrome -->
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- Windows -->
+<meta name="msapplication-TileColor" content="#0c0c0c">
+<meta name="msapplication-TileImage" content="../../icons/icon-192.png">
+<meta name="msapplication-tap-highlight" content="no">
+
+<!-- Favicons -->
+<link rel="icon" type="image/png" sizes="32x32" href="../../icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../../icons/favicon-16.png">
+<link rel="shortcut icon" href="../../icons/favicon.ico">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="../../shared/css/dani-theme.css">
 <link rel="stylesheet" href="css/style.css">
-<script>
-(function(){try{
-  if(localStorage.getItem('ir_theme')==='light')document.documentElement.classList.add('theme-light');
-}catch(e){}})();
-</script>
 </head>
 <body>
 
 <header class="topbar">
-  <button class="small-btn" id="themeBtn" onclick="Theme.toggle()">☀ Light</button>
-  <div class="brand">🛠️ INCOMING INSPECTION REPORT</div>
+  <span class="brand">
+    <span class="brand-logo-wrap"><img src="../../icons/icon-192.png" alt="" class="brand-logo"></span>
+    <span class="brand-word">🛠️ INCOMING INSPECTION REPORT</span>
+  </span>
+  <button class="small-btn" id="themeToggleBtn">☀️ Tema Chiaro</button>
+  <button class="small-btn" onclick="window.location.href='../../index.html'">🏠 Home</button>
   <div class="status-bar" id="statusBar">&gt; Pronto.</div>
 </header>
 
@@ -89,10 +118,10 @@
 <script src="https://cdn.jsdelivr.net/npm/docxtemplater@3.48.0/build/docxtemplater.js"></script>
 
 <script src="js/config.js"></script>
-<script src="js/theme.js"></script>
 <script src="js/form.js"></script>
 <script src="js/checklist.js"></script>
 <script src="js/report.js"></script>
 <script src="js/main.js"></script>
+<script type="module">import { initTheme } from '../../shared/js/theme.js'; initTheme(document.getElementById('themeToggleBtn'));</script>
 </body>
 </html>

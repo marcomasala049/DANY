@@ -30,13 +30,20 @@
 <link rel="icon" type="image/png" sizes="16x16" href="../../icons/favicon-16.png">
 <link rel="shortcut icon" href="../../icons/favicon.ico">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="../../shared/css/dani-theme.css">
 <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
 
-<div id="topbar">
-  <h1><img src="../../icons/icon-192.png" alt="" class="brand-logo">TEST PROCEDURE RUNNER</h1>
+<div id="topbar" class="topbar">
+  <span class="brand">
+    <span class="brand-logo-wrap"><img src="../../icons/icon-192.png" alt="" class="brand-logo"></span>
+    <span class="brand-word">TEST PROCEDURE RUNNER</span>
+  </span>
   <div class="spacer"></div>
   <div class="tb-field">Operatore: <input id="usernameField" placeholder="nome.cognome" oninput="onUsernameChange()"></div>
   <button class="btn" id="btnExportCsv" style="display:none" onclick="exportUpdatedCsv()">💾 Esporta CSV</button>
