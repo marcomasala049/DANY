@@ -5,7 +5,7 @@ import { saveSession } from './session-storage.js';
 import { enterExecution } from './execution.js';
 import { downloadBlob } from './download.js';
 
-function excelValue(v) {
+export function excelValue(v) {
   if (v == null) return '';
   if (typeof v === 'object') {
     if (v.richText) return v.richText.map(x => x.text || '').join('');
@@ -16,7 +16,7 @@ function excelValue(v) {
   return String(v);
 }
 
-function arrayBufferToDataUrl(buffer, extension) {
+export function arrayBufferToDataUrl(buffer, extension) {
   const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
   let binary = '';
   const chunk = 0x8000;
@@ -27,7 +27,13 @@ function arrayBufferToDataUrl(buffer, extension) {
   return 'data:' + mime + ';base64,' + btoa(binary);
 }
 
-function recoverEmbeddedImages(workbook, worksheet, parsed) {
+/**
+ * Recovers embedded images from an XLSX worksheet into `parsed[i].image` as
+ * data URLs, matching each image to the parsed row at the same sheet row.
+ * Works on any array of objects with an `.image` field — reused by both the
+ * Runner's file loader and the Builder's import (see ui/builder.js).
+ */
+export function recoverEmbeddedImages(workbook, worksheet, parsed) {
   try {
     const media = workbook.model && workbook.model.media ? workbook.model.media : [];
     for (const image of worksheet.getImages()) {
@@ -89,6 +95,39 @@ export async function loadFromXLSXFile(file) {
   state.currentIndex = findFirstUnsigned(state.steps);
   saveSession();
   enterExecution();
+}
+
+/**
+ * Adds a "Procedura" worksheet to `workbook` with the standard header/column
+ * widths/frozen header row, one row per step (embedding any data-URL image),
+ * and returns it. Shared by the Runner's own export (ui/export.js) and the
+ * Builder's standalone XLSX export (ui/builder.js) so the XLSX layout is
+ * defined in exactly one place.
+ */
+export function buildProcedureWorksheet(workbook, steps) {
+  const ws = workbook.addWorksheet('Procedura');
+  ws.addRow(PROCEDURE_COLUMNS);
+  ws.columns = [
+    { width: 8 }, { width: 55 }, { width: 22 }, { width: 18 }, { width: 35 }, { width: 22 },
+    { width: 22 }, { width: 18 }, { width: 35 }, { width: 18 }, { width: 30 }
+  ];
+  ws.getRow(1).font = { bold: true };
+  ws.freezePanes = { ySplit: 1 };
+
+  steps.forEach((s, i) => {
+    const row = ws.addRow([
+      s.step, s.desc, s.expected || '', s.measured || '', s.notes || '', '',
+      s.timestamp || '', s.signature || '', s.correction || '', s.anomaly || '', s.skipReason || ''
+    ]);
+    if (s.image && s.image.startsWith('data:image/')) {
+      const ext = s.image.startsWith('data:image/jpeg') ? 'jpeg' : s.image.startsWith('data:image/gif') ? 'gif' : 'png';
+      const imageId = workbook.addImage({ base64: s.image, extension: ext });
+      row.height = 78;
+      ws.addImage(imageId, { tl: { col: 5, row: i + 1 }, ext: { width: 115, height: 65 } });
+    }
+  });
+
+  return ws;
 }
 
 /** Downloads a starter .xlsx template with sample rows and frozen header. */

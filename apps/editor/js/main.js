@@ -31,6 +31,10 @@ import { checkThreshold } from './ui/threshold.js';
 import { addProcedureStep, renderProcedure, exportProcedureReport } from './ui/procedure.js';
 import { inspectData, reinspectData, renderData, exportCleanCsv, drawDataChart, initChartResize } from './ui/data-inspector.js';
 import { exportWorkspaceState, importWorkspaceState } from './ui/workspace-state.js';
+import { updateStats, markDirty } from './ui/editor-stats.js';
+import { findNext, replaceOne, replaceAll, updateFindStatus, focusFind } from './ui/find-replace.js';
+import { togglePanel } from './ui/panel.js';
+import { initWidgetDragDrop, resetWidgetOrder } from './ui/widget-order.js';
 import {
   salvaFile, salvaCome, chiudiSalvaCome, selezionaCartellaSalvataggio, confermaSalvaCome,
   loadTargetFile, checkServer, resolveTargetFileFromHash, setTargetFilePath
@@ -53,7 +57,9 @@ Object.assign(window, {
   checkThreshold,
   addProcedureStep, exportProcedureReport,
   inspectData, reinspectData, renderData, exportCleanCsv, drawDataChart,
-  exportWorkspaceState, importWorkspaceState
+  exportWorkspaceState, importWorkspaceState,
+  findNext, replaceOne, replaceAll, updateFindStatus,
+  togglePanel, resetWidgetOrder
 });
 
 /**
@@ -71,6 +77,8 @@ function adaptWorkspace() {
 function initKeyboardShortcuts() {
   document.addEventListener('keydown', e => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); salvaFile(); return; }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'f') { e.preventDefault(); focusFind(); return; }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); togglePanel(); return; }
     if (e.key === 'Escape' && $('helpModal').classList.contains('show')) { closeHelp(); return; }
 
     if (document.activeElement === $('editor') || ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
@@ -116,6 +124,10 @@ function init() {
   initInstallPrompt($('installBtn'));
   initChartResize();
   initTheme($('themeToggleBtn'));
+
+  updateStats();
+  $('editor').addEventListener('input', () => { markDirty(); updateStats(); });
+  initWidgetDragDrop();
 }
 
 window.addEventListener('resize', adaptWorkspace);

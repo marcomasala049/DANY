@@ -4,6 +4,7 @@ import { PROCEDURE_COLUMNS } from '../logic/column-mapping.js';
 import { buildFullReportText } from '../logic/report.js';
 import { state } from './state.js';
 import { downloadBlob } from './download.js';
+import { buildProcedureWorksheet } from './xlsx-io.js';
 
 function baseName() {
   return (state.sourceName || 'procedura').replace(/\.[^.]+$/, '');
@@ -35,24 +36,7 @@ export async function exportUpdatedXlsx() {
     wb.creator = 'Test Procedure Runner';
     wb.created = new Date();
 
-    const ws = wb.addWorksheet('Procedura');
-    ws.addRow(PROCEDURE_COLUMNS);
-    ws.columns = [
-      { width: 8 }, { width: 55 }, { width: 22 }, { width: 18 }, { width: 35 }, { width: 22 },
-      { width: 22 }, { width: 18 }, { width: 35 }, { width: 18 }, { width: 30 }
-    ];
-    ws.getRow(1).font = { bold: true };
-    ws.freezePanes = { ySplit: 1 };
-
-    state.steps.forEach((s, i) => {
-      const row = ws.addRow([s.step, s.desc, s.expected, s.measured, s.notes, '', s.timestamp, s.signature, s.correction, s.anomaly, s.skipReason]);
-      if (s.image && s.image.startsWith('data:image/')) {
-        const ext = s.image.startsWith('data:image/jpeg') ? 'jpeg' : s.image.startsWith('data:image/gif') ? 'gif' : 'png';
-        const imageId = wb.addImage({ base64: s.image, extension: ext });
-        row.height = 78;
-        ws.addImage(imageId, { tl: { col: 5, row: i + 1 }, ext: { width: 115, height: 65 } });
-      }
-    });
+    buildProcedureWorksheet(wb, state.steps);
 
     const buffer = await wb.xlsx.writeBuffer();
     downloadBlob(

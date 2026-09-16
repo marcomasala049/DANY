@@ -12,7 +12,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v6';
+const CACHE_VERSION = 'dani-v7';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 
@@ -50,18 +50,24 @@ const PRECACHE_PATHS = [
   'apps/editor/js/core/dom-helpers.js',
   'apps/editor/js/logic/calculator-display.js',
   'apps/editor/js/logic/csv-data.js',
+  'apps/editor/js/logic/editor-stats.js',
   'apps/editor/js/logic/engineering-formulas.js',
   'apps/editor/js/logic/expression-evaluator.js',
+  'apps/editor/js/logic/find-replace.js',
   'apps/editor/js/logic/formulas-data.js',
   'apps/editor/js/logic/unit-conversions.js',
+  'apps/editor/js/logic/widget-order.js',
   'apps/editor/js/logic/widget-storage-keys.js',
   'apps/editor/js/ui/calculator.js',
   'apps/editor/js/ui/clock.js',
   'apps/editor/js/ui/converter.js',
   'apps/editor/js/ui/data-inspector.js',
+  'apps/editor/js/ui/editor-stats.js',
   'apps/editor/js/ui/engineering.js',
   'apps/editor/js/ui/file-io.js',
+  'apps/editor/js/ui/find-replace.js',
   'apps/editor/js/ui/formulas.js',
+  'apps/editor/js/ui/panel.js',
   'apps/editor/js/ui/pins.js',
   'apps/editor/js/ui/procedure.js',
   'apps/editor/js/ui/quick-calculator.js',
@@ -69,6 +75,7 @@ const PRECACHE_PATHS = [
   'apps/editor/js/ui/threshold.js',
   'apps/editor/js/ui/timer.js',
   'apps/editor/js/ui/todo.js',
+  'apps/editor/js/ui/widget-order.js',
   'apps/editor/js/ui/widgets.js',
   'apps/editor/js/ui/workspace-state.js',
 

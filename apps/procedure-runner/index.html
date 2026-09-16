@@ -83,12 +83,23 @@
   <div class="load-card" id="builderCard" style="display:none;max-width:760px;margin-top:18px;text-align:left">
     <h2 style="text-align:center">Nuova Procedura — Definisci gli Step</h2>
     <div class="muted" style="font-size:.78em;margin-bottom:8px;text-align:center">Descrizione e valore atteso sono testuali; con 🖼 puoi associare un’immagine locale allo step.</div>
+    <div class="builder-proc-name">
+      <label for="builderProcName">📄 Nome procedura</label>
+      <input type="text" id="builderProcName" placeholder="Es. Test_AIT_Modulo1" oninput="scheduleDraftSave()">
+    </div>
+    <div class="builder-actions-row">
+      <button class="btn" onclick="importIntoBuilder()">📂 Importa</button>
+      <button class="btn" onclick="exportBuilderXlsx()">📊 Esporta XLSX</button>
+      <button class="btn btn-danger" onclick="newBuilderProcedure()">🗑 Nuova</button>
+    </div>
+    <input type="file" id="builderImportInput" accept=".csv,.txt,.xlsx" style="display:none" onchange="onBuilderImportFile(event)">
     <div id="builderList"></div>
     <button class="btn" onclick="addBuilderRow()">+ Aggiungi Step</button>
     <div style="display:flex;gap:8px;margin-top:14px;justify-content:center">
       <button class="btn" onclick="closeBuilder()">Annulla</button>
       <button class="btn btn-primary" onclick="startFromBuilder()">▶ Avvia Procedura</button>
     </div>
+    <div class="builder-draft-info" id="builderDraftInfo"></div>
   </div>
 </div>
 

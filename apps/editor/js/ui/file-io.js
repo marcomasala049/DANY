@@ -1,6 +1,7 @@
 import { $, setText, setHtml } from '../core/dom-helpers.js';
 import { escapeHtml } from '../../../../shared/js/dom-utils.js';
 import { isSessionRunning, appendSession } from './session.js';
+import { clearDirty } from './editor-stats.js';
 
 const LOCAL_SERVER = 'http://127.0.0.1:8080';
 
@@ -26,6 +27,7 @@ function afterSaveUI(path, stamped) {
   try {
     const editor = $('editor');
     if (editor) editor.value = stamped; else console.error('[afterSaveUI] elemento mancante: #editor');
+    clearDirty();
     targetFilePath = path;
     setText('file-label', path);
     saveCount++;
@@ -146,6 +148,7 @@ export async function loadTargetFile(path) {
     if (!r.ok) throw new Error('HTTP ' + r.status + (text ? ' — ' + text : ''));
 
     $('editor').value = text;
+    clearDirty();
     $('editorState').innerText = '● LOADED';
     $('status').className = 'status-bar status-ok';
     $('status').innerText = '> File caricato correttamente | ' + path;

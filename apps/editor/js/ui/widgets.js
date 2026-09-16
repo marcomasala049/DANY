@@ -13,6 +13,8 @@ const helpDescriptions = {
   'Test Session': 'Gestisce una sessione di test con ID, avvio/arresto e log temporale delle note e dei salvataggi.',
   'Threshold Monitor': 'Controllo manuale di una soglia: imposta valore corrente, warning e alarm per evidenziare rapidamente condizioni anomale.',
   'Mini Data Inspector': 'Carica un CSV/TXT/TSV, rileva o seleziona il delimitatore, imposta quante righe vedere, consulta min/max/media/σ per ogni colonna numerica, disegna un grafico a barre della colonna scelta ed esporta i dati puliti in CSV.',
+  'Editor Stats': 'Contatore live di righe, parole e caratteri del testo, più indicatore di stato: ● OK quando il file è salvato, ● MOD (giallo) quando ci sono modifiche non ancora salvate.',
+  'Trova & Sostituisci': 'Cerca una stringa nel testo (Enter o Ctrl/Cmd+F per il campo, poi Enter per il match successivo con wrap-around), sostituisci il match selezionato oppure sostituisci tutte le occorrenze con conteggio.',
   'Procedura di Test': 'Checklist di step per una procedura di test: aggiungi step, segnali PASS/FAIL/N.A. e note, controlli il riepilogo e esporti un report .txt timestampato (si integra con la Test Session).',
   'Scientific Formula Library': 'Libreria rapida di formule scientifiche e ingegneristiche organizzate per meccanica, motori, gearbox, elettrica, termica, fluidi, dinamica e geometria.'
 };
