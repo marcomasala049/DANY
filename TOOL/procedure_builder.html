@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Procedure Builder</title>
+<script>
+(function(){
+  if ((localStorage.getItem('procrunner_theme') || 'dark') === 'light') {
+    document.documentElement.classList.add('light');
+  }
+})();
+</script>
+<style>
+:root{
+  --bg:#0c0c0c;--panel:#121212;--panel-2:#0f0f0f;--border:#222;--border-2:#333;
+  --text:#00ff66;--text-dim:#888;--text-mute:#666;
+  --accent:#00ff66;--accent-hover:#00cc52;--accent-contrast:#000;
+  --input-bg:#000;--input-border:#333;
+  --warn:#ffb700;--warn-bg:#2b230d;--warn-border:#5a4200;
+  --danger:#ff5555;--danger-bg:#2b0d0d;--danger-border:#5a1a1a;
+  --info:#67c7ff;--info-bg:#0d1a2b;--info-border:#1a3a5a;
+}
+html.light{
+  --bg:#eef1ef;--panel:#ffffff;--panel-2:#f7faf8;--border:#d0d5d2;--border-2:#c0c8c2;
+  --text:#0a7a3a;--text-dim:#666;--text-mute:#888;
+  --accent:#0a8a3a;--accent-hover:#087530;--accent-contrast:#fff;
+  --input-bg:#ffffff;--input-border:#d0d5d2;
+  --warn:#a67700;--warn-bg:#fff8e6;--warn-border:#e6c66a;
+  --danger:#cc2222;--danger-bg:#fff0f0;--danger-border:#e6a0a0;
+  --info:#1e6fb8;--info-bg:#e8f2ff;--info-border:#a8c8e6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{height:100%}
+body{min-height:100%;background:var(--bg);color:var(--text);font-family:Consolas,'Courier New',monospace;transition:background .2s,color .2s}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+::selection{background:var(--accent);color:var(--accent-contrast)}
+#topSticky{position:sticky;top:0;z-index:60;background:var(--panel);border-bottom:1px solid var(--border)}
+#topbar{display:flex;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+#topbar h1{font-size:.95em;letter-spacing:1px;white-space:nowrap;color:var(--text)}
+#topbar .spacer{flex:1}
+.tb-count{font-size:.72em;color:var(--text-dim);white-space:nowrap}
+.btn{background:var(--panel-2);color:var(--text);border:1px solid var(--border-2);border-radius:4px;padding:6px 10px;font-size:.75em;transition:background .15s,border-color .15s}
+.btn:hover{border-color:var(--accent);background:var(--panel)}
+.btn-primary{background:var(--accent);color:var(--accent-contrast);border:none;font-weight:bold}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border)}
+.btn-danger:hover{border-color:var(--danger)}
+.container{max-width:1100px;margin:0 auto;padding:22px}
+.intro{margin-bottom:18px}
+.intro h2{font-size:1.15em;color:var(--text);margin-bottom:6px}
+.intro p{font-size:.8em;color:var(--text-dim);line-height:1.6}
+.proc-info{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:14px}
+.proc-info label{font-size:.75em;color:var(--text-dim);white-space:nowrap}
+.proc-info input{flex:1;background:var(--input-bg);color:var(--text);border:1px solid var(--input-border);border-radius:4px;padding:8px 10px;outline:none;font-size:.85em;min-width:0}
+.proc-info input:focus{border-color:var(--accent)}
+.step-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;transition:border-color .15s}
+.step-card:hover{border-color:var(--border-2)}
+.step-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.step-num{background:var(--accent);color:var(--accent-contrast);font-weight:bold;border-radius:5px;padding:4px 10px;font-size:.78em;min-width:34px;text-align:center}
+.step-label{font-size:.72em;color:var(--text-mute);text-transform:uppercase;letter-spacing:1px}
+.step-head .spacer{flex:1}
+.icon-btn{background:transparent;color:var(--text-dim);border:1px solid transparent;border-radius:4px;padding:4px 8px;font-size:.9em;line-height:1;transition:all .15s}
+.icon-btn:hover:not(:disabled){color:var(--accent);border-color:var(--border-2)}
+.icon-btn:disabled{opacity:.25;cursor:not-allowed}
+.icon-btn.danger:hover:not(:disabled){color:var(--danger);border-color:var(--danger-border)}
+.step-body{display:grid;grid-template-columns:1fr 180px;gap:14px}
+@media(max-width:700px){.step-body{grid-template-columns:1fr}}
+.step-fields{display:flex;flex-direction:column;gap:6px}
+.step-fields label{font-size:.68em;color:var(--text-mute);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.step-fields textarea,.step-fields input{width:100%;background:var(--input-bg);color:var(--text);border:1px solid var(--input-border);border-radius:4px;padding:8px 10px;outline:none;font-size:.85em;font-family:inherit;transition:border-color .15s}
+.step-fields textarea{min-height:70px;resize:vertical;line-height:1.5}
+.step-fields textarea:focus,.step-fields input:focus{border-color:var(--accent)}
+.step-img{display:flex;flex-direction:column;gap:6px}
+.step-img label{font-size:.68em;color:var(--text-mute);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.img-thumb{position:relative;width:100%;height:130px;border:1px dashed var(--border-2);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;background:var(--input-bg);color:var(--text-mute);font-size:.72em;text-align:center;padding:8px;transition:border-color .15s,background .15s}
+.img-thumb:hover{border-color:var(--accent);background:var(--panel-2)}
+.img-thumb img{max-width:100%;max-height:100%;object-fit:contain}
+.img-remove{position:absolute;top:4px;right:4px;background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);border-radius:50%;width:22px;height:22px;line-height:1;font-size:.85em;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.img-remove:hover{background:var(--danger);color:#fff}
+.empty{text-align:center;color:var(--text-mute);font-size:.85em;padding:40px 20px;border:1px dashed var(--border);border-radius:8px}
+.actions{display:flex;justify-content:center;gap:8px;margin-top:8px}
+.actions .btn{padding:10px 20px;font-size:.82em}
+.draft-info{font-size:.7em;color:var(--text-mute);text-align:center;margin-top:16px}
+.draft-info b{color:var(--text-dim)}
+</style>
+</head>
+<body>
+
+<div id="topSticky">
+  <div id="topbar">
+    <h1>🛠 PROCEDURE BUILDER</h1>
+    <span class="tb-count" id="stepCount"></span>
+    <div class="spacer"></div>
+    <button class="btn" onclick="importProcedure()">📂 Importa</button>
+    <button class="btn btn-primary" onclick="exportXlsx()">📊 XLSX</button>
+    <button class="btn" id="btnThemeToggle" onclick="toggleTheme()" title="Cambia tema">☀ Light</button>
+    <button class="btn btn-danger" onclick="newProcedure()">🗑 Nuova</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="intro">
+    <h2>Definisci la Procedura di Test</h2>
+    <p class="muted">Aggiungi gli step con descrizione, valore atteso e (opzionale) immagine di riferimento. L'immagine verrà incorporata direttamente nel file XLSX esportato.</p>
+  </div>
+
+  <div class="proc-info">
+    <label for="procName">📄 Nome procedura:</label>
+    <input type="text" id="procName" placeholder="Es. Test_AIT_Modulo1" oninput="saveDraft()">
+  </div>
+
+  <div id="stepsList"></div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="addStep()">+ Aggiungi Step</button>
+  </div>
+
+  <div class="draft-info" id="draftInfo"></div>
+</div>
+
+<input type="file" id="importInput" accept=".csv,.txt,.xlsx" style="display:none" onchange="onImportFile(event)">
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const DRAFT_KEY = 'procbuilder_draft';
+const THEME_KEY = 'procrunner_theme';
+
+let steps = [];
+
+/* ---------- Helpers ---------- */
+
+function newStep() { return { desc: '', expected: '', image: '' }; }
+
+function esc(s) {
+  return (s ?? '').toString()
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/* ---------- Theme ---------- */
+
+function applyTheme(theme) {
+  const isLight = theme === 'light';
+  document.documentElement.classList.toggle('light', isLight);
+  const btn = $('btnThemeToggle');
+  if (btn) {
+    btn.textContent = isLight ? '🌙 Dark' : '☀ Light';
+    btn.title = isLight ? 'Passa a tema scuro' : 'Passa a tema chiaro';
+  }
+}
+
+function toggleTheme() {
+  const next = document.documentElement.classList.contains('light') ? 'dark' : 'light';
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}
+
+/* ---------- Draft persistence ---------- */
+
+let saveTimer = null;
+
+function saveDraft() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+        procName: $('procName').value,
+        steps,
+        savedAt: new Date().toISOString()
+      }));
+      updateDraftInfo();
+    } catch (e) {
+      console.warn('Auto-save fallito:', e);
+      const el = $('draftInfo');
+      if (el) el.innerHTML = '<b style="color:var(--warn)">⚠ Bozza troppo grande per l\'auto-salvataggio (immagini pesanti).</b>';
+    }
+  }, 300);
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    if (!d.steps || !d.steps.length) return false;
+    steps = d.steps.map(s => ({
+      desc: s.desc || '',
+      expected: s.expected || '',
+      image: s.image || ''
+    }));
+    if (d.procName) $('procName').value = d.procName;
+    return true;
+  } catch (e) { return false; }
+}
+
+function updateDraftInfo() {
+  const el = $('draftInfo');
+  if (!el) return;
+  const raw = localStorage.getItem(DRAFT_KEY);
+  if (!raw) { el.textContent = ''; return; }
+  try {
+    const d = JSON.parse(raw);
+    const when = d.savedAt ? new Date(d.savedAt).toLocaleString('it-IT') : '—';
+    el.innerHTML = 'Bozza salvata automaticamente il <b>' + esc(when) + '</b> (solo nel browser)';
+  } catch (e) { el.textContent = ''; }
+}
+
+/* ---------- Step rendering ---------- */
+
+function renderSteps() {
+  const container = $('stepsList');
+  container.innerHTML = '';
+
+  if (!steps.length) {
+    container.innerHTML = '<div class="empty">Nessuno step ancora. Clicca "+ Aggiungi Step" per iniziare.</div>';
+    updateStepCount();
+    return;
+  }
+
+  steps.forEach((s, i) => container.appendChild(buildStepCard(s, i)));
+  updateStepCount();
+}
+
+function buildStepCard(s, idx) {
+  const card = document.createElement('div');
+  card.className = 'step-card';
+
+  // --- Head ---
+  const head = document.createElement('div');
+  head.className = 'step-head';
+  head.innerHTML =
+    '<span class="step-num">' + (idx + 1) + '</span>' +
+    '<span class="step-label">Step</span>' +
+    '<span class="spacer"></span>';
+
+  const btnUp = document.createElement('button');
+  btnUp.className = 'icon-btn';
+  btnUp.textContent = '↑';
+  btnUp.title = 'Sposta su';
+  btnUp.disabled = idx === 0;
+  btnUp.onclick = () => moveStep(idx, -1);
+
+  const btnDown = document.createElement('button');
+  btnDown.className = 'icon-btn';
+  btnDown.textContent = '↓';
+  btnDown.title = 'Sposta giù';
+  btnDown.disabled = idx === steps.length - 1;
+  btnDown.onclick = () => moveStep(idx, 1);
+
+  const btnDel = document.createElement('button');
+  btnDel.className = 'icon-btn danger';
+  btnDel.textContent = '🗑';
+  btnDel.title = 'Elimina step';
+  btnDel.onclick = () => deleteStep(idx);
+
+  head.append(btnUp, btnDown, btnDel);
+  card.appendChild(head);
+
+  // --- Body ---
+  const body = document.createElement('div');
+  body.className = 'step-body';
+
+  // Fields column
+  const fields = document.createElement('div');
+  fields.className = 'step-fields';
+
+  const lblDesc = document.createElement('label');
+  lblDesc.textContent = 'Descrizione';
+  const taDesc = document.createElement('textarea');
+  taDesc.placeholder = 'Descrizione operativa dello step...';
+  taDesc.value = s.desc || '';
+  taDesc.oninput = () => { s.desc = taDesc.value; saveDraft(); };
+
+  const lblExp = document.createElement('label');
+  lblExp.textContent = 'Valore atteso';
+  const inExp = document.createElement('input');
+  inExp.type = 'text';
+  inExp.placeholder = 'Atteso (opzionale)';
+  inExp.value = s.expected || '';
+  inExp.oninput = () => { s.expected = inExp.value; saveDraft(); };
+
+  fields.append(lblDesc, taDesc, lblExp, inExp);
+
+  // Image column
+  const imgWrap = document.createElement('div');
+  imgWrap.className = 'step-img';
+
+  const lblImg = document.createElement('label');
+  lblImg.textContent = 'Immagine';
+
+  const thumb = document.createElement('div');
+  thumb.className = 'img-thumb';
+
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.style.display = 'none';
+  fileInput.onchange = () => {
+    const f = fileInput.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      s.image = reader.result;
+      saveDraft();
+      renderSteps();
+    };
+    reader.readAsDataURL(f);
+    fileInput.value = '';
+  };
+
+  // Render thumbnail content
+  if (s.image) {
+    const im = document.createElement('img');
+    im.src = s.image;
+    im.alt = 'Anteprima step ' + (idx + 1);
+    thumb.appendChild(im);
+
+    const rm = document.createElement('button');
+    rm.className = 'img-remove';
+    rm.textContent = '×';
+    rm.title = 'Rimuovi immagine';
+    rm.onclick = (e) => {
+      e.stopPropagation();
+      s.image = '';
+      saveDraft();
+      renderSteps();
+    };
+    thumb.appendChild(rm);
+  } else {
+    const span = document.createElement('span');
+    span.textContent = '📷 Clicca per caricare';
+    thumb.appendChild(span);
+  }
+
+  thumb.onclick = () => fileInput.click();
+
+  imgWrap.append(lblImg, thumb, fileInput);
+  body.append(fields, imgWrap);
+  card.appendChild(body);
+
+  return card;
+}
+
+function updateStepCount() {
+  const el = $('stepCount');
+  if (el) el.textContent = steps.length ? '— ' + steps.length + ' step' : '';
+}
+
+/* ---------- Step operations ---------- */
+
+function addStep() {
+  steps.push(newStep());
+  saveDraft();
+  renderSteps();
+  setTimeout(() => {
+    const list = $('stepsList');
+    if (list.lastElementChild) {
+      list.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 60);
+}
+
+function deleteStep(idx) {
+  const s = steps[idx];
+  const hasContent = (s.desc || s.expected || s.image);
+  if (hasContent && !confirm('Eliminare lo step ' + (idx + 1) + '?')) return;
+  steps.splice(idx, 1);
+  saveDraft();
+  renderSteps();
+}
+
+function moveStep(idx, dir) {
+  const newIdx = idx + dir;
+  if (newIdx < 0 || newIdx >= steps.length) return;
+  [steps[idx], steps[newIdx]] = [steps[newIdx], steps[idx]];
+  saveDraft();
+  renderSteps();
+}
+
+function newProcedure() {
+  if (steps.length && !confirm('Creare una nuova procedura? Gli step correnti verranno eliminati.')) return;
+  steps = [newStep(), newStep()];
+  $('procName').value = '';
+  saveDraft();
+  renderSteps();
+}
+
+/* ---------- CSV parsing (same as runner) ---------- */
+
+function parseCSV(text) {
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuotes) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if (c === '"') inQuotes = true;
+      else if (c === ',') { row.push(field); field = ''; }
+      else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+      else field += c;
+    }
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows.filter(r => !(r.length === 1 && r[0].trim() === ''));
+}
+
+
+const COLMAP = {
+  step: ['step','passo','n','numero','step #'],
+  desc: ['descrizione','description','desc','step description'],
+  expected: ['atteso','expected','requisito','expected value'],
+  measured: ['misurato','measured','valore','measured value'],
+  notes: ['note','notes','remarks','osservazioni','remarks'],
+  image: ['immagine','image','imageurl','immagine(url)','img'],
+  timestamp: ['timestamp','data','time'],
+  signature: ['firma','signature'],
+  correction: ['correzione','correction'],
+  anomaly: ['anomalia','anomaly'],
+  skipReason: ['motivosalto','skipreason','salto']
+}
+
+function mapHeader(headerRow) {
+  const norm = h => h.toLowerCase().trim();
+  const idx = {};
+  Object.keys(COLMAP).forEach(key => {
+    idx[key] = -1;
+    headerRow.forEach((h, i) => {
+      if (COLMAP[key].includes(norm(h))) idx[key] = i;
+    });
+  });
+  return idx;
+}
+
+/* ---------- Import ---------- */
+
+function importProcedure() { $('importInput').click(); }
+
+async function onImportFile(e) {
+  const f = e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  try {
+    const ext = f.name.toLowerCase().split('.').pop();
+    if (ext === 'xlsx') await importFromXLSX(f);
+    else {
+      const text = await f.text();
+      importFromCSV(text, f.name);
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Impossibile leggere il file: ' + (err?.message || err));
+  }
+}
+
+function importFromCSV(text, filename) {
+  const rows = parseCSV(text);
+  if (rows.length < 2) { alert('CSV vuoto o senza righe dati.'); return; }
+  const idx = mapHeader(rows[0]);
+  if (idx.desc === -1) { alert('Colonna "Descrizione" non trovata.'); return; }
+  const parsed = [];
+  for (let r = 1; r < rows.length; r++) {
+    const row = rows[r];
+    if (row.every(c => !(c || '').trim())) continue;
+    parsed.push({
+      desc: (row[idx.desc] || '').trim(),
+      expected: idx.expected >= 0 ? (row[idx.expected] || '').trim() : '',
+      image: idx.image >= 0 ? (row[idx.image] || '').trim() : ''
+    });
+  }
+  if (!parsed.length) { alert('Nessuno step valido trovato.'); return; }
+  if (steps.length && !confirm('Sostituire gli step attuali con quelli importati?')) return;
+  steps = parsed;
+  if (!$('procName').value) $('procName').value = filename.replace(/\.[^.]+$/, '');
+  saveDraft();
+  renderSteps();
+}
+
+function excelValue(v) {
+  if (v == null) return '';
+  if (typeof v === 'object') {
+    if (v.richText) return v.richText.map(x => x.text || '').join('');
+    if (v.text != null) return String(v.text);
+    if (v.result != null) return String(v.result);
+    if (v.hyperlink) return String(v.text || v.hyperlink);
+  }
+  return String(v);
+}
+
+function arrayBufferToDataUrl(buffer, extension) {
+  const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+  let binary = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  const mime = extension === 'jpeg' || extension === 'jpg' ? 'image/jpeg' :
+               extension === 'gif' ? 'image/gif' : 'image/png';
+  return 'data:' + mime + ';base64,' + btoa(binary);
+}
+
+async function importFromXLSX(file) {
+  if (typeof ExcelJS === 'undefined') {
+    alert('Libreria XLSX non disponibile. Controlla la connessione.');
+    return;
+  }
+  const buffer = await file.arrayBuffer();
+  const wb = new ExcelJS.Workbook();
+  await wb.xlsx.load(buffer);
+  const ws = wb.worksheets[0];
+  if (!ws) { alert('Nessun foglio nel XLSX.'); return; }
+
+  const headerRow = ws.getRow(1).values.slice(1).map(excelValue);
+  const idx = mapHeader(headerRow);
+  if (idx.desc === -1) { alert('Colonna "Descrizione" non trovata.'); return; }
+
+  const parsed = [];
+  for (let r = 2; r <= ws.rowCount; r++) {
+    const row = ws.getRow(r);
+    const values = [];
+    for (let c = 1; c <= Math.max(ws.columnCount, headerRow.length); c++) {
+      values[c - 1] = excelValue(row.getCell(c).value);
+    }
+    if (values.every(c => !String(c || '').trim())) continue;
+    const get = key => idx[key] >= 0 ? (values[idx[key]] || '') : '';
+    parsed.push({
+      desc: get('desc'),
+      expected: get('expected'),
+      image: get('image')
+    });
+  }
+
+  if (!parsed.length) { alert('Nessuno step valido trovato.'); return; }
+
+  // Immagini embedded
+  try {
+    const media = wb.model && wb.model.media ? wb.model.media : [];
+    for (const image of ws.getImages()) {
+      const mediaItem = media.find(m => m.index === image.imageId);
+      if (!mediaItem) continue;
+      const nativeRow = image.range?.tl?.nativeRow ?? image.range?.tl?.row;
+      if (nativeRow == null) continue;
+      const dataUrl = mediaItem.buffer ? arrayBufferToDataUrl(mediaItem.buffer, mediaItem.extension) :
+                      mediaItem.base64 ? (String(mediaItem.base64).startsWith('data:') ? mediaItem.base64 : 'data:image/' + mediaItem.extension + ';base64,' + mediaItem.base64) : '';
+      const parsedIndex = Number(nativeRow) - 1;
+      if (dataUrl && parsed[parsedIndex]) parsed[parsedIndex].image = dataUrl;
+    }
+  } catch (err) { console.warn('Immagini XLSX non recuperate:', err); }
+
+  if (steps.length && !confirm('Sostituire gli step attuali con quelli importati?')) return;
+  steps = parsed;
+  if (!$('procName').value) $('procName').value = file.name.replace(/\.[^.]+$/, '');
+  saveDraft();
+  renderSteps();
+}
+
+/* ---------- Export ---------- */
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function validateBeforeExport() {
+  const valid = steps.filter(s => (s.desc || '').trim());
+  if (!valid.length) {
+    alert('Aggiungi almeno uno step con una descrizione prima di esportare.');
+    return null;
+  }
+  return valid;
+}
+
+function getBaseName() {
+  const name = ($('procName').value || '').trim();
+  return name || ('procedura_' + new Date().toISOString().slice(0, 10));
+}
+
+
+async function exportXlsx() {
+  const valid = validateBeforeExport();
+  if (!valid) return;
+  if (typeof ExcelJS === 'undefined') {
+    alert('Libreria XLSX non disponibile.');
+    return;
+  }
+
+  // --- CONFERMA NOME FILE ---
+  const defaultName = getBaseName();
+  const inputName = prompt(
+    'Conferma il nome del file da salvare (senza estensione):',
+    defaultName
+  );
+
+  // Annullato
+  if (inputName === null) return;
+
+  // Vuoto -> usa il default
+  let baseName = inputName.trim();
+  if (!baseName) {
+    alert('Nome non valido. Operazione annullata.');
+    return;
+  }
+
+  // Rimuove eventuale estensione .xlsx digitata dall'utente
+  baseName = baseName.replace(/\.xlsx$/i, '');
+
+  // Conferma finale
+  const conferma = confirm(
+    'Confermi di voler salvare il file come:\n\n' +
+    baseName + '.xlsx\n\n' +
+    'Procedura: ' + (($('procName').value || '').trim() || '(senza nome)') +
+    '\nStep: ' + valid.length
+  );
+  if (!conferma) return;
+  // --- FINE CONFERMA ---
+
+  try {
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'Procedure Builder';
+    wb.created = new Date();
+    const ws = wb.addWorksheet('Procedura');
+
+    const header = ['Step','Descrizione','Atteso','Misurato','Note','Immagine','Timestamp','Firma','Correzione','Anomalia','MotivoSalto'];
+    ws.addRow(header);
+    ws.columns = [
+      {width:8},{width:55},{width:22},{width:18},{width:35},{width:22},
+      {width:22},{width:18},{width:35},{width:18},{width:30}
+    ];
+    ws.getRow(1).font = { bold: true };
+    ws.freezePanes = { ySplit: 1 };
+
+    valid.forEach((s, i) => {
+      const row = ws.addRow([String(i + 1), s.desc, s.expected, '', '', '', '', '', '', '', '']);
+      if (s.image && s.image.startsWith('data:image/')) {
+        const ext = s.image.startsWith('data:image/jpeg') ? 'jpeg' :
+                    s.image.startsWith('data:image/gif')  ? 'gif'  : 'png';
+        const imageId = wb.addImage({ base64: s.image, extension: ext });
+        row.height = 78;
+        ws.addImage(imageId, { tl: { col: 5, row: i + 1 }, ext: { width: 115, height: 65 } });
+      }
+    });
+
+    const buffer = await wb.xlsx.writeBuffer();
+    downloadBlob(
+      new Blob([buffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),
+      baseName + '.xlsx'
+    );
+  } catch (err) {
+    console.error(err);
+    alert('Errore esportazione XLSX: ' + (err?.message || err));
+  }
+}
+
+/* ---------- Keyboard shortcuts ---------- */
+
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    exportXlsx();
+  }
+});
+
+/* ---------- Init ---------- */
+
+window.addEventListener('load', () => {
+  applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+
+  const restored = loadDraft();
+  if (!restored) {
+    steps = [newStep(), newStep()];
+  }
+  renderSteps();
+  updateDraftInfo();
+});
+</script>
+</body>
+</html>
