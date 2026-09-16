@@ -1,0 +1,219 @@
+/**
+ * DANI shared design system — the same "elegant" look used on the home
+ * screen (index.html), factored out so every app imports one canonical
+ * source instead of duplicating it. Load this BEFORE an app's own
+ * css/styles.css: this file sets tokens + a handful of low-level chrome
+ * components (topbar, buttons, panel/widget shell, modal shell, form
+ * controls); each app's own stylesheet keeps its app-specific layout
+ * (grids, widths, per-widget internals) and reads these custom properties
+ * instead of redefining its own palette.
+ *
+ * Dark tokens on :root mirror index.html's :root block exactly (same
+ * hex/rgba values) so all apps stay visually identical to the home
+ * screen; :root[data-theme="light"] mirrors its light block the same way.
+ * The extra tokens below (danger/warning/info, well/elevated surfaces)
+ * don't exist on the home screen — it has no status states or embedded
+ * inputs — so they're new, chosen to sit in the same soft/desaturated
+ * family as --accent/--accent-2 rather than the old neon-terminal hues.
+ */
+
+:root{
+  /* --- copied 1:1 from index.html --- */
+  --page-bg:#0c0c0c;
+  --panel-bg:#121212;
+  --panel-glass:rgba(255,255,255,.035);
+  --panel-glass-hover:rgba(255,255,255,.06);
+  --border:#222;
+  --border-strong:rgba(255,255,255,.14);
+  --text:#00ff66;
+  --text-primary:#eef4f1;
+  --text-secondary:#9aa7a1;
+  --text-tertiary:#5f6b65;
+  --accent:#00ff66;
+  --accent-strong:#16c77a;
+  --accent-soft:rgba(0,255,102,.14);
+  --accent-2:#38bdf8;
+  --shadow:0 24px 60px -24px rgba(0,0,0,.65);
+  --glow-1:rgba(0,255,102,.16);
+  --glow-2:rgba(56,189,248,.12);
+  color-scheme:dark;
+
+  /* --- new: surfaces the bench apps need that the home screen doesn't --- */
+  --well-bg:#000;              /* recessed surface: text inputs, readouts, canvases */
+  --elevated-bg:#161616;       /* raised surface: modals, popovers */
+  --table-head-bg:#171717;
+  --row-hover-bg:#181818;
+
+  /* --- new: semantic status colors, same soft/desaturated family as --accent --- */
+  --danger:#ff6b6b;
+  --danger-soft:rgba(255,107,107,.14);
+  --danger-border:rgba(255,107,107,.4);
+  --warning:#ffb84d;
+  --warning-soft:rgba(255,184,77,.14);
+  --warning-border:rgba(255,184,77,.4);
+  --info:#38bdf8;
+  --info-soft:rgba(56,189,248,.14);
+  --info-border:rgba(56,189,248,.4);
+
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:18px;
+  --font-display:'Sora',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --font-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  --font-mono:Consolas,'SF Mono','Courier New',monospace;
+}
+
+:root[data-theme="light"]{
+  --page-bg:#eef1ef;
+  --panel-bg:#ffffff;
+  --panel-glass:#ffffff;
+  --panel-glass-hover:#ffffff;
+  --border:#d7dbd8;
+  --border-strong:rgba(15,23,20,.16);
+  --text:#008535;
+  --text-primary:#101512;
+  --text-secondary:#5b655f;
+  --text-tertiary:#8b968f;
+  --accent:#059669;
+  --accent-strong:#047a56;
+  --accent-soft:rgba(5,150,105,.10);
+  --accent-2:#0284c7;
+  --shadow:0 24px 45px -28px rgba(15,23,20,.22);
+  --glow-1:rgba(5,150,105,.10);
+  --glow-2:rgba(2,132,199,.08);
+  color-scheme:light;
+
+  --well-bg:#ffffff;
+  --elevated-bg:#ffffff;
+  --table-head-bg:#f4f6f5;
+  --row-hover-bg:#eef1ef;
+
+  --danger:#dc2626;
+  --danger-soft:rgba(220,38,38,.08);
+  --danger-border:rgba(220,38,38,.35);
+  --warning:#b45309;
+  --warning-soft:rgba(180,83,9,.08);
+  --warning-border:rgba(180,83,9,.35);
+  --info:#0284c7;
+  --info-soft:rgba(2,132,199,.08);
+  --info-border:rgba(2,132,199,.35);
+}
+
+/* ==========================================================================
+   Topbar — same shell on every app: brand mark on the left, pill buttons
+   on the right, wraps on narrow widths, respects safe-area insets.
+   ========================================================================== */
+.topbar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:12px 20px;
+  padding-top:max(12px,env(safe-area-inset-top));
+  padding-left:max(20px,env(safe-area-inset-left));
+  padding-right:max(20px,env(safe-area-inset-right));
+  background:var(--panel-glass);
+  border-bottom:1px solid var(--border-strong);
+  backdrop-filter:blur(14px);
+}
+.topbar .brand,.brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand-logo-wrap{
+  width:30px;height:30px;border-radius:9px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(155deg,var(--accent-soft),transparent);
+  border:1px solid var(--border-strong);
+}
+.brand-logo{width:20px;height:20px;border-radius:5px;display:block}
+.brand-word{font-family:var(--font-display);font-weight:700;font-size:1em;letter-spacing:.4px;color:var(--text-primary)}
+.topbar .spacer,.spacer{flex:1}
+
+/* ==========================================================================
+   Buttons — every button-ish class already used across the four apps
+   (.btn, .btn-bar, .small-btn, .btn-primary, .btn-danger, .btn-warn,
+   .btn-accent, .btn-ghost) styled as one pill-button family so no app
+   markup needs renaming.
+   ========================================================================== */
+.btn,.btn-bar,.small-btn,.btn-ghost{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  background:var(--panel-glass);color:var(--text-primary);border:1px solid var(--border-strong);
+  border-radius:999px;padding:8px 16px;font-family:var(--font-body);font-size:.8em;font-weight:500;
+  backdrop-filter:blur(10px);transition:border-color .15s,background .15s,transform .15s;
+  line-height:1.3;
+}
+.btn:hover,.btn-bar:hover,.small-btn:hover,.btn-ghost:hover{
+  border-color:var(--accent);background:var(--panel-glass-hover);transform:translateY(-1px);
+}
+.btn:active,.btn-bar:active,.small-btn:active,.btn-ghost:active{transform:translateY(0) scale(.96)}
+
+.btn-primary{
+  background:var(--accent);color:#04150c;border:none;font-weight:700;
+  box-shadow:0 10px 24px -12px var(--accent-soft);
+}
+.btn-primary:hover:not(:disabled){background:var(--accent-strong);transform:translateY(-1px)}
+.btn-primary:disabled{background:var(--panel-glass);color:var(--text-tertiary);cursor:not-allowed;box-shadow:none}
+
+.btn-danger{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border)}
+.btn-danger:hover{border-color:var(--danger);background:var(--danger-soft)}
+.btn-warn{background:var(--warning-soft);color:var(--warning);border:1px solid var(--warning-border)}
+.btn-warn:hover{border-color:var(--warning)}
+.btn-accent{background:var(--info-soft);color:var(--info);border:1px solid var(--info-border)}
+.btn-accent:hover{border-color:var(--info)}
+
+/* ==========================================================================
+   Panel / widget shell — the glass card every widget, panel and load-card
+   already uses (class names vary per app: .widget, .panel, .load-card,
+   .action-card); the header row pattern (.widget-title/.panel-title +
+   .collapse-arrow + .title-text) is shared by editor/runner/data-analysis.
+   ========================================================================== */
+.widget,.panel,.load-card,.action-card{
+  background:var(--panel-glass);border:1px solid var(--border-strong);border-radius:var(--radius-md);
+  box-shadow:var(--shadow);
+}
+.widget-title,.panel-title{
+  font-family:var(--font-body);font-size:.72em;color:var(--text-secondary);text-transform:uppercase;
+  letter-spacing:1.5px;font-weight:600;
+  border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;
+  display:flex;align-items:center;gap:7px;
+}
+.collapse-arrow{color:var(--accent)}
+.title-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ==========================================================================
+   Modal shell — supports both display patterns already in use:
+   `.modal.show{display:flex}` (runner/data-analysis) and
+   `.modal[hidden]` (incoming_report_tool).
+   ========================================================================== */
+.modal{
+  position:fixed;inset:0;background:rgba(4,6,5,.72);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:90;padding:20px;
+}
+.modal.show{display:flex}
+.modal:not([hidden]).modal-open{display:flex}
+.modal-box{
+  width:min(560px,92vw);background:var(--elevated-bg);border:1px solid var(--border-strong);
+  border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow);
+}
+.modal-box.danger{border-color:var(--danger-border)}
+.modal-title{font-family:var(--font-display);color:var(--text-primary);font-size:1em;font-weight:700;margin-bottom:10px}
+.modal-box.danger .modal-title{color:var(--danger)}
+.modal-text{color:var(--text-secondary);font-size:.82em;line-height:1.6;margin-bottom:12px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+
+/* ==========================================================================
+   Form controls — text/number/select/textarea share one look; the
+   per-app stylesheets keep sizing (width/columns) but not color/radius.
+   ========================================================================== */
+input[type=text],input[type=number],input[type=email],input[type=search],
+select,textarea,.field-input{
+  background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);
+  border-radius:var(--radius-sm);padding:7px 10px;outline:none;font-family:var(--font-body);
+  transition:border-color .15s;
+}
+input[type=text]:focus,input[type=number]:focus,input[type=email]:focus,input[type=search]:focus,
+select:focus,textarea:focus,.field-input:focus{border-color:var(--accent)}
+
+::selection{background:var(--accent-soft)}
+
+/* Scrollbars used by several apps' scrollable columns/tables */
+.left-col::-webkit-scrollbar,.right-col::-webkit-scrollbar,.preview-wrap::-webkit-scrollbar,
+.ytable-wrap::-webkit-scrollbar,.right-panel::-webkit-scrollbar{width:8px;height:8px}
+.left-col::-webkit-scrollbar-track,.right-col::-webkit-scrollbar-track,.preview-wrap::-webkit-scrollbar-track,
+.ytable-wrap::-webkit-scrollbar-track,.right-panel::-webkit-scrollbar-track{background:var(--page-bg)}
+.left-col::-webkit-scrollbar-thumb,.right-col::-webkit-scrollbar-thumb,.preview-wrap::-webkit-scrollbar-thumb,
+.ytable-wrap::-webkit-scrollbar-thumb,.right-panel::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}

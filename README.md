@@ -2,7 +2,7 @@
 https://marcomasala049.github.io/DANY/
 
 An offline-capable, installable PWA toolkit for engineering/electrical test
-technicians. Three independent, no-build-step web apps plus a small local
+technicians. Four independent, no-build-step web apps plus a small local
 file server:
 
 - **[apps/editor](apps/editor/index.html)** — "Terminal Workspace": a plain-text
@@ -33,6 +33,12 @@ file server:
   normalized / log10 Y-scale mode, per-interval statistics (mean, RMS, σ,
   min/max, integral) and an FFT spectrum per channel, a report export to
   `.txt`, and a detached popup window for the stats/FFT panel.
+- **[apps/incoming_report_tool](apps/incoming_report_tool/index.html)** —
+  "Incoming Inspection Report": a 4-tab hardware incoming-inspection form
+  (asset/hardware-model info, a pass/fail/n.a. checklist, final decision +
+  corrective-action notes) that compiles a `.docx` template client-side
+  (via docxtemplater/PizZip) into a downloadable Word report, with a
+  built-in placeholder reference for the tags the template must contain.
 - **[server/local-file-server.ps1](server/local-file-server.ps1)** — a
   minimal loopback-only HTTP server (started by
   [open_editor.bat](open_editor.bat)) that lets the editor `GET /load` and
@@ -42,10 +48,10 @@ file server:
 ## Running it
 
 Open `index.html` (the repo root) — a small home screen with a button for
-each of the three apps below. Every app is also plain static HTML on its
-own, so `apps/editor/index.html`, `apps/procedure-runner/index.html` and
-`apps/data-analysis/index.html` can each be opened directly too; no server
-or build step required either way.
+each of the four apps below. Every app is also plain static HTML on its
+own, so `apps/editor/index.html`, `apps/procedure-runner/index.html`,
+`apps/data-analysis/index.html` and `apps/incoming_report_tool/index.html`
+can each be opened directly too; no server or build step required either way.
 
 To use the editor the way it's meant to be used on Windows (opened on a
 specific `.txt` file, with load/save wired up), drag a `.txt` file onto
@@ -56,7 +62,7 @@ handler for `.txt` files. It starts the local file server on
 ## Project layout
 
 ```
-index.html              home screen — buttons to each of the 3 apps below
+index.html              home screen — buttons to each of the 4 apps below
 manifest.webmanifest     Web App Manifest (name, icons, start_url, ...)
 service-worker.js        app-shell cache — offline support, installability
 icons/                   PWA icons (generated from the app's own ">_" mark)
@@ -80,7 +86,16 @@ apps/
     js/main.js         single module — parsing, plotting, FFT and UI
                         wiring; kept as one file to track the source tool
                         in TOOL/ (see below) with minimal drift
-shared/js/              helpers used by all three apps (dom-utils, pwa.js,
+  incoming_report_tool/ Incoming Inspection Report app
+    index.html
+    css/style.css
+    js/                config/form/checklist/report/main — plain scripts,
+                        no build step, same shared theme as the other apps
+shared/
+  css/dani-theme.css    design tokens + chrome components (topbar, buttons,
+                        panel/widget shell, modal shell, form controls)
+                        shared by the home screen and all four apps
+  js/                  helpers used by all four apps (dom-utils, pwa.js,
                         theme.js)
 server/
   local-file-server.ps1     used by open_editor.bat (the editor's own /load /save)
@@ -148,7 +163,7 @@ Once published, opening the URL, using the app, and installing it (browser
 menu, or the editor's own "📲 Installa App" button where the browser
 supports it) is all that's needed — no server, no CLI, nothing to install
 beforehand. The app keeps working fully offline after the first successful
-load (all three apps' entire JS/CSS, the manifest and the icons are precached).
+load (all four apps' entire JS/CSS, the manifest and the icons are precached).
 
 **Local-only exception:** the editor's "Salva Modifiche" / "Salva come nuovo
 .txt" *without* picking a folder talks to `server/local-file-server.ps1` on

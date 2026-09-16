@@ -1,7 +1,7 @@
 /**
- * DANI service worker — app-shell cache for the editor, procedure-runner
- * and data-analysis apps, so all three keep working (and can be launched)
- * offline after the first successful online visit.
+ * DANI service worker — app-shell cache for the editor, procedure-runner,
+ * data-analysis and incoming_report_tool apps, so all four keep working
+ * (and can be launched) offline after the first successful online visit.
  *
  * Bump CACHE_VERSION whenever the precached file list changes — activate()
  * deletes every cache that doesn't match it, so a stale version can never
@@ -12,7 +12,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v7';
+const CACHE_VERSION = 'dani-v8';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 
@@ -25,6 +25,7 @@ const HOME_URL = new URL('index.html', SCOPE).href;
 const EDITOR_URL = new URL('apps/editor/index.html', SCOPE).href;
 const PROCEDURE_RUNNER_URL = new URL('apps/procedure-runner/index.html', SCOPE).href;
 const DATA_ANALYSIS_URL = new URL('apps/data-analysis/index.html', SCOPE).href;
+const INCOMING_REPORT_URL = new URL('apps/incoming_report_tool/index.html', SCOPE).href;
 
 // Paths are relative to SCOPE (the directory this script itself lives in).
 const PRECACHE_PATHS = [
@@ -107,7 +108,17 @@ const PRECACHE_PATHS = [
   'apps/data-analysis/css/styles.css',
   'apps/data-analysis/js/main.js',
 
+  // Incoming Inspection Report app shell
+  'apps/incoming_report_tool/index.html',
+  'apps/incoming_report_tool/css/style.css',
+  'apps/incoming_report_tool/js/config.js',
+  'apps/incoming_report_tool/js/form.js',
+  'apps/incoming_report_tool/js/checklist.js',
+  'apps/incoming_report_tool/js/report.js',
+  'apps/incoming_report_tool/js/main.js',
+
   // Shared helpers
+  'shared/css/dani-theme.css',
   'shared/js/dom-utils.js',
   'shared/js/pwa.js',
   'shared/js/theme.js'
@@ -192,7 +203,7 @@ self.addEventListener('fetch', event => {
   }
 
   // HTML navigations: prefer the freshest copy, fall back to the cached
-  // app shell when offline so all three apps still launch.
+  // app shell when offline so all four apps still launch.
   if (request.mode === 'navigate') {
     event.respondWith(
       networkFirst(request, CACHE_VERSION).catch(async () => {
@@ -200,9 +211,11 @@ self.addEventListener('fetch', event => {
           ? PROCEDURE_RUNNER_URL
           : url.pathname.includes('/data-analysis/')
             ? DATA_ANALYSIS_URL
-            : url.pathname.includes('/editor/')
-              ? EDITOR_URL
-              : HOME_URL;
+            : url.pathname.includes('/incoming_report_tool/')
+              ? INCOMING_REPORT_URL
+              : url.pathname.includes('/editor/')
+                ? EDITOR_URL
+                : HOME_URL;
         const fallback = await caches.match(fallbackUrl);
         return fallback || Response.error();
       })
