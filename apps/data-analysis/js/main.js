@@ -2126,7 +2126,7 @@ function openPopup(){
   const popup=window.open('','daTabsPopup',
     'width=1200,height=700,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=no');
   if(!popup){
-    alert('La finestra popup è stata bloccata dal browser.\nConsenti i popup per questa pagina e riprova.');
+    daniAlert('La finestra popup è stata bloccata dal browser.\nConsenti i popup per questa pagina e riprova.');
     return;
   }
   popupWindow=popup;
@@ -2300,7 +2300,7 @@ window.addEventListener('resize',()=>{
 function closeTab(){
   window.close();
   setTimeout(()=>{
-    if(!window.closed) alert('Puoi chiudere questa scheda manualmente.');
+    if(!window.closed) daniAlert('Puoi chiudere questa scheda manualmente.');
   },200);
 }
 $('btnCloseTab').addEventListener('click',closeTab);

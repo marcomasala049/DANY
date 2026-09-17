@@ -107,6 +107,11 @@ const PATHS = {
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>',
   layers: '<path d="m12 3 8 4.5-8 4.5-8-4.5Z"/><path d="m4 12 8 4.5 8-4.5"/><path d="m4 16.5 8 4.5 8-4.5"/>',
   menu: '<path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/>',
+
+  // ---- Text formatting (step description mini rich-text toolbar) ---------
+  bold: '<path d="M7 4v16"/><path d="M7 4h6a3 3 0 0 1 0 6H7"/><path d="M7 12h7a3.5 3.5 0 0 1 0 7H7"/>',
+  italic: '<path d="M10 4h6"/><path d="M8 20h6"/><path d="M14 4 10 20"/>',
+  underline: '<path d="M7 4v8a5 5 0 0 0 10 0V4"/><path d="M5 20h14"/>',
 };
 
 /**

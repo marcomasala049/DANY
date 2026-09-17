@@ -6,13 +6,17 @@ import { state } from './state.js';
 import { downloadBlob } from '../../../../shared/js/download.js';
 import { buildProcedureWorksheet } from './xlsx-io.js';
 import { daniAlert } from '../../../../shared/js/dialog.js';
+import { stepHtmlToPlainText } from '../../../../shared/js/step-desc.js';
 
 function baseName() {
   return (state.sourceName || 'procedura').replace(/\.[^.]+$/, '');
 }
 
+// CSV/.txt can't represent the description's rich formatting (bold/italic/
+// underline/table) at all, so both always get its plain-text equivalent —
+// only the XLSX export (buildProcedureWorksheet) keeps real formatting.
 function stepToRow(s) {
-  return [s.step, s.desc, s.expected, s.measured, s.notes, s.image, s.timestamp, s.signature, s.correction, s.anomaly, s.skipReason];
+  return [s.step, stepHtmlToPlainText(s.desc), s.expected, s.measured, s.notes, s.image, s.timestamp, s.signature, s.correction, s.anomaly, s.skipReason];
 }
 
 /** Downloads the current procedure (with all sign-offs/notes) as CSV. */
@@ -54,7 +58,8 @@ export async function exportUpdatedXlsx() {
 export async function exportReportTxt() {
   if (!state.steps.length) { await daniAlert('Nessuna procedura caricata.'); return; }
 
-  const text = buildFullReportText(state.steps, {
+  const plainSteps = state.steps.map(s => ({ ...s, desc: stepHtmlToPlainText(s.desc) }));
+  const text = buildFullReportText(plainSteps, {
     username: state.username,
     sourceName: state.sourceName,
     generatedAt: nowStamp()

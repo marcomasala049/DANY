@@ -4,6 +4,7 @@ import { daniIcon } from '../../../../shared/js/dani-icons.js';
 import { stepStatus, getRepositionBadge } from '../logic/steps.js';
 import { state } from './state.js';
 import { openModal } from './modal.js';
+import { stepHtmlToPlainText } from '../../../../shared/js/step-desc.js';
 
 let selectedSummaryRow = -1;
 
@@ -34,7 +35,7 @@ export function renderSummary() {
     tdStep.textContent = s.step;
 
     const tdDesc = document.createElement('td');
-    const desc = s.desc || '';
+    const desc = stepHtmlToPlainText(s.desc);
     tdDesc.textContent = desc.length > 90 ? desc.slice(0, 90) + '…' : desc;
 
     const tdStatus = document.createElement('td');
@@ -53,7 +54,7 @@ export function selectSummaryRow(i) {
 
   $('prevTitle').innerHTML = daniIcon('search', { size: 14 }) + '<span>Dettagli Passo N° ' + escapeHtml(s.step) + '</span>';
   $('prevBody').innerText =
-    'Descrizione: ' + (s.desc || '—') + '\n\n' +
+    'Descrizione: ' + (stepHtmlToPlainText(s.desc) || '—') + '\n\n' +
     'Atteso: ' + (s.expected || '—') + '\n' +
     'Misurato: ' + (s.measured || '—') + '\n\n' +
     'Note: ' + (s.notes || '—') +
@@ -68,7 +69,7 @@ export function openStepDetail(i) {
   const s = state.steps[i];
   $('detailTitle').innerText = 'Dettaglio Passo ' + s.step;
   $('detailText').innerText =
-    'Descrizione:\n' + (s.desc || '—') +
+    'Descrizione:\n' + (stepHtmlToPlainText(s.desc) || '—') +
     '\n\nAtteso:\n' + (s.expected || '—') +
     '\n\nMisurato:\n' + (s.measured || '—');
   openModal('modalDetail');

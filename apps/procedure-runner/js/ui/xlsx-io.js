@@ -6,6 +6,7 @@ import { enterExecution } from './execution.js';
 import { downloadBlob } from '../../../../shared/js/download.js';
 import { excelValue, recoverEmbeddedImages, buildProcedureWorksheet } from '../../../../shared/js/procedure-xlsx.js';
 import { daniAlert } from '../../../../shared/js/dialog.js';
+import { richTextRunsToStepHtml } from '../../../../shared/js/step-desc.js';
 
 export { excelValue, recoverEmbeddedImages, buildProcedureWorksheet };
 
@@ -35,7 +36,15 @@ export async function loadFromXLSXFile(file) {
       values[c - 1] = excelValue(row.getCell(c).value);
     }
     if (values.every(c => !String(c || '').trim())) continue;
-    parsed.push(extractStep(idx, values, parsed.length + 1));
+    const step = extractStep(idx, values, parsed.length + 1);
+    // A Description cell we ourselves exported with bold/italic/underline
+    // comes back as ExcelJS richText, not a plain string — rebuild the
+    // formatting instead of falling back to excelValue()'s flattened text.
+    if (idx.desc !== -1) {
+      const rawDesc = row.getCell(idx.desc + 1).value;
+      if (rawDesc && rawDesc.richText) step.desc = richTextRunsToStepHtml(rawDesc.richText);
+    }
+    parsed.push(step);
   }
 
   if (!parsed.length) { await daniAlert('Nessuno step valido trovato nel XLSX.'); return; }

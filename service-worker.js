@@ -13,7 +13,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v18';
+const CACHE_VERSION = 'dani-v20';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 
@@ -143,6 +143,8 @@ const PRECACHE_PATHS = [
   'shared/js/dani-icons.js',
   'shared/js/sidebar.js',
   'shared/js/operator.js',
+  'shared/js/dialog.js',
+  'shared/js/step-desc.js',
   'shared/js/csv.js',
   'shared/js/column-mapping.js',
   'shared/js/download.js',

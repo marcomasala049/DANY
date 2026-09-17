@@ -1,14 +1,6 @@
 /**
  * Procedure Builder — define a test procedure's steps from scratch, import/
- * merge one from CSV/XLSX, export it as a standalone XLSX, or hand it off to
- * Test Procedure Runner to start executing it right away.
- *
- * The "start now" handoff doesn't duplicate the Runner's execution engine:
- * it writes the exact same session shape Procedure Runner's own
- * ui/session-storage.js saveSession() does, under the same localStorage key
- * (both apps are same-origin, so localStorage is already shared) — then
- * navigates there, where the Runner's existing "resume session" prompt on
- * its load screen picks it up like any other in-progress run.
+ * merge one from CSV/XLSX, and export it as a standalone XLSX.
  */
 import { $ } from '../core/dom-helpers.js';
 import { parseCSV } from '../../../../shared/js/csv.js';
@@ -17,11 +9,9 @@ import { downloadBlob } from '../../../../shared/js/download.js';
 import { excelValue, recoverEmbeddedImages, buildProcedureWorksheet } from '../../../../shared/js/procedure-xlsx.js';
 import { daniIcon } from '../../../../shared/js/dani-icons.js';
 import { daniAlert, daniConfirm, daniPrompt } from '../../../../shared/js/dialog.js';
+import { sanitizeStepHtml, richTextRunsToStepHtml } from '../../../../shared/js/step-desc.js';
 
 const DRAFT_KEY = 'procbuilder_draft';
-// Must match Procedure Runner's own ui/session-storage.js SESSION_KEY — this
-// is the hand-off contract between the two apps.
-const RUNNER_SESSION_KEY = 'procrunner_session';
 
 let builderRows = 0;
 let draftSaveTimer = null;
@@ -85,7 +75,7 @@ function renderIndex() {
   }
 
   rows.forEach((r, i) => {
-    const desc = r.querySelector('.b-desc').value.trim();
+    const desc = r.querySelector('.b-desc').textContent.trim();
 
     const li = document.createElement('li');
     const btn = document.createElement('button');
@@ -131,14 +121,46 @@ export function addBuilderRow(initial) {
 
   const num = document.createElement('span');
   num.className = 'muted';
-  num.style.alignSelf = 'center';
   num.textContent = builderRows + '.';
 
-  const desc = document.createElement('input');
-  desc.placeholder = 'Descrizione dello step';
-  desc.className = 'b-desc';
-  desc.value = (initial && initial.desc) || '';
+  // A short mini rich-text toolbar (bold/italic/underline/table), Word-like,
+  // for the description box right below it. mousedown is blocked so
+  // clicking a button never steals focus/selection away from the box first.
+  const toolbar = document.createElement('div');
+  toolbar.className = 'builder-rte-toolbar';
+
+  function makeRteButton(icon, title, run) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'builder-rte-btn';
+    btn.title = title;
+    btn.innerHTML = daniIcon(icon, { size: 14 });
+    btn.onmousedown = e => e.preventDefault();
+    btn.onclick = () => { desc.focus(); run(); scheduleDraftSave(); };
+    return btn;
+  }
+
+  const desc = document.createElement('div');
+  desc.className = 'b-desc rich-desc';
+  desc.contentEditable = 'true';
+  desc.dataset.placeholder = 'Descrizione dello step';
+  desc.innerHTML = sanitizeStepHtml((initial && initial.desc) || '');
   desc.oninput = scheduleDraftSave;
+  // Force any pasted content (e.g. copied from a webpage) to plain text —
+  // the toolbar above is the only way to add real formatting here.
+  desc.addEventListener('paste', e => {
+    e.preventDefault();
+    const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+    document.execCommand('insertText', false, text);
+  });
+
+  toolbar.append(
+    makeRteButton('bold', 'Grassetto', () => document.execCommand('bold')),
+    makeRteButton('italic', 'Corsivo', () => document.execCommand('italic')),
+    makeRteButton('underline', 'Sottolineato', () => document.execCommand('underline')),
+    makeRteButton('table', 'Aggiungi tabella', () => document.execCommand('insertHTML', false,
+      '<table><tr><td>Cella 1</td><td>Cella 2</td></tr><tr><td>Cella 3</td><td>Cella 4</td></tr></table>'))
+  );
 
   const exp = document.createElement('input');
   exp.placeholder = 'Valore atteso (opzionale)';
@@ -268,7 +290,15 @@ export function addBuilderRow(initial) {
 
   controls.append(move, del);
 
-  div.append(num, desc, exp, imageWrap, controls);
+  const rowTop = document.createElement('div');
+  rowTop.className = 'builder-row-top';
+  rowTop.append(num, toolbar, controls);
+
+  const rowFooter = document.createElement('div');
+  rowFooter.className = 'builder-row-footer';
+  rowFooter.append(exp, imageWrap);
+
+  div.append(rowTop, desc, rowFooter);
   $('builderList').appendChild(div);
   renumberBuilderRows();
   return div;
@@ -276,11 +306,14 @@ export function addBuilderRow(initial) {
 
 /** Reads the current builder rows into plain {desc, expected, image} objects. */
 function collectBuilderSteps() {
-  return collectBuilderRowEls().map(r => ({
-    desc: r.querySelector('.b-desc').value.trim(),
-    expected: r.querySelector('.b-exp').value.trim(),
-    image: r._imageData || ''
-  }));
+  return collectBuilderRowEls().map(r => {
+    const descEl = r.querySelector('.b-desc');
+    return {
+      desc: descEl.textContent.trim() ? sanitizeStepHtml(descEl.innerHTML) : '',
+      expected: r.querySelector('.b-exp').value.trim(),
+      image: r._imageData || ''
+    };
+  });
 }
 
 function replaceBuilderRows(steps) {
@@ -435,6 +468,12 @@ async function importBuilderFromXLSX(file) {
     }
     if (values.every(c => !String(c || '').trim())) continue;
     const step = extractStep(idx, values, parsed.length + 1);
+    // A Description cell this app itself exported with bold/italic/underline
+    // comes back as ExcelJS richText, not a plain string — rebuild it.
+    if (idx.desc !== -1) {
+      const rawDesc = row.getCell(idx.desc + 1).value;
+      if (rawDesc && rawDesc.richText) step.desc = richTextRunsToStepHtml(rawDesc.richText);
+    }
     parsed.push({ desc: step.desc, expected: step.expected, image: step.image });
   }
   if (!parsed.length) { await daniAlert('Nessuno step valido trovato nel XLSX.'); return; }

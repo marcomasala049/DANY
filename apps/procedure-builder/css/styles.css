@@ -10,7 +10,7 @@ button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 .muted{color:var(--text-tertiary);font-size:.78em}
 
-#screenBuilder{padding:22px;padding-bottom:max(22px,env(safe-area-inset-bottom));max-width:1180px;margin:0 auto}
+#screenBuilder{padding:22px;padding-bottom:max(22px,env(safe-area-inset-bottom));width:100%;margin:0 auto}
 #screenBuilder h2{font-size:1.15em;color:var(--text-primary);font-family:var(--font-display);margin-bottom:6px;text-align:center}
 #screenBuilder > .builder-layout > .load-card > p{color:var(--text-secondary);font-size:.8em;margin-bottom:20px;line-height:1.6;text-align:center}
 
@@ -65,15 +65,36 @@ button{cursor:pointer}
 .builder-actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 
 #builderList{margin:12px 0;text-align:left}
-.builder-row{display:grid;grid-template-columns:40px minmax(220px,1fr) minmax(160px,1fr) 130px 92px;gap:6px;margin-bottom:8px;align-items:center}
-@media(max-width:720px){
-  .builder-row{grid-template-columns:24px 1fr 92px;grid-template-areas:"num desc ctrl" "num exp ctrl" "num img ctrl";column-gap:6px;row-gap:6px;align-items:start;padding:8px;border:1px solid var(--border);border-radius:var(--radius-md)}
-  .builder-row>.muted{grid-area:num}
-  .builder-row .b-desc{grid-area:desc}
-  .builder-row .b-exp{grid-area:exp}
-  .builder-row .builder-image-wrap{grid-area:img}
-  .builder-row .builder-controls{grid-area:ctrl}
+
+/* Each step: a top strip (number, formatting toolbar, move/delete controls),
+   the description box itself (full width, grows with its content), then a
+   footer strip (expected value + image picker). */
+.builder-row{
+  display:flex;flex-direction:column;gap:6px;margin-bottom:14px;padding:10px;
+  border:1px solid var(--border);border-radius:var(--radius-md);
 }
+.builder-row-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.builder-row-top .muted{flex:0 0 auto}
+.builder-row-top .builder-controls{margin-left:auto}
+.builder-row-footer{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.builder-row-footer .b-exp{flex:1;min-width:160px}
+
+.builder-rte-toolbar{display:flex;align-items:center;gap:2px;padding:2px;border-radius:var(--radius-sm);background:var(--well-bg)}
+.builder-rte-btn{
+  display:flex;align-items:center;justify-content:center;width:26px;height:26px;
+  background:none;border:1px solid transparent;border-radius:var(--radius-sm);color:var(--text-secondary);
+  transition:background-color .15s ease,color .15s ease,border-color .15s ease;
+}
+.builder-rte-btn:hover{background:var(--hover-bg);color:var(--accent);border-color:var(--border-strong)}
+
+.b-desc.rich-desc{
+  display:block;width:100%;min-height:2.6em;max-height:none;
+  background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);
+  padding:8px 10px;font-size:.82em;line-height:1.55;outline:none;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere;
+}
+.b-desc.rich-desc:focus{border-color:var(--accent)}
+.b-desc.rich-desc:empty::before{content:attr(data-placeholder);color:var(--text-tertiary)}
+
 .builder-row input{background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:6px;font-size:.78em;outline:none}
 .builder-image-wrap{display:flex;align-items:center;gap:5px}
 .builder-img-menu-wrap{position:relative}
@@ -93,7 +114,7 @@ button{cursor:pointer}
 .builder-thumb{display:none;width:42px;height:32px;object-fit:contain;border:1px solid var(--border-strong);border-radius:var(--radius-sm);margin-left:4px;vertical-align:middle}
 .builder-img-remove{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border);border-radius:50%;width:18px;height:18px;line-height:1;font-size:.72em;display:none;align-items:center;justify-content:center;flex:0 0 auto}
 .builder-img-remove:hover{background:var(--danger);color:#fff}
-.builder-controls{display:flex;align-items:center;gap:4px;justify-self:end}
+.builder-controls{display:flex;align-items:center;gap:4px}
 .builder-move{display:flex;flex-direction:column;gap:2px}
 .builder-up,.builder-down{background:var(--panel-glass);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-size:.68em;padding:1px 5px;line-height:1.5}
 .builder-up:hover:not(:disabled),.builder-down:hover:not(:disabled){color:var(--accent);border-color:var(--accent)}

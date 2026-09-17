@@ -6,7 +6,7 @@
 import { $ } from './core/dom-helpers.js';
 import {
   initBuilder, addBuilderRow, newBuilderProcedure, importIntoBuilder,
-  onBuilderImportFile, exportBuilderXlsx, startInRunner, scheduleDraftSave
+  onBuilderImportFile, exportBuilderXlsx, scheduleDraftSave
 } from './ui/builder.js';
 import { registerServiceWorker } from '../../../shared/js/pwa.js';
 import { initTheme } from '../../../shared/js/theme.js';
@@ -15,7 +15,7 @@ import { renderSidebar, renderHomeButton } from '../../../shared/js/sidebar.js';
 
 Object.assign(window, {
   addBuilderRow, newBuilderProcedure, importIntoBuilder,
-  onBuilderImportFile, exportBuilderXlsx, startInRunner, scheduleDraftSave
+  onBuilderImportFile, exportBuilderXlsx, scheduleDraftSave
 });
 
 renderSidebar({ active: 'procedure-builder', base: '../../' });

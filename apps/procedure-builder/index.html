@@ -69,7 +69,7 @@
       <div class="builder-actions-row">
         <button class="btn" onclick="importIntoBuilder()"><span data-dani-icon="folder-open" data-dani-size="16"></span><span>Importa</span></button>
         <button class="btn" onclick="exportBuilderXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
-        <button class="btn btn-danger" onclick="newBuilderProcedure()"><span data-dani-icon="delete" data-dani-size="16"></span><span>Nuova</span></button>
+        <button class="btn btn-danger" onclick="newBuilderProcedure()"><span data-dani-icon="delete" data-dani-size="16"></span><span>Elimina</span></button>
       </div>
       <input type="file" id="builderImportInput" accept=".csv,.txt,.xlsx" style="display:none" onchange="onBuilderImportFile(event)">
 
@@ -77,7 +77,7 @@
       <button class="btn" onclick="addBuilderRow()"><span data-dani-icon="add" data-dani-size="16"></span><span>Aggiungi Step</span></button>
 
       <div class="builder-start-row">
-        <button class="btn btn-primary" onclick="startInRunner()"><span data-dani-icon="play" data-dani-size="16"></span><span>Avvia in Procedure Runner</span></button>
+        <button class="btn btn-primary" onclick="exportBuilderXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
       </div>
       <div class="builder-draft-info" id="builderDraftInfo"></div>
     </div>

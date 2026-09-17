@@ -394,6 +394,16 @@ body.sidebar-expanded .dani-sb-label{opacity:1}
 .dani-dialog-overlay .dani-dialog-icon{color:var(--accent)}
 .dani-dialog-overlay .dani-dialog-box.danger .dani-dialog-icon{color:var(--danger)}
 
+/* shared/js/step-desc.js — anywhere a step's (possibly rich-formatted)
+   Description is rendered as real HTML: Procedure Builder's editable box,
+   Procedure Runner's execution screen and linked-step panels. Bare <table>/
+   <td> with no class/style survive sanitizeStepHtml() (which strips every
+   attribute), so they're styled here by element selector alone. */
+.rich-desc b,.rich-desc strong{font-weight:700}
+.rich-desc u{text-decoration:underline}
+.rich-desc table{border-collapse:collapse;margin:6px 0;max-width:100%}
+.rich-desc td,.rich-desc th{border:1px solid var(--border-strong);padding:4px 8px;font-size:.92em;text-align:left;vertical-align:top}
+
 /* ==========================================================================
    Form controls. Baseline look only (color/border/radius) — sizing
    (padding/font-size/height) stays with each app's own stylesheet, since

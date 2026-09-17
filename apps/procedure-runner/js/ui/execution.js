@@ -12,6 +12,7 @@ import { openModal, closeModal } from './modal.js';
 import { renderSummary } from './summary.js';
 import { evaluateEnd } from './end-screen.js';
 import { daniAlert, daniConfirm } from '../../../../shared/js/dialog.js';
+import { sanitizeStepHtml, stepHtmlToPlainText } from '../../../../shared/js/step-desc.js';
 
 // Set only while the anomaly/skip modals are open on behalf of a *linked*
 // (repositioned) step's inline panel, rather than the current step — null
@@ -66,7 +67,7 @@ export function renderStep() {
 
   $('stepTitle').innerText = 'STEP N° ' + s.step;
   $('stepProgress').innerText = (state.currentIndex + 1) + ' / ' + state.steps.length;
-  $('descBody').innerText = s.desc || '—';
+  $('descBody').innerHTML = s.desc ? sanitizeStepHtml(s.desc) : '—';
   $('expectedBody').innerText = s.expected || '—';
   $('measuredInput').value = s.measured || '';
   $('noteInput').value = '';
@@ -124,16 +125,16 @@ function renderLinkedSkipAlert(currentStep) {
   });
 }
 
-function lsbPanel(title, body, color) {
+function lsbPanel(title, body, color, isHtml) {
   const p = document.createElement('div');
   p.className = 'lsb-panel';
   const t = document.createElement('div');
   t.className = 'lsb-panel-title';
   t.textContent = title;
   const b = document.createElement('div');
-  b.className = 'lsb-panel-body';
+  b.className = isHtml ? 'lsb-panel-body rich-desc' : 'lsb-panel-body';
   if (color) b.style.color = color;
-  b.textContent = body;
+  if (isHtml) b.innerHTML = sanitizeStepHtml(body); else b.textContent = body;
   p.append(t, b);
   return p;
 }
@@ -148,7 +149,7 @@ function buildLinkedStepBlock(stepData, originalIndex) {
   title.innerHTML = daniIcon('step', { size: 15 }) + '<span>Step N° ' + escapeHtml(stepData.step) + ' — da eseguire ora</span>';
   block.appendChild(title);
 
-  block.appendChild(lsbPanel('Descrizione Operativa', stepData.desc || '—'));
+  block.appendChild(lsbPanel('Descrizione Operativa', stepData.desc || '—', null, !!stepData.desc));
   if (stepData.expected) block.appendChild(lsbPanel('Valore Atteso', stepData.expected));
   if (stepData.skipReason) block.appendChild(lsbPanel('Motivo del riposizionamento', stepData.skipReason, 'var(--text-secondary)'));
 
@@ -372,7 +373,8 @@ function populateSkipTargetSelect(excludeIndexes, selectedStep) {
   skipTargetOptions(state.steps, excludeIndexes).forEach(o => {
     const opt = document.createElement('option');
     opt.value = o.step;
-    opt.textContent = 'Step ' + o.step + (o.desc ? ' - ' + o.desc.slice(0, 40) + '…' : '');
+    const plainDesc = stepHtmlToPlainText(o.desc);
+    opt.textContent = 'Step ' + o.step + (plainDesc ? ' - ' + plainDesc.slice(0, 40) + '…' : '');
     if (selectedStep != null && String(o.step) === String(selectedStep)) opt.selected = true;
     select.appendChild(opt);
   });
@@ -493,7 +495,7 @@ export async function confirmAnomaly() {
 export function openCorrectionModal() {
   if (state.currentIndex >= state.steps.length) return;
   const s = state.steps[state.currentIndex];
-  $('correctionInput').value = s.correction || s.desc || '';
+  $('correctionInput').value = s.correction || stepHtmlToPlainText(s.desc) || '';
   openModal('modalCorrection');
 }
 

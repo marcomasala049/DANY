@@ -6,6 +6,7 @@
  * index.html) only inside the functions that actually touch a workbook.
  */
 import { PROCEDURE_COLUMNS } from './column-mapping.js';
+import { stepHtmlToExcelRichText } from './step-desc.js';
 
 export function excelValue(v) {
   if (v == null) return '';
@@ -72,12 +73,19 @@ export function buildProcedureWorksheet(workbook, steps) {
   ];
   ws.getRow(1).font = { bold: true };
   ws.freezePanes = { ySplit: 1 };
+  // Descriptions can be multi-line now (a rich-text step, or a table
+  // flattened into readable lines by stepHtmlToExcelRichText) — wrap them
+  // instead of showing one truncated line.
+  ws.getColumn(2).alignment = { wrapText: true, vertical: 'top' };
 
   steps.forEach((s, i) => {
     const row = ws.addRow([
-      s.step, s.desc, s.expected || '', s.measured || '', s.notes || '', '',
+      s.step, '', s.expected || '', s.measured || '', s.notes || '', '',
       s.timestamp || '', s.signature || '', s.correction || '', s.anomaly || '', s.skipReason || ''
     ]);
+    // Written separately (not inline above) because it may need a real
+    // ExcelJS richText cell value rather than a plain string.
+    row.getCell(2).value = stepHtmlToExcelRichText(s.desc);
     if (s.image && s.image.startsWith('data:image/')) {
       const ext = s.image.startsWith('data:image/jpeg') ? 'jpeg' : s.image.startsWith('data:image/gif') ? 'gif' : 'png';
       const imageId = workbook.addImage({ base64: s.image, extension: ext });
