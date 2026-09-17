@@ -6,25 +6,26 @@
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;width:100%;background:var(--page-bg);color:var(--text-primary);font-family:var(--font-body);overflow:hidden}
-body{padding:8px;padding-top:max(8px,env(safe-area-inset-top));padding-right:max(8px,env(safe-area-inset-right));padding-bottom:max(8px,env(safe-area-inset-bottom));padding-left:max(8px,env(safe-area-inset-left));display:grid;grid-template-columns:minmax(0,1fr) clamp(480px,43vw,760px);gap:8px}
+body{padding:8px;padding-top:max(8px,env(safe-area-inset-top));padding-right:max(8px,env(safe-area-inset-right));padding-bottom:max(8px,env(safe-area-inset-bottom));padding-left:max(8px,env(safe-area-inset-left));display:grid;grid-template-columns:minmax(0,1fr) clamp(480px,43vw,760px);grid-template-rows:auto auto;gap:8px}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
-.left-panel{min-width:0;display:flex;flex-direction:column;gap:6px;height:max(280px,calc(var(--app-height) - 16px))}
+/* #editorTopbar's own rendered height (padding + one row of pill buttons)
+   plus the row gap is subtracted below, on top of body's own padding, so
+   --app-height (kept in sync with visualViewport.height by main.js — see
+   adaptWorkspace() — so panels shrink above an on-screen keyboard instead
+   of being clipped by it) still drives the actual available height. */
+#editorTopbar{grid-column:1/-1}
+.kbd-hint{opacity:.7;font-size:.85em;font-family:var(--font-mono);margin-left:2px}
+.left-panel{min-width:0;display:flex;flex-direction:column;gap:6px;height:max(280px,calc(var(--app-height) - 84px))}
 .status-bar{font-size:.78em;color:var(--text-secondary);background:var(--panel-glass);padding:5px 8px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .status-ok{color:var(--accent)}
 .status-error{color:var(--danger)}
 textarea{flex:1;min-height:0;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:10px;font-family:var(--font-mono);font-size:13.5px;resize:none;outline:none;line-height:1.35}
 textarea:focus{border-color:var(--accent)}
 .controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-/* Purely visual grouping dividers (Home | Save actions | view/settings) —
-   targeted by the buttons' own onclick attributes so no markup needs to
-   change into nested wrapper elements. */
-.controls [onclick*="salvaFile"]{margin-left:2px}
-.controls [onclick*="openWidgetManager"]{position:relative;margin-left:10px}
-.controls [onclick*="openWidgetManager"]::before{content:'';position:absolute;left:-6px;top:50%;transform:translateY(-50%);width:1px;height:60%;background:var(--border-strong)}
-.timer-box{font-size:.72em;color:var(--text-secondary);margin-left:auto}
+.timer-box{font-size:.72em;color:var(--text-secondary)}
 .timer-value{color:var(--text-primary);font-size:1.2em;margin:0 5px;font-family:var(--font-mono)}
-.right-panel-wrap{position:relative;min-width:0;height:max(240px,calc(var(--app-height) - 16px))}
+.right-panel-wrap{position:relative;min-width:0;height:max(240px,calc(var(--app-height) - 84px))}
 body.panel-collapsed{grid-template-columns:minmax(0,1fr) 0px}
 body.panel-collapsed .right-panel-wrap{width:0;max-width:0;min-width:0;overflow:visible}
 body.panel-collapsed .right-panel{display:none}
@@ -226,7 +227,7 @@ body.panel-collapsed .panel-tab::before{content:'◀'}
 #installBtn[hidden]{display:none}
 @media(min-width:1600px){body{grid-template-columns:minmax(0,1fr) clamp(600px,38vw,980px)}.right-panel{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}
 @media(max-width:1250px){body{grid-template-columns:minmax(0,1fr) clamp(380px,40vw,560px)}.right-panel{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}
-@media(max-width:900px){html,body{overflow:auto}body{grid-template-columns:1fr}body.panel-collapsed{grid-template-columns:1fr}body:not(.panel-collapsed) .left-panel{height:max(320px,calc(var(--app-height) * .6));min-height:320px}body.panel-collapsed .left-panel{height:max(320px,calc(var(--app-height) - 16px));min-height:0}.right-panel-wrap{height:auto;min-height:0}.right-panel{height:auto;max-height:none;overflow:visible;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}.wide-widget{grid-column:1/-1}.clock-date{font-size:.68em}.panel-tab{position:fixed;right:0;left:auto;top:50%;transform:translateY(-50%);border-radius:var(--radius-sm) 0 0 var(--radius-sm);border-right:none;z-index:100}.panel-tab:active{transform:translateY(-50%) scale(.94)}}
+@media(max-width:900px){html,body{overflow:auto}body{grid-template-columns:1fr;grid-template-rows:auto}body.panel-collapsed{grid-template-columns:1fr}body:not(.panel-collapsed) .left-panel{height:max(320px,calc(var(--app-height) * .6));min-height:320px}body.panel-collapsed .left-panel{height:max(320px,calc(var(--app-height) - 16px));min-height:0}.right-panel-wrap{height:auto;min-height:0}.right-panel{height:auto;max-height:none;overflow:visible;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}.wide-widget{grid-column:1/-1}.clock-date{font-size:.68em}.panel-tab{position:fixed;right:0;left:auto;top:50%;transform:translateY(-50%);border-radius:var(--radius-sm) 0 0 var(--radius-sm);border-right:none;z-index:100}.panel-tab:active{transform:translateY(-50%) scale(.94)}}
 @media(max-width:560px){.right-panel{grid-template-columns:1fr}.wide-widget{grid-column:auto}.controls{gap:6px}.timer-box{margin-left:0;flex-basis:100%;justify-content:flex-start;display:flex;align-items:center}}
 @media(pointer:coarse){.small-btn,.btn-primary,.btn{min-height:38px;padding-top:7px;padding-bottom:7px}.conv-select,.eng-select,.field-row select,.quick-input,.pin-input,.threshold-input,.data-select,.todo-input,.proc-input,.conv-input,.conv-output{min-height:34px}.help-btn{width:22px;height:22px;line-height:20px}.todo-del,.pin-del{padding:6px}.collapse-arrow{padding:4px}}
 @media(max-width:900px),(pointer:coarse){.calc-btn,.calc-mode button{min-height:34px}.eng-tab{padding:6px 9px}.proc-btn{padding:5px 9px}}

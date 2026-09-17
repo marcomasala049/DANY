@@ -16,13 +16,13 @@ export const PROCEDURE_SAMPLE_ROWS = [
 ];
 
 export const COLMAP = {
-  step: ['step', 'passo', 'n', 'numero'],
-  desc: ['descrizione', 'description', 'desc'],
-  expected: ['atteso', 'expected', 'requisito'],
-  measured: ['misurato', 'measured', 'valore'],
+  step: ['step', 'passo', 'n', 'numero', 'step #'],
+  desc: ['descrizione', 'description', 'desc', 'step description'],
+  expected: ['atteso', 'expected', 'requisito', 'expected value'],
+  measured: ['misurato', 'measured', 'valore', 'measured value'],
   notes: ['note', 'notes', 'remarks', 'osservazioni'],
   image: ['immagine', 'image', 'imageurl', 'immagine(url)', 'img'],
-  timestamp: ['timestamp', 'data'],
+  timestamp: ['timestamp', 'data', 'time'],
   signature: ['firma', 'signature'],
   correction: ['correzione', 'correction'],
   anomaly: ['anomalia', 'anomaly'],

@@ -58,22 +58,36 @@ export function downloadTemplate() {
   downloadBlob(new Blob([toCsvText(rows)], { type: 'text/csv;charset=utf-8' }), 'modello_procedura.csv');
 }
 
-/** Wires drag-and-drop onto the load screen's drop zone. */
+/** True when a drag carries files (as opposed to e.g. dragged text/links). */
+function isFileDrag(e) {
+  const dt = e.dataTransfer;
+  return !!(dt && dt.types && Array.from(dt.types).includes('Files'));
+}
+
+/**
+ * Wires drag-and-drop onto the load screen's drop zone. Also blocks the
+ * browser's default "navigate to/open the dropped file" behavior for any
+ * file dragged over the page — not just over the drop zone. Without this,
+ * a file dropped slightly off-target (or while a procedure is already
+ * running and the drop zone isn't even on screen) would replace the tab
+ * with the raw file instead of being ignored.
+ */
 export function initDropZone() {
+  ['dragover', 'drop'].forEach(ev => {
+    document.addEventListener(ev, e => { if (isFileDrag(e)) e.preventDefault(); });
+  });
+
   ['dragover', 'dragleave', 'drop'].forEach(ev => {
     document.addEventListener(ev, e => {
       const dz = $('dropZone');
       const overDropZone = e.target && e.target.closest && e.target.closest('#dropZone');
-      if (!overDropZone) return;
+      if (!dz || !overDropZone) return;
 
       if (ev === 'dragover') {
-        e.preventDefault();
         dz.classList.add('drag');
       } else if (ev === 'dragleave') {
-        e.preventDefault();
         dz.classList.remove('drag');
       } else if (ev === 'drop') {
-        e.preventDefault();
         dz.classList.remove('drag');
         const f = e.dataTransfer.files[0];
         if (f) loadProcedureFile(f);

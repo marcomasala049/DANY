@@ -39,10 +39,24 @@
 <body>
 <script>try{if(localStorage.getItem('editor_panel_collapsed')==='1')document.body.classList.add('panel-collapsed')}catch(e){}</script>
 
+<div class="topbar" id="editorTopbar">
+  <span class="brand">
+    <span class="brand-logo-wrap"><img src="../../icons/icon-192.png" alt="" class="brand-logo"></span>
+    <span class="brand-word">📝 BLOCCO NOTE</span>
+  </span>
+  <span class="spacer"></span>
+  <button class="btn btn-primary" onclick="salvaFile()">💾 Salva Modifiche <span class="kbd-hint">Ctrl+S</span></button>
+  <button class="btn" onclick="salvaCome()">📁 Salva Come</button>
+  <button class="btn" onclick="openWidgetManager()">⚙ Widget</button>
+  <button class="btn" id="themeToggleBtn">☀️ Tema Chiaro</button>
+  <button class="btn" id="installBtn" hidden>📲 Installa App</button>
+  <button class="btn btn-home" onclick="window.location.href='../../index.html'">🏠 Home</button>
+</div>
+
 <div class="left-panel">
 <div class="status-bar" id="status">> File aperto: <span id="file-label">Caricamento in corso...</span></div>
 <textarea id="editor" placeholder="Scrivi qui..."></textarea>
-<div class="controls"><button class="small-btn" onclick="window.location.href='../../index.html'">🏠 Home</button><button class="btn-primary" onclick="salvaFile()">Salva Modifiche (Ctrl+S)</button><button class="small-btn" onclick="salvaCome()">Salva come nuovo .txt</button><button class="small-btn" onclick="openWidgetManager()">⚙ Widget</button><button class="small-btn" id="themeToggleBtn">☀️ Tema Chiaro</button><button class="small-btn" id="installBtn" hidden>📲 Installa App</button><div class="timer-box">TEST TIMER: <span class="timer-value" id="timerDisplay">00:00:00</span><button class="small-btn" onclick="toggleTimer()" id="timerBtn">START</button><button class="small-btn" onclick="resetTimer()">RESET</button></div></div>
+<div class="controls"><div class="timer-box">TEST TIMER: <span class="timer-value" id="timerDisplay">00:00:00</span><button class="small-btn" onclick="toggleTimer()" id="timerBtn">START</button><button class="small-btn" onclick="resetTimer()">RESET</button></div></div>
 </div>
 <div class="right-panel-wrap">
 <button class="panel-tab" id="panelTab" onclick="togglePanel()" title="Comprimi/espandi pannello widget (Ctrl+B)" aria-label="Comprimi/espandi pannello widget"></button>

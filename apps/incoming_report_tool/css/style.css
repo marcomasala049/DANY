@@ -20,7 +20,7 @@ button{cursor:pointer}
   padding:10px 16px;backdrop-filter:blur(14px);box-shadow:var(--shadow);
 }
 .status-bar{
-  margin-left:auto;font-size:.75em;color:var(--text-secondary);
+  font-size:.75em;color:var(--text-secondary);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;
 }
 .status-ok{color:var(--accent)}

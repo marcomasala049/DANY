@@ -170,6 +170,15 @@
 .btn-accent{background:var(--info-soft);color:var(--info);border:1px solid var(--info-border)}
 .btn-accent:hover{border-color:var(--info)}
 
+/* Home always sits last in the topbar (far right, after the .spacer pushes
+   everything else left) — a small divider + tighter margin sets it apart
+   as the one constant, always-there anchor, like a window control. */
+.btn-home{margin-left:10px;position:relative}
+.btn-home::before{
+  content:'';position:absolute;left:-7px;top:50%;transform:translateY(-50%);
+  width:1px;height:60%;background:var(--border-strong);
+}
+
 /* ==========================================================================
    Panel / widget shell — the glass card every widget, panel and load-card
    already uses (class names vary per app: .widget, .panel, .load-card,
