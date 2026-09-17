@@ -13,7 +13,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v16';
+const CACHE_VERSION = 'dani-v17';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 

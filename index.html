@@ -106,17 +106,9 @@ main{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align
 .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
 
 main h1.hero-brand{
-  display:flex;flex-direction:column;align-items:center;
   font-family:var(--font-display);font-weight:800;letter-spacing:1px;color:var(--text-primary);
   font-size:clamp(2.6em,7vw,4.2em);line-height:1;
-  gap:.18em;
 }
-.hero-logo-leonardo{
-  height:.34em;width:auto;display:block;
-  align-self:flex-start;
-  margin-left:6%;
-}
-.hero-brand-text{display:block}
 main .subtitle{
   font-family:var(--font-display);font-weight:600;font-size:1.05em;color:var(--text-secondary);
   margin-top:10px;letter-spacing:.2px;
@@ -140,6 +132,11 @@ main .tagline{
 .welcome-form-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .welcome-form-row input{width:220px;text-align:center}
 .welcome-form-row .btn-primary{padding:9px 20px}
+
+.bottom-logo-leonardo{
+  height:clamp(2.6em,7vw,4.2em);width:auto;display:block;
+  margin-top:52px;
+}
 
 .cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;width:100%;max-width:1320px}
 @media(max-width:1150px){.cards{grid-template-columns:repeat(3,minmax(0,1fr));max-width:900px}}
@@ -197,10 +194,7 @@ footer{
 <main>
   <img class="home-background-art" src="shared/assets/illustrations/dani-robotic-hands.webp" alt="" aria-hidden="true">
   <span class="eyebrow"><span class="dot"></span>Toolkit da banco per tecnici</span>
-  <h1 class="hero-brand">
-    <img src="shared/assets/branding/logo-leonardo.svg" alt="Leonardo" class="hero-logo-leonardo">
-    <span class="hero-brand-text">AIT TOOLS</span>
-  </h1>
+  <h1 class="hero-brand">AIT TOOLS</h1>
   <p class="subtitle">Data Analysis &amp; Navigation Interface</p>
 
   <div class="welcome-block" id="welcomeBlock">
@@ -257,6 +251,8 @@ footer{
       <span class="card-cta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
     </a>
   </nav>
+
+  <img src="shared/assets/branding/logo-leonardo.svg" alt="Leonardo" class="bottom-logo-leonardo">
 </main>
 
 <footer>AIT TOOLS — funziona offline dopo il primo caricamento</footer>
@@ -265,7 +261,7 @@ footer{
 import { registerServiceWorker, initInstallPrompt } from './shared/js/pwa.js';
 import { initTheme } from './shared/js/theme.js';
 import { mountIcons } from './shared/js/dani-icons.js';
-import { getOperatorName, setOperatorName, clearOperatorName } from './shared/js/operator.js';
+import { getOperatorName, setOperatorName, clearOperatorName, welcomeGreeting } from './shared/js/operator.js';
 import { escapeHtml } from './shared/js/dom-utils.js';
 
 registerServiceWorker();
@@ -284,7 +280,7 @@ const welcomeChangeBtn = document.getElementById('welcomeChangeBtn');
 function renderWelcome() {
   const name = getOperatorName();
   if (name) {
-    welcomeText.innerHTML = 'Benvenuto, <b>' + escapeHtml(name) + '</b>';
+    welcomeText.innerHTML = welcomeGreeting(name) + ', <b>' + escapeHtml(name) + '</b>';
     welcomeText.hidden = false;
     welcomeForm.hidden = true;
     welcomeChangeBtn.hidden = false;
