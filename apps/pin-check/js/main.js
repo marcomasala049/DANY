@@ -13,7 +13,7 @@ import { exportTxt, exportXlsx } from './ui/export.js';
 import { registerServiceWorker, initInstallPrompt } from '../../../shared/js/pwa.js';
 import { initTheme } from '../../../shared/js/theme.js';
 import { mountIcons } from '../../../shared/js/dani-icons.js';
-import { renderSidebar } from '../../../shared/js/sidebar.js';
+import { renderSidebar, renderHomeButton } from '../../../shared/js/sidebar.js';
 
 Object.assign(window, {
   selectConnector, backToSelect, backToTest, goToEnd, restartTool,
@@ -23,6 +23,7 @@ Object.assign(window, {
 
 function init() {
   renderSidebar({ active: 'connector', base: '../../' });
+  renderHomeButton('../../');
   renderConnectorGrid();
   registerServiceWorker();
   initInstallPrompt(document.getElementById('installBtn'));

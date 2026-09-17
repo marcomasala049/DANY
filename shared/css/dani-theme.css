@@ -199,13 +199,17 @@ h1,h2,h3{font-family:var(--font-display);color:var(--text-primary);font-weight:7
 .btn-accent{background:var(--info-soft);color:var(--info);border:1px solid var(--info-border)}
 .btn-accent:hover{border-color:var(--info)}
 
-/* Home always sits last in the topbar — a small divider sets it apart as
-   the one constant anchor, like a window control. */
-.btn-home{margin-left:10px;position:relative}
+/* Home — a permanent, always-visible nav command in every sub-app's
+   topbar (independent of the sidebar: that's a convenience, this is the
+   guarantee). Plain .btn treatment on purpose — it's a normal navigation
+   control, not a primary action, so it never takes the DANI red fill.
+   Always sits last on the right, set apart by a small divider. */
+.btn-home{margin-left:10px;position:relative;text-decoration:none}
 .btn-home::before{
   content:'';position:absolute;left:-7px;top:50%;transform:translateY(-50%);
   width:1px;height:60%;background:var(--border);
 }
+@media(max-width:560px){.btn-home .dani-home-label{display:none}}
 
 /* Icon-only buttons (no visible label — tooltip required, see below) */
 .dani-icon-btn{

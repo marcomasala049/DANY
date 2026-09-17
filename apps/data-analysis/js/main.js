@@ -2,7 +2,7 @@ import { $, escapeHtml } from '../../../shared/js/dom-utils.js';
 import { registerServiceWorker, initInstallPrompt } from '../../../shared/js/pwa.js';
 import { initTheme } from '../../../shared/js/theme.js';
 import { daniIcon, mountIcons } from '../../../shared/js/dani-icons.js';
-import { renderSidebar } from '../../../shared/js/sidebar.js';
+import { renderSidebar, renderHomeButton } from '../../../shared/js/sidebar.js';
 
 // ==================== STATE ====================
 let loadedData=[];
@@ -2314,6 +2314,7 @@ registerServiceWorker();
 initInstallPrompt($('installBtn'));
 initTheme($('themeToggleBtn'));
 renderSidebar({ active: 'analysis', base: '../../' });
+renderHomeButton('../../');
 mountIcons();
 
 // Init

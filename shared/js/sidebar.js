@@ -63,6 +63,24 @@ export function renderSidebar({ active, base = './' } = {}) {
   });
 }
 
+/**
+ * The topbar's permanent "Home" nav command — present in every sub-app
+ * regardless of sidebar state (the sidebar is a convenience, not a
+ * replacement: users shouldn't have to rely on it to get back to Home).
+ * A future tool just needs one `<span id="daniHomeBtn"></span>` at the end
+ * of its topbar and a call to this function with the same `base` it
+ * already passes to renderSidebar() — nothing else to wire up.
+ */
+export function renderHomeButton(base = './') {
+  const el = document.getElementById('daniHomeBtn');
+  if (!el) return;
+  el.outerHTML =
+    `<a class="btn btn-home" href="${base}index.html" data-tooltip="Home" aria-label="Torna alla Home">` +
+    `${daniIcon('home', { size: 16 })}` +
+    `<span class="dani-home-label">Home</span>` +
+    `</a>`;
+}
+
 function readExpanded() {
   try {
     return localStorage.getItem(STORAGE_KEY) === '1';

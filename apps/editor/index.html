@@ -41,9 +41,10 @@
 
 <div id="daniSidebar"></div>
 <script type="module">
-  import { renderSidebar } from '../../shared/js/sidebar.js';
+  import { renderSidebar, renderHomeButton } from '../../shared/js/sidebar.js';
   import { mountIcons } from '../../shared/js/dani-icons.js';
   renderSidebar({ active: 'notes', base: '../../' });
+  renderHomeButton('../../');
   mountIcons();
 </script>
 
@@ -59,6 +60,7 @@
   <button class="btn" onclick="openWidgetManager()"><span data-dani-icon="settings" data-dani-size="16"></span><span>Widget</span></button>
   <button class="btn" id="themeToggleBtn"></button>
   <button class="btn" id="installBtn" hidden><span data-dani-icon="install" data-dani-size="16"></span><span>Installa App</span></button>
+  <span id="daniHomeBtn"></span>
 </div>
 
 <div class="left-panel">

@@ -40,12 +40,13 @@
 
 <div id="daniSidebar"></div>
 <script type="module">
-  import { renderSidebar } from '../../shared/js/sidebar.js';
+  import { renderSidebar, renderHomeButton } from '../../shared/js/sidebar.js';
   import { daniIcon, mountIcons } from '../../shared/js/dani-icons.js';
   import { escapeHtml } from '../../shared/js/dom-utils.js';
   window.daniIcon = daniIcon;
   window.escapeHtml = escapeHtml;
   renderSidebar({ active: 'inspection', base: '../../' });
+  renderHomeButton('../../');
   mountIcons();
 </script>
 
@@ -57,6 +58,7 @@
   <span class="spacer"></span>
   <div class="status-bar" id="statusBar"><span data-dani-icon="status" data-dani-size="13"></span><span>Pronto.</span></div>
   <button class="small-btn" id="themeToggleBtn"></button>
+  <span id="daniHomeBtn"></span>
 </header>
 
 <nav class="tabs dani-stepper" role="tablist">

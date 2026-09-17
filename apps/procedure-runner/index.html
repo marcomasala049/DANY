@@ -40,9 +40,10 @@
 
 <div id="daniSidebar"></div>
 <script type="module">
-  import { renderSidebar } from '../../shared/js/sidebar.js';
+  import { renderSidebar, renderHomeButton } from '../../shared/js/sidebar.js';
   import { mountIcons } from '../../shared/js/dani-icons.js';
   renderSidebar({ active: 'procedure', base: '../../' });
+  renderHomeButton('../../');
   mountIcons();
 </script>
 
@@ -57,6 +58,7 @@
   <button class="btn" id="btnExportXlsx" style="display:none" onclick="exportUpdatedXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
   <button class="btn" id="themeToggleBtn"></button>
   <button class="btn btn-danger" onclick="closeTab()"><span data-dani-icon="close" data-dani-size="16"></span><span>Chiudi Tab</span></button>
+  <span id="daniHomeBtn"></span>
 </div>
 
 <div id="progressWrap"><div id="progressFill"></div></div>
