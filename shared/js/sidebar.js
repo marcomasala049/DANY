@@ -12,7 +12,8 @@
  *   </script>
  *
  * `base` is the relative path prefix to the project root from the current
- * page (e.g. '../../' from apps/*/index.html, './' from index.html).
+ * page (e.g. '../../' from an apps sub-app's index.html, './' from the
+ * root index.html).
  */
 import { daniIcon } from './dani-icons.js';
 

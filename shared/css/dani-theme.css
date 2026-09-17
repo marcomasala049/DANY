@@ -117,6 +117,14 @@
   --disabled-text:#b7a7a7;
 }
 
+/* Pre-existing latent bug, fixed here: several buttons (Installa App,
+   Nuova Verifica, ...) rely on the plain `hidden` attribute to stay
+   invisible until JS reveals them, but the UA's [hidden]{display:none}
+   has the same specificity as this file's own .btn{display:inline-flex}
+   and loses the cascade tie-break to it — the "hidden" buttons rendered
+   anyway. This one rule outranks both. */
+[hidden]{display:none!important}
+
 /* ==========================================================================
    Typography scale
    ========================================================================== */
