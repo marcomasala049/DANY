@@ -138,8 +138,7 @@ main .tagline{
   margin-top:52px;
 }
 
-.cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;width:100%;max-width:1320px}
-@media(max-width:1150px){.cards{grid-template-columns:repeat(3,minmax(0,1fr));max-width:900px}}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;width:100%;max-width:980px}
 @media(max-width:700px){.cards{grid-template-columns:repeat(2,minmax(0,1fr));max-width:620px;gap:18px}}
 @media(max-width:480px){.cards{grid-template-columns:minmax(0,1fr);max-width:400px}}
 
@@ -224,6 +223,14 @@ footer{
       </span>
       <span class="card-title">Procedure Runner</span>
       <span class="card-desc">Esegui una procedura di test CSV/XLSX passo per passo, con firma e report</span>
+      <span class="card-cta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
+    </a>
+    <a class="card" href="apps/procedure-builder/index.html">
+      <span class="card-icon-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M13 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z"/><path d="M13 3v5h5"/><path d="M12 12v5"/><path d="M9.5 14.5h5"/></svg>
+      </span>
+      <span class="card-title">Crea Procedura</span>
+      <span class="card-desc">Definisci una nuova procedura da zero, step per step, e avviala nel Runner</span>
       <span class="card-cta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
     </a>
     <a class="card" href="apps/data-analysis/index.html">

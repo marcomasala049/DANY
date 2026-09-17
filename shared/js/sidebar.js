@@ -21,6 +21,7 @@ const NAV = [
   { key: 'home', label: 'Home', icon: 'home', href: 'index.html' },
   { key: 'notes', label: 'Blocco Note', icon: 'notes', href: 'apps/editor/index.html' },
   { key: 'procedure', label: 'Procedure', icon: 'procedure', href: 'apps/procedure-runner/index.html' },
+  { key: 'procedure-builder', label: 'Crea Procedura', icon: 'new-file', href: 'apps/procedure-builder/index.html' },
   { key: 'analysis', label: 'Analisi Dati', icon: 'analysis', href: 'apps/data-analysis/index.html' },
   { key: 'inspection', label: 'Incoming Inspection', icon: 'inspection', href: 'apps/incoming_report_tool/index.html' },
   { key: 'connector', label: 'Electrical Checks', icon: 'connector', href: 'apps/pin-check/index.html' },

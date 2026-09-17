@@ -5,11 +5,11 @@
  * shell, the .modal shell and form-control styling all come from
  * ../../../shared/css/dani-theme.css (loaded before this file in
  * index.html). This file keeps only: grids/structure specific to this
- * app (.exec-grid, .summary-grid, .builder-row, ...), a handful of
- * status/badge colors this app needs (skip/anomaly/signed states) built
- * on the shared --warning/--danger/--info/--accent tokens, and the few
- * bits of chrome (tabbar, tb-field, builder controls) dani-theme.css
- * doesn't cover. No local custom properties are declared here anymore —
+ * app (.exec-grid, .summary-grid, ...), a handful of status/badge colors
+ * this app needs (skip/anomaly/signed states) built on the shared
+ * --warning/--danger/--info/--accent tokens, and the few bits of chrome
+ * (tabbar, tb-field) dani-theme.css doesn't cover. No local custom
+ * properties are declared here anymore —
  * every color reads directly from dani-theme.css's :root tokens.
  */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -43,7 +43,7 @@ button{cursor:pointer}
 .load-tile{
   display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;
   padding:22px 16px;border:1px dashed var(--border-strong);border-radius:var(--radius-md);
-  background:var(--panel-glass);cursor:pointer;font-family:inherit;color:inherit;
+  background:var(--panel-glass);cursor:pointer;font-family:inherit;color:inherit;text-decoration:none;
   transition:border-color .15s ease,background-color .15s ease,transform .15s ease;
 }
 .load-tile:hover,.load-tile:focus-visible{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px);outline:none}
@@ -113,20 +113,6 @@ table.summary-table tr.selected{background:var(--accent-soft)}
 .card.modified .n{color:var(--info)}
 #reportBox{background:var(--panel-bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;font-size:.76em;white-space:pre-wrap;max-height:340px;overflow:auto;margin-bottom:16px;line-height:1.55}
 .end-actions{display:flex;gap:8px;flex-wrap:wrap}
-.builder-row{display:grid;grid-template-columns:40px minmax(220px,1fr) minmax(160px,1fr) 130px 92px;gap:6px;margin-bottom:8px;align-items:center}
-@media(max-width:720px){.builder-row{grid-template-columns:24px 1fr 92px;grid-template-areas:"num desc ctrl" "num exp ctrl" "num img ctrl";column-gap:6px;row-gap:6px;align-items:start;padding:8px;border:1px solid var(--border);border-radius:var(--radius-md)}.builder-row>.muted{grid-area:num}.builder-row .b-desc{grid-area:desc}.builder-row .b-exp{grid-area:exp}.builder-row .builder-image-wrap{grid-area:img}.builder-row .builder-controls{grid-area:ctrl}}
-.builder-img-btn{display:inline-flex;align-items:center;gap:5px;font-size:.72em;padding:6px 7px}
-.builder-thumb{display:none;width:42px;height:32px;object-fit:contain;border:1px solid var(--border-strong);border-radius:var(--radius-sm);margin-left:4px;vertical-align:middle}
-.builder-image-wrap{display:flex;align-items:center;gap:5px}
-.builder-img-remove{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border);border-radius:50%;width:18px;height:18px;line-height:1;font-size:.72em;display:none;align-items:center;justify-content:center;flex:0 0 auto}
-.builder-img-remove:hover{background:var(--danger);color:#fff}
-.builder-row input{background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:6px;font-size:.78em;outline:none}
-.builder-controls{display:flex;align-items:center;gap:4px;justify-self:end}
-.builder-move{display:flex;flex-direction:column;gap:2px}
-.builder-up,.builder-down{background:var(--panel-glass);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-size:.68em;padding:1px 5px;line-height:1.5}
-.builder-up:hover:not(:disabled),.builder-down:hover:not(:disabled){color:var(--accent);border-color:var(--accent)}
-.builder-up:disabled,.builder-down:disabled{opacity:.3;cursor:not-allowed}
-.builder-del{background:none;border:none;color:var(--danger);font-size:1.1em}
 #linkedSkipAlert{background:var(--warning-soft);border:1px solid var(--warning);color:var(--warning);border-radius:var(--radius-md);padding:14px;margin-bottom:14px;font-size:.82em}
 #linkedSkipAlert .lsa-title{display:flex;align-items:center;gap:7px;font-weight:bold;font-size:1em;margin-bottom:8px}
 .linked-step-block{background:var(--warning-soft);border:1px solid var(--warning-border);border-radius:var(--radius-md);padding:12px;margin-top:10px;text-align:left}
@@ -138,13 +124,5 @@ table.summary-table tr.selected{background:var(--accent-soft)}
 .badge-repositioned{display:inline-flex;align-items:center;gap:4px;font-size:.72em;padding:2px 7px;border-radius:10px;margin-left:5px;border:1px solid;white-space:nowrap;letter-spacing:.3px}
 .badge-repositioned.pending{color:var(--warning);border-color:var(--warning-border);background:var(--warning-soft)}
 .badge-repositioned.executed{color:var(--info);border-color:var(--info-border);background:var(--info-soft)}
-.builder-draft-info{font-size:.68em;color:var(--text-tertiary);text-align:center;margin-top:12px}
-.builder-draft-info b{color:var(--text-secondary)}
-.builder-proc-name{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.builder-proc-name label{font-size:.75em;color:var(--text-secondary);white-space:nowrap}
-.builder-proc-name input{flex:1;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:6px 8px;font-size:.82em;outline:none}
-.builder-proc-name input:focus{border-color:var(--accent)}
-.builder-actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-#builderList{max-height:300px;overflow:auto;margin:12px 0;text-align:left}
 @media(max-width:560px){#topbar .brand-word{font-size:.82em}.tb-field{flex-basis:100%}.tb-field input{width:100%;flex:1}.exec-actions{flex-direction:column;align-items:stretch}.exec-actions .btn{width:100%;text-align:center}.end-actions{flex-direction:column;align-items:stretch}.end-actions .btn{width:100%;text-align:center}}
-@media(pointer:coarse){.btn{min-height:38px;padding-top:9px;padding-bottom:9px}.tabbtn{min-height:38px}table.summary-table td,table.summary-table th{padding:9px 8px}.builder-del{font-size:1.4em;padding:6px 10px}.builder-up,.builder-down{padding:5px 8px;font-size:.8em}}
+@media(pointer:coarse){.btn{min-height:38px;padding-top:9px;padding-bottom:9px}.tabbtn{min-height:38px}table.summary-table td,table.summary-table th{padding:9px 8px}}

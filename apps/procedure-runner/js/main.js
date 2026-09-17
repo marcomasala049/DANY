@@ -12,10 +12,6 @@ import { onUsernameChange } from './ui/username.js';
 import { closeModal, closeTab } from './ui/modal.js';
 import { onFileSelected, downloadTemplate, initDropZone } from './ui/loader.js';
 import { downloadXlsxTemplate } from './ui/xlsx-io.js';
-import {
-  openBuilder, closeBuilder, addBuilderRow, startFromBuilder,
-  newBuilderProcedure, importIntoBuilder, onBuilderImportFile, exportBuilderXlsx, scheduleDraftSave
-} from './ui/builder.js';
 import { checkForSavedSession, resumeSession, discardSession, saveSession } from './ui/session-storage.js';
 import {
   switchTab, openCorrectionModal, onMeasuredChange, onNoteChange, prevStep, handleAction,
@@ -30,8 +26,6 @@ Object.assign(window, {
   onUsernameChange,
   closeModal, closeTab,
   onFileSelected, downloadTemplate, downloadXlsxTemplate,
-  openBuilder, closeBuilder, addBuilderRow, startFromBuilder,
-  newBuilderProcedure, importIntoBuilder, onBuilderImportFile, exportBuilderXlsx, scheduleDraftSave,
   resumeSession, discardSession,
   switchTab, openCorrectionModal, onMeasuredChange, onNoteChange, prevStep, handleAction,
   openSkipModal, confirmSkip, confirmAnomaly, saveCorrection,

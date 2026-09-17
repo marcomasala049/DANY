@@ -1,0 +1,53 @@
+/**
+ * Procedure Builder — app-specific layout only. Colors, fonts, radii,
+ * topbar/brand chrome, the .btn family, the .load-card shell and form
+ * controls all come from ../../../shared/css/dani-theme.css (loaded before
+ * this file in index.html).
+ */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%;background:var(--page-bg);color:var(--text-primary);font-family:var(--font-body)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.muted{color:var(--text-tertiary);font-size:.78em}
+
+#screenBuilder{padding:22px;padding-bottom:max(22px,env(safe-area-inset-bottom));max-width:900px;margin:0 auto}
+#screenBuilder .load-card{padding:28px 26px;text-align:left}
+#screenBuilder h2{font-size:1.15em;color:var(--text-primary);font-family:var(--font-display);margin-bottom:6px;text-align:center}
+#screenBuilder > .load-card > p{color:var(--text-secondary);font-size:.8em;margin-bottom:20px;line-height:1.6;text-align:center}
+
+.builder-proc-name{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.builder-proc-name label{display:flex;align-items:center;gap:5px;font-size:.75em;color:var(--text-secondary);white-space:nowrap}
+.builder-proc-name input{flex:1;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:6px 8px;font-size:.82em;outline:none}
+.builder-proc-name input:focus{border-color:var(--accent)}
+
+.builder-actions-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+
+#builderList{max-height:420px;overflow:auto;margin:12px 0;text-align:left}
+.builder-row{display:grid;grid-template-columns:40px minmax(220px,1fr) minmax(160px,1fr) 130px 92px;gap:6px;margin-bottom:8px;align-items:center}
+@media(max-width:720px){
+  .builder-row{grid-template-columns:24px 1fr 92px;grid-template-areas:"num desc ctrl" "num exp ctrl" "num img ctrl";column-gap:6px;row-gap:6px;align-items:start;padding:8px;border:1px solid var(--border);border-radius:var(--radius-md)}
+  .builder-row>.muted{grid-area:num}
+  .builder-row .b-desc{grid-area:desc}
+  .builder-row .b-exp{grid-area:exp}
+  .builder-row .builder-image-wrap{grid-area:img}
+  .builder-row .builder-controls{grid-area:ctrl}
+}
+.builder-row input{background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:6px;font-size:.78em;outline:none}
+.builder-image-wrap{display:flex;align-items:center;gap:5px}
+.builder-img-btn{display:inline-flex;align-items:center;gap:5px;font-size:.72em;padding:6px 7px}
+.builder-thumb{display:none;width:42px;height:32px;object-fit:contain;border:1px solid var(--border-strong);border-radius:var(--radius-sm);margin-left:4px;vertical-align:middle}
+.builder-img-remove{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border);border-radius:50%;width:18px;height:18px;line-height:1;font-size:.72em;display:none;align-items:center;justify-content:center;flex:0 0 auto}
+.builder-img-remove:hover{background:var(--danger);color:#fff}
+.builder-controls{display:flex;align-items:center;gap:4px;justify-self:end}
+.builder-move{display:flex;flex-direction:column;gap:2px}
+.builder-up,.builder-down{background:var(--panel-glass);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-size:.68em;padding:1px 5px;line-height:1.5}
+.builder-up:hover:not(:disabled),.builder-down:hover:not(:disabled){color:var(--accent);border-color:var(--accent)}
+.builder-up:disabled,.builder-down:disabled{opacity:.3;cursor:not-allowed}
+.builder-del{background:none;border:none;color:var(--danger);font-size:1.1em}
+
+.builder-start-row{display:flex;gap:8px;margin-top:16px;justify-content:center}
+.builder-draft-info{font-size:.68em;color:var(--text-tertiary);text-align:center;margin-top:12px}
+.builder-draft-info b{color:var(--text-secondary)}
+
+@media(max-width:560px){#topbar .brand-word{font-size:.82em}}
+@media(pointer:coarse){.btn{min-height:38px;padding-top:9px;padding-bottom:9px}.builder-del{font-size:1.4em;padding:6px 10px}.builder-up,.builder-down{padding:5px 8px;font-size:.8em}}

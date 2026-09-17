@@ -1,8 +1,8 @@
 /**
  * DANI service worker — app-shell cache for the editor, procedure-runner,
- * data-analysis, incoming_report_tool and pin-check apps, so all five keep
- * working (and can be launched) offline after the first successful online
- * visit.
+ * procedure-builder, data-analysis, incoming_report_tool and pin-check apps,
+ * so all six keep working (and can be launched) offline after the first
+ * successful online visit.
  *
  * Bump CACHE_VERSION whenever the precached file list changes — activate()
  * deletes every cache that doesn't match it, so a stale version can never
@@ -13,7 +13,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v17';
+const CACHE_VERSION = 'dani-v18';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 
@@ -25,6 +25,7 @@ const LOCAL_FILE_SERVER_ORIGIN = 'http://127.0.0.1:8080';
 const HOME_URL = new URL('index.html', SCOPE).href;
 const EDITOR_URL = new URL('apps/editor/index.html', SCOPE).href;
 const PROCEDURE_RUNNER_URL = new URL('apps/procedure-runner/index.html', SCOPE).href;
+const PROCEDURE_BUILDER_URL = new URL('apps/procedure-builder/index.html', SCOPE).href;
 const DATA_ANALYSIS_URL = new URL('apps/data-analysis/index.html', SCOPE).href;
 const INCOMING_REPORT_URL = new URL('apps/incoming_report_tool/index.html', SCOPE).href;
 const PIN_CHECK_URL = new URL('apps/pin-check/index.html', SCOPE).href;
@@ -83,12 +84,8 @@ const PRECACHE_PATHS = [
   'apps/procedure-runner/js/main.js',
   'apps/procedure-runner/js/core/dom-helpers.js',
   'apps/procedure-runner/js/core/time.js',
-  'apps/procedure-runner/js/logic/column-mapping.js',
-  'apps/procedure-runner/js/logic/csv.js',
   'apps/procedure-runner/js/logic/report.js',
   'apps/procedure-runner/js/logic/steps.js',
-  'apps/procedure-runner/js/ui/builder.js',
-  'apps/procedure-runner/js/ui/download.js',
   'apps/procedure-runner/js/ui/end-screen.js',
   'apps/procedure-runner/js/ui/execution.js',
   'apps/procedure-runner/js/ui/export.js',
@@ -99,6 +96,13 @@ const PRECACHE_PATHS = [
   'apps/procedure-runner/js/ui/summary.js',
   'apps/procedure-runner/js/ui/username.js',
   'apps/procedure-runner/js/ui/xlsx-io.js',
+
+  // Procedure Builder app shell
+  'apps/procedure-builder/index.html',
+  'apps/procedure-builder/css/styles.css',
+  'apps/procedure-builder/js/main.js',
+  'apps/procedure-builder/js/core/dom-helpers.js',
+  'apps/procedure-builder/js/ui/builder.js',
 
   // Data Analysis Tool app shell
   'apps/data-analysis/index.html',
@@ -139,6 +143,10 @@ const PRECACHE_PATHS = [
   'shared/js/dani-icons.js',
   'shared/js/sidebar.js',
   'shared/js/operator.js',
+  'shared/js/csv.js',
+  'shared/js/column-mapping.js',
+  'shared/js/download.js',
+  'shared/js/procedure-xlsx.js',
 
   // Shared branding assets — corporate logo (topbar) + app icon source,
   // both need to be fully available offline like everything else.
@@ -234,6 +242,8 @@ self.addEventListener('fetch', event => {
       networkFirst(request, CACHE_VERSION).catch(async () => {
         const fallbackUrl = url.pathname.includes('/procedure-runner/')
           ? PROCEDURE_RUNNER_URL
+          : url.pathname.includes('/procedure-builder/')
+          ? PROCEDURE_BUILDER_URL
           : url.pathname.includes('/data-analysis/')
             ? DATA_ANALYSIS_URL
             : url.pathname.includes('/incoming_report_tool/')

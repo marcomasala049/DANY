@@ -1,9 +1,9 @@
 import { nowStamp } from '../core/time.js';
-import { toCsvText } from '../logic/csv.js';
-import { PROCEDURE_COLUMNS } from '../logic/column-mapping.js';
+import { toCsvText } from '../../../../shared/js/csv.js';
+import { PROCEDURE_COLUMNS } from '../../../../shared/js/column-mapping.js';
 import { buildFullReportText } from '../logic/report.js';
 import { state } from './state.js';
-import { downloadBlob } from './download.js';
+import { downloadBlob } from '../../../../shared/js/download.js';
 import { buildProcedureWorksheet } from './xlsx-io.js';
 
 function baseName() {

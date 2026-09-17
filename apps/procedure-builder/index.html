@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('dani_theme')==='dark'?'dark':'light')}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Crea Procedura — AIT TOOLS</title>
+<meta name="description" content="Definisci una nuova procedura di test da zero, step per step, con import/export CSV/XLSX e avvio diretto nel Test Procedure Runner.">
+
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#f8f2f1">
+<meta name="color-scheme" content="light dark">
+
+<!-- iOS / iPadOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DANI">
+<link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png">
+
+<!-- Android / Chrome -->
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- Windows -->
+<meta name="msapplication-TileColor" content="#110808">
+<meta name="msapplication-TileImage" content="../../icons/icon-192.png">
+<meta name="msapplication-tap-highlight" content="no">
+
+<!-- Favicons -->
+<link rel="icon" type="image/png" sizes="32x32" href="../../icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../../icons/favicon-16.png">
+<link rel="shortcut icon" href="../../icons/favicon.ico">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="../../shared/css/dani-theme.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div id="daniSidebar"></div>
+
+<div class="topbar" id="topbar">
+  <span class="brand">
+    <img src="../../shared/assets/branding/logo-leonardo.svg" alt="Leonardo" class="brand-logo-leonardo">
+    <span class="brand-word">Crea Procedura</span>
+  </span>
+  <span class="spacer"></span>
+  <button class="btn" id="themeToggleBtn"></button>
+  <span id="daniHomeBtn"></span>
+</div>
+
+<div id="screenBuilder">
+  <div class="load-card">
+    <h2>Crea una nuova procedura</h2>
+    <p>Definisci gli step uno a uno, oppure importa una procedura CSV/XLSX esistente per modificarla. Puoi associare un'immagine locale a ogni step.</p>
+
+    <div class="builder-proc-name">
+      <label for="builderProcName"><span data-dani-icon="file" data-dani-size="14"></span> Nome procedura</label>
+      <input type="text" id="builderProcName" placeholder="Es. Test_AIT_Modulo1" oninput="scheduleDraftSave()">
+    </div>
+
+    <div class="builder-actions-row">
+      <button class="btn" onclick="importIntoBuilder()"><span data-dani-icon="folder-open" data-dani-size="16"></span><span>Importa</span></button>
+      <button class="btn" onclick="exportBuilderXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
+      <button class="btn btn-danger" onclick="newBuilderProcedure()"><span data-dani-icon="delete" data-dani-size="16"></span><span>Nuova</span></button>
+    </div>
+    <input type="file" id="builderImportInput" accept=".csv,.txt,.xlsx" style="display:none" onchange="onBuilderImportFile(event)">
+
+    <div id="builderList"></div>
+    <button class="btn" onclick="addBuilderRow()"><span data-dani-icon="add" data-dani-size="16"></span><span>Aggiungi Step</span></button>
+
+    <div class="builder-start-row">
+      <button class="btn btn-primary" onclick="startInRunner()"><span data-dani-icon="play" data-dani-size="16"></span><span>Avvia in Procedure Runner</span></button>
+    </div>
+    <div class="builder-draft-info" id="builderDraftInfo"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

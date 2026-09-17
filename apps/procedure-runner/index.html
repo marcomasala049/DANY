@@ -66,7 +66,7 @@
 <div id="screenLoad" class="screen active">
   <div class="load-card" style="max-width:820px">
     <h2>Avvia una procedura di test</h2>
-    <p>Carica una procedura esistente in <b>CSV o XLSX</b> oppure creane una da zero. Le immagini possono essere associate agli step e, nei file XLSX creati dal tool, vengono incorporate direttamente nel documento.</p>
+    <p>Carica una procedura esistente in <b>CSV o XLSX</b>. Le immagini possono essere associate agli step e, nei file XLSX creati dal tool, vengono incorporate direttamente nel documento.</p>
     <div id="resumeBox">
       <div><b>Sessione in corso trovata</b></div>
       <div class="muted" id="resumeInfo" style="margin:4px 0"></div>
@@ -83,11 +83,11 @@
         <span class="load-tile-desc">CSV, XLSX o TXT — trascina qui il file o clicca per selezionarlo</span>
         <input type="file" id="csvFile" accept=".csv,.txt,.xlsx" style="display:none" onchange="onFileSelected(event)">
       </label>
-      <button type="button" class="load-tile" onclick="openBuilder()">
+      <a class="load-tile" href="../procedure-builder/index.html">
         <span class="load-tile-icon"><span data-dani-icon="add" data-dani-size="22"></span></span>
-        <span class="load-tile-title">Nuova procedura</span>
-        <span class="load-tile-desc">Crea una procedura da zero, definendo gli step uno a uno</span>
-      </button>
+        <span class="load-tile-title">Crea nuova procedura</span>
+        <span class="load-tile-desc">Apri Crea Procedura per definire gli step da zero</span>
+      </a>
     </div>
 
     <div class="load-secondary">
@@ -99,28 +99,6 @@
       Colonne riconosciute (prima riga, nomi in italiano o inglese, ordine libero):<br>
       <b>Step, Descrizione, Atteso, Misurato, Note, Immagine, Timestamp, Firma, Correzione, Anomalia, MotivoSalto</b><br><span class="muted">Nel XLSX l’immagine può essere incorporata direttamente.</span>
     </div>
-  </div>
-
-  <div class="load-card" id="builderCard" style="display:none;max-width:760px;margin-top:18px;text-align:left">
-    <h2 style="text-align:center">Nuova Procedura — Definisci gli Step</h2>
-    <div class="muted" style="font-size:.78em;margin-bottom:8px;text-align:center">Descrizione e valore atteso sono testuali; puoi associare un'immagine locale a ogni step.</div>
-    <div class="builder-proc-name">
-      <label for="builderProcName"><span data-dani-icon="file" data-dani-size="14"></span> Nome procedura</label>
-      <input type="text" id="builderProcName" placeholder="Es. Test_AIT_Modulo1" oninput="scheduleDraftSave()">
-    </div>
-    <div class="builder-actions-row">
-      <button class="btn" onclick="importIntoBuilder()"><span data-dani-icon="folder-open" data-dani-size="16"></span><span>Importa</span></button>
-      <button class="btn" onclick="exportBuilderXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
-      <button class="btn btn-danger" onclick="newBuilderProcedure()"><span data-dani-icon="delete" data-dani-size="16"></span><span>Nuova</span></button>
-    </div>
-    <input type="file" id="builderImportInput" accept=".csv,.txt,.xlsx" style="display:none" onchange="onBuilderImportFile(event)">
-    <div id="builderList"></div>
-    <button class="btn" onclick="addBuilderRow()"><span data-dani-icon="add" data-dani-size="16"></span><span>Aggiungi Step</span></button>
-    <div style="display:flex;gap:8px;margin-top:14px;justify-content:center">
-      <button class="btn" onclick="closeBuilder()">Annulla</button>
-      <button class="btn btn-primary" onclick="startFromBuilder()"><span data-dani-icon="play" data-dani-size="16"></span><span>Avvia Procedura</span></button>
-    </div>
-    <div class="builder-draft-info" id="builderDraftInfo"></div>
   </div>
 </div>
 

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mapHeader, extractStep, COLMAP, PROCEDURE_COLUMNS } from '../apps/procedure-runner/js/logic/column-mapping.js';
+import { mapHeader, extractStep, COLMAP, PROCEDURE_COLUMNS } from '../shared/js/column-mapping.js';
 
 test('mapHeader recognizes Italian headers regardless of column order', () => {
   const idx = mapHeader(['Note', 'Descrizione', 'Passo', 'Atteso']);

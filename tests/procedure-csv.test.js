@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseCSV, csvField, toCsvText } from '../apps/procedure-runner/js/logic/csv.js';
+import { parseCSV, csvField, toCsvText } from '../shared/js/csv.js';
 
 test('parseCSV splits a simple comma-separated file into rows of fields', () => {
   assert.deepEqual(parseCSV('a,b,c\n1,2,3'), [['a', 'b', 'c'], ['1', '2', '3']]);

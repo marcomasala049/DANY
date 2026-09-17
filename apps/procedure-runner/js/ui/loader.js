@@ -1,11 +1,11 @@
 import { $ } from '../core/dom-helpers.js';
-import { parseCSV, toCsvText } from '../logic/csv.js';
-import { mapHeader, extractStep, PROCEDURE_COLUMNS, PROCEDURE_SAMPLE_ROWS } from '../logic/column-mapping.js';
+import { parseCSV, toCsvText } from '../../../../shared/js/csv.js';
+import { mapHeader, extractStep, PROCEDURE_COLUMNS, PROCEDURE_SAMPLE_ROWS } from '../../../../shared/js/column-mapping.js';
 import { findFirstUnsigned } from '../logic/steps.js';
 import { state } from './state.js';
 import { saveSession } from './session-storage.js';
 import { enterExecution } from './execution.js';
-import { downloadBlob } from './download.js';
+import { downloadBlob } from '../../../../shared/js/download.js';
 import { loadFromXLSXFile } from './xlsx-io.js';
 
 export async function onFileSelected(e) {
