@@ -12,7 +12,6 @@ import { startClock } from './ui/clock.js';
 import { toggleTimer, resetTimer } from './ui/timer.js';
 import { convertUnits, swapConversion } from './ui/converter.js';
 import { addTodo, renderTodos } from './ui/todo.js';
-import { addPin, renderPins } from './ui/pins.js';
 import { quickCalculate } from './ui/quick-calculator.js';
 import {
   setCalcMode, calcAppend, calcClear, calcBack, calcFunc, calcToggleSign, calcMemory, calcCompute
@@ -26,17 +25,15 @@ import {
   restoreWidgetStates, applyWidgetVisibility, addHelpButtons, openHelp, closeHelp,
   initWidgetManagerKeyboardShortcut
 } from './ui/widgets.js';
-import { startSession, logSessionNote, stopSession } from './ui/session.js';
-import { checkThreshold } from './ui/threshold.js';
-import { addProcedureStep, renderProcedure, exportProcedureReport } from './ui/procedure.js';
-import { inspectData, reinspectData, renderData, exportCleanCsv, drawDataChart, initChartResize } from './ui/data-inspector.js';
 import { exportWorkspaceState, importWorkspaceState } from './ui/workspace-state.js';
 import { updateStats, markDirty } from './ui/editor-stats.js';
 import { findNext, replaceOne, replaceAll, updateFindStatus, focusFind } from './ui/find-replace.js';
 import { togglePanel } from './ui/panel.js';
 import { initWidgetDragDrop, resetWidgetOrder } from './ui/widget-order.js';
+import { initPanelResize } from './ui/panel-resize.js';
 import {
   salvaFile, salvaCome, chiudiSalvaCome, selezionaCartellaSalvataggio, confermaSalvaCome,
+  apriFile, onOpenFileSelected,
   loadTargetFile, checkServer, resolveTargetFileFromHash, setTargetFilePath
 } from './ui/file-io.js';
 import { registerServiceWorker, initInstallPrompt } from '../../../shared/js/pwa.js';
@@ -44,19 +41,16 @@ import { initTheme } from '../../../shared/js/theme.js';
 
 Object.assign(window, {
   salvaFile, salvaCome, chiudiSalvaCome, selezionaCartellaSalvataggio, confermaSalvaCome,
+  apriFile, onOpenFileSelected,
   toggleTimer, resetTimer,
   convertUnits, swapConversion,
-  addTodo, addPin,
+  addTodo,
   quickCalculate,
   setCalcMode, calcAppend, calcClear, calcBack, calcFunc, calcToggleSign, calcMemory, calcCompute,
   showEng,
   calcMotor: calcMotorUI, calcGearbox: calcGearboxUI, calcVDrop: calcVDropUI,
   calcElectrical: calcElectricalUI, calcThermal: calcThermalUI,
   openWidgetManager, closeWidgetManager, showAllWidgets, hideAllWidgets, toggleWidget, closeHelp,
-  startSession, logSessionNote, stopSession,
-  checkThreshold,
-  addProcedureStep, exportProcedureReport,
-  inspectData, reinspectData, renderData, exportCleanCsv, drawDataChart,
   exportWorkspaceState, importWorkspaceState,
   findNext, replaceOne, replaceAll, updateFindStatus,
   togglePanel, resetWidgetOrder
@@ -112,8 +106,6 @@ function init() {
   }
 
   renderTodos();
-  renderPins();
-  renderProcedure();
   renderFormulas();
   addHelpButtons();
   startClock();
@@ -126,16 +118,15 @@ function init() {
   restoreWidgetStates();
   applyWidgetVisibility();
   checkServer();
-  checkThreshold();
 
   registerServiceWorker();
   initInstallPrompt($('installBtn'));
-  initChartResize();
   initTheme($('themeToggleBtn'));
 
   updateStats();
   $('editor').addEventListener('input', () => { markDirty(); updateStats(); });
   initWidgetDragDrop();
+  initPanelResize();
 }
 
 window.addEventListener('resize', adaptWorkspace);

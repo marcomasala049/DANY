@@ -2,11 +2,15 @@
 /* App-specific tokens not provided by shared/css/dani-theme.css. Every
    other color/font/radius below reads from that shared file — this app no
    longer defines its own palette. */
-:root{--app-height:100dvh}
+:root{--app-height:100dvh;--right-panel-width:43vw}
 
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;width:100%;background:var(--page-bg);color:var(--text-primary);font-family:var(--font-body);overflow:hidden}
-body{padding:8px;padding-top:max(8px,env(safe-area-inset-top));padding-right:max(8px,env(safe-area-inset-right));padding-bottom:max(8px,env(safe-area-inset-bottom));padding-left:max(8px,env(safe-area-inset-left));display:grid;grid-template-columns:minmax(0,1fr) clamp(480px,43vw,760px);grid-template-rows:auto auto;gap:8px}
+/* The widget panel's column width is a variable (--right-panel-width,
+   defaulting to the original responsive 43vw) instead of a literal value,
+   so js/ui/panel-resize.js can override it in px while dragging the
+   splitter without touching this rule; clamp() still keeps it sane. */
+body{padding:8px;padding-top:max(8px,env(safe-area-inset-top));padding-right:max(8px,env(safe-area-inset-right));padding-bottom:max(8px,env(safe-area-inset-bottom));padding-left:max(8px,env(safe-area-inset-left));display:grid;grid-template-columns:minmax(0,1fr) clamp(340px,var(--right-panel-width),min(900px,70vw));grid-template-rows:auto auto;gap:8px}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 /* --app-height (set in js/main.js) already has the topbar's own measured
@@ -33,6 +37,17 @@ body.panel-collapsed .right-panel{display:none}
 body.panel-collapsed .panel-tab::before{content:'◀'}
 .panel-tab:hover{background:var(--panel-glass-hover);border-color:var(--accent)}
 .panel-tab:active{transform:translateY(-50%) scale(.94)}
+/* Draggable splitter — sits behind .panel-tab (lower z-index) on the same
+   left edge, so the collapse button stays clickable on top while the rest
+   of the boundary's height is free to grab-and-drag. Widened via a
+   transparent ::before so the actual hit area is comfortable without
+   making the visible line itself thick. */
+.panel-resize-handle{position:absolute;left:-3px;top:0;bottom:0;width:6px;cursor:col-resize;z-index:4;touch-action:none}
+.panel-resize-handle::before{content:'';position:absolute;inset:0 -4px;}
+.panel-resize-handle::after{content:'';position:absolute;left:2px;top:0;bottom:0;width:2px;border-radius:2px;background:transparent;transition:background .15s ease}
+.panel-resize-handle:hover::after,.panel-resize-handle.dragging::after{background:var(--accent)}
+body.panel-collapsed .panel-resize-handle{display:none}
+@media(max-width:900px){.panel-resize-handle{display:none}}
 .right-panel{width:100%;height:100%;min-width:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));grid-auto-rows:max-content;align-content:start;align-items:stretch;gap:8px;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 3px 8px 0;container-type:inline-size}
 .right-panel>.widget{width:100%;min-width:0}
 .wide-widget{grid-column:1/-1}
@@ -44,19 +59,16 @@ body.panel-collapsed .panel-tab::before{content:'◀'}
 .right-panel>.widget.drop-before{box-shadow:0 -4px 0 0 var(--accent)}
 .right-panel>.widget.drop-after{box-shadow:0 4px 0 0 var(--accent)}
 
-.stats-widget{min-height:0}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.stat-cell{background:var(--well-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:5px 6px;font-size:.58em;color:var(--text-tertiary);letter-spacing:1.2px}
-.stat-value{display:block;color:var(--text-primary);font-size:1.5em;margin-top:2px;font-weight:bold;letter-spacing:0;transition:color .15s;font-family:var(--font-mono)}
-.stat-value.dirty{color:var(--warning)}
-
-.find-widget{min-height:0}
 .find-input{width:100%;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);padding:5px;border-radius:var(--radius-sm);outline:none;font-size:.78em;margin-bottom:4px}
 .find-input:focus{border-color:var(--accent)}
 .find-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:2px}
 .find-status{font-size:.62em;color:var(--text-tertiary);margin-top:5px;text-align:center}
 .find-status.found{color:var(--accent)}
-.widget{background:var(--panel-glass);border:1px solid var(--border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow);padding:8px;min-height:0;overflow:visible;align-self:start;container-type:inline-size}
+/* Every widget shares one minimum footprint (width comes from the grid
+   column below) so compressing/resizing the panel never leaves some
+   widgets full-size while others get squashed thin or lopsided — see
+   .right-panel's minmax() for the matching column-width floor. */
+.widget{background:var(--panel-glass);border:1px solid var(--border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow);padding:8px;box-sizing:border-box;min-width:0;min-height:120px;overflow:visible;align-self:start;container-type:inline-size}
 .group-label{
   grid-column:1/-1;font-family:var(--font-display);font-size:.7em;color:var(--text-secondary);
   letter-spacing:2px;text-transform:uppercase;font-weight:700;
@@ -90,13 +102,12 @@ body.panel-collapsed .panel-tab::before{content:'◀'}
 .widget.collapsed .widget-body{display:none}
 
 /* clock */
-.clock-widget{min-height:82px}
 .clock-display{background:var(--well-bg);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:5px;text-align:center}
 .clock-time{font-family:var(--font-mono);font-size:clamp(1.35em,2vw,1.7em);font-weight:bold;letter-spacing:1.5px}
 .clock-date{font-size:clamp(.62em,.8vw,.78em);color:var(--text-secondary);margin-top:2px;text-transform:uppercase;white-space:nowrap;overflow:visible}
 
 /* common fields */
-.conv-select,.eng-select,.field-row input,.field-row select,.eng-input,.quick-input,.pin-input,.threshold-input,.data-select{width:100%;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);padding:5px;border-radius:var(--radius-sm);outline:none;font-size:.76em}
+.conv-select,.eng-select,.field-row input,.field-row select,.eng-input,.quick-input{width:100%;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);padding:5px;border-radius:var(--radius-sm);outline:none;font-size:.76em}
 .conv-row{display:flex;flex-direction:column;gap:5px}
 .conv-inputs{display:flex;gap:4px;align-items:center}
 .conv-input,.conv-output{flex:1;min-width:0;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);padding:5px 6px;border-radius:var(--radius-sm);outline:none;font-size:.82em;font-family:var(--font-mono)}
@@ -104,7 +115,6 @@ body.panel-collapsed .panel-tab::before{content:'◀'}
 .conv-swap-btn{background:var(--panel-glass);color:var(--text-primary);border:1px solid var(--border-strong);padding:5px 8px;border-radius:var(--radius-sm)}
 .conv-swap-btn:hover{border-color:var(--accent);background:var(--panel-glass-hover)}
 .conv-units,.muted{font-size:.62em;color:var(--text-tertiary)}
-.converter-widget{min-height:145px}
 
 /* todo */
 .todo-widget{max-height:190px}
@@ -119,7 +129,6 @@ body.panel-collapsed .panel-tab::before{content:'◀'}
 .todo-summary{font-size:.62em;color:var(--text-tertiary);text-align:right;margin-top:4px}
 
 /* calculator */
-.calc-widget{min-height:0}
 .calc-screen{width:100%;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:7px 8px;font-family:var(--font-mono);font-size:1.05em;text-align:right;margin-bottom:5px;outline:none}
 .calc-mode{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-bottom:5px}
 .calc-mode button,.calc-btn{background:var(--panel-glass);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:3px;font-size:.65em;min-width:0;min-height:28px;transition:background .15s ease,border-color .15s ease,color .15s ease}
@@ -133,7 +142,6 @@ body.panel-collapsed .panel-tab::before{content:'◀'}
 .calc-history{font-family:var(--font-mono);font-size:.58em;color:var(--text-tertiary);max-height:28px;overflow:hidden;margin-top:4px;white-space:nowrap;text-overflow:ellipsis}
 
 /* engineering */
-.eng-widget{min-height:0}
 .eng-tabs{display:flex;gap:3px;overflow-x:auto;margin-bottom:6px}
 .eng-tab{background:var(--panel-glass);color:var(--text-secondary);border:1px solid var(--border-strong);padding:4px 6px;border-radius:3px;font-size:.62em;white-space:nowrap;transition:color .15s ease,border-color .15s ease}
 .eng-tab.active{color:var(--accent);border-color:var(--accent)}
@@ -147,65 +155,16 @@ body.panel-collapsed .panel-tab::before{content:'◀'}
 .formula{color:var(--text-secondary);font-size:.63em;margin-top:4px}
 
 /* new tools */
-.quick-row,.pin-row,.threshold-row,.data-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px}
+.quick-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px}
 .quick-input{font-size:.82em}
 .quick-result{background:var(--well-bg);border:1px solid var(--border-strong);padding:5px;margin-top:4px;font-size:.72em;min-height:25px;font-family:var(--font-mono)}
 .history-list{max-height:70px;overflow:auto;font-family:var(--font-mono);font-size:.62em;color:var(--text-tertiary);margin-top:4px}
 .history-list div{padding:2px 0;border-bottom:1px solid var(--border)}
-.pin-grid{display:grid;grid-template-columns:1fr;gap:3px;max-height:115px;overflow:auto}
-.pin-item{display:flex;gap:5px;align-items:center;background:var(--well-bg);border:1px solid var(--border);padding:4px 5px;font-size:.68em}
-.pin-item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pin-del{background:none;border:0;color:var(--danger)}
 .monitor-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
 .monitor-cell{background:var(--well-bg);border:1px solid var(--border);padding:5px;font-size:.64em;color:var(--text-tertiary)}
 .monitor-value{display:block;font-size:1.05em;color:var(--accent);margin-top:2px;font-family:var(--font-mono)}
 .monitor-dot{color:var(--accent)}
-.threshold-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:3px;font-size:.62em;align-items:center}
-.threshold-grid input{font-size:.9em;padding:3px}
-.alarm{border-color:var(--danger)!important;color:var(--danger)!important}
-.session-status{font-size:.8em;color:var(--accent);margin-bottom:5px}
-.session-log{background:var(--well-bg);border:1px solid var(--border);padding:5px;height:70px;overflow:auto;font-family:var(--font-mono);font-size:.62em;white-space:pre-wrap}
 .session-controls{display:flex;gap:4px;margin-top:4px}
-.data-drop{border:1px dashed var(--border-strong);padding:7px;text-align:center;font-size:.66em;color:var(--text-tertiary)}
-.data-file{display:none}
-.data-table-wrap{max-height:180px;overflow:auto;margin-top:5px}
-.data-table{width:100%;border-collapse:collapse;font-family:var(--font-mono);font-size:.57em}
-.data-table th,.data-table td{border:1px solid var(--border);padding:3px;text-align:right;white-space:nowrap}
-.data-table th{text-align:left;color:var(--text-secondary);position:sticky;top:0;background:var(--elevated-bg)}
-
-.data-row2{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;align-items:center}
-.data-row2 label{font-size:.62em;color:var(--text-tertiary);white-space:nowrap}
-.data-rows-input{width:56px;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);padding:4px;border-radius:var(--radius-sm);outline:none;font-size:.72em}
-.data-chart-select{flex:1;min-width:110px;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);padding:4px;border-radius:var(--radius-sm);outline:none;font-size:.72em}
-
-.data-stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:4px;margin-top:6px}
-.data-stat-card{background:var(--well-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:4px 6px;font-size:.6em;color:var(--text-secondary)}
-.data-stat-card b{color:var(--text-primary);display:block;font-size:1.05em;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-mono)}
-.data-stat-line{display:flex;justify-content:space-between}
-
-.data-chart{width:100%;height:90px;margin-top:6px;background:var(--well-bg);border:1px solid var(--border);border-radius:var(--radius-sm);display:none}
-
-.proc-input-row{display:flex;gap:4px;margin-bottom:6px}
-.proc-input{flex:1;min-width:0;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);padding:5px 6px;border-radius:var(--radius-sm);outline:none;font-size:.78em}
-
-.proc-list{list-style:none;max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
-
-.proc-item{background:var(--well-bg);border:1px solid var(--border);border-radius:var(--radius-sm);padding:5px 6px}
-.proc-item.proc-pass{border-color:var(--accent)}
-.proc-item.proc-fail{border-color:var(--danger)}
-
-.proc-row1{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-.proc-idx{color:var(--text-tertiary);font-size:.68em;flex:0 0 auto}
-.proc-text{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.74em}
-
-.proc-row2{display:flex;gap:4px;align-items:center}
-.proc-btn{background:var(--panel-glass);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:3px;font-size:.62em;padding:3px 7px}
-.proc-btn.pass.active{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
-.proc-btn.fail.active{color:var(--danger);border-color:var(--danger);background:var(--danger-soft)}
-.proc-btn.na.active{color:var(--warning);border-color:var(--warning);background:var(--warning-soft)}
-.proc-note{flex:1;min-width:0;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border);padding:3px 5px;font-size:.86em;border-radius:3px;outline:none}
-
-.proc-summary{font-size:.64em;color:var(--text-tertiary);display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:6px}
 .formula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px;max-height:240px;overflow:auto}
 .formula-card{background:var(--well-bg);border:1px solid var(--border);padding:5px;font-size:.67em}
 .formula-card b{color:var(--text-primary)}
@@ -224,11 +183,11 @@ body.panel-collapsed .panel-tab::before{content:'◀'}
 
 .calc-warn{color:var(--warning);font-size:.62em;margin-bottom:4px;padding:3px 4px;border:1px solid var(--warning-border);border-radius:3px;background:var(--warning-soft)}
 #installBtn[hidden]{display:none}
-@media(min-width:1600px){body{grid-template-columns:minmax(0,1fr) clamp(600px,38vw,980px)}.right-panel{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}
-@media(max-width:1250px){body{grid-template-columns:minmax(0,1fr) clamp(380px,40vw,560px)}.right-panel{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}
+@media(min-width:1600px){body{grid-template-columns:minmax(0,1fr) clamp(600px,var(--right-panel-width),980px)}.right-panel{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}
+@media(max-width:1250px){body{grid-template-columns:minmax(0,1fr) clamp(380px,var(--right-panel-width),560px)}.right-panel{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}
 @media(max-width:900px){html,body{overflow:auto}body{grid-template-columns:1fr;grid-template-rows:auto}body.panel-collapsed{grid-template-columns:1fr}body:not(.panel-collapsed) .left-panel{height:max(320px,calc(var(--app-height) * .6));min-height:320px}body.panel-collapsed .left-panel{height:max(320px,calc(var(--app-height) - 16px));min-height:0}.right-panel-wrap{height:auto;min-height:0}.right-panel{height:auto;max-height:none;overflow:visible;grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}.wide-widget{grid-column:1/-1}.clock-date{font-size:.68em}.panel-tab{position:fixed;right:0;left:auto;top:50%;transform:translateY(-50%);border-radius:var(--radius-sm) 0 0 var(--radius-sm);border-right:none;z-index:100}.panel-tab:active{transform:translateY(-50%) scale(.94)}}
 @media(max-width:560px){.right-panel{grid-template-columns:1fr}.wide-widget{grid-column:auto}.controls{gap:6px}.timer-box{margin-left:0;flex-basis:100%;justify-content:flex-start;display:flex;align-items:center}}
-@media(pointer:coarse){.small-btn,.btn-primary,.btn{min-height:38px;padding-top:7px;padding-bottom:7px}.conv-select,.eng-select,.field-row select,.quick-input,.pin-input,.threshold-input,.data-select,.todo-input,.proc-input,.conv-input,.conv-output{min-height:34px}.help-btn{width:22px;height:22px;line-height:20px}.todo-del,.pin-del{padding:6px}.collapse-arrow{padding:4px}}
-@media(max-width:900px),(pointer:coarse){.calc-btn,.calc-mode button{min-height:34px}.eng-tab{padding:6px 9px}.proc-btn{padding:5px 9px}}
+@media(pointer:coarse){.small-btn,.btn-primary,.btn{min-height:38px;padding-top:7px;padding-bottom:7px}.conv-select,.eng-select,.field-row select,.quick-input,.todo-input,.conv-input,.conv-output{min-height:34px}.help-btn{width:22px;height:22px;line-height:20px}.todo-del{padding:6px}.collapse-arrow{padding:4px}}
+@media(max-width:900px),(pointer:coarse){.calc-btn,.calc-mode button{min-height:34px}.eng-tab{padding:6px 9px}}
 @media(max-height:700px){.clock-widget{flex-basis:72px}.calc-btn,.calc-mode button{min-height:24px}.calc-widget{padding-bottom:5px}.eng-widget{max-height:360px}.formula-grid{max-height:140px}}
 @media(prefers-reduced-motion:reduce){.widget-manager-box,.help-box,.save-modal-box{animation:none}}

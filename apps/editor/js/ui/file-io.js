@@ -1,6 +1,5 @@
 import { $, setText, setHtml } from '../core/dom-helpers.js';
 import { escapeHtml } from '../../../../shared/js/dom-utils.js';
-import { isSessionRunning, appendSession } from './session.js';
 import { clearDirty } from './editor-stats.js';
 
 const LOCAL_SERVER = 'http://127.0.0.1:8080';
@@ -8,7 +7,9 @@ const LOCAL_SERVER = 'http://127.0.0.1:8080';
 let targetFilePath = '';
 let selectedSaveDirectory = null;
 let targetFileHandle = null;
-let saveCount = 0;
+/** True only for a file actually opened through the local server (hash-launched
+ *  from open_editor.bat) — the one case where writing back through it makes sense. */
+let isServerBackedFile = false;
 
 export function getTargetFilePath() {
   return targetFilePath;
@@ -18,31 +19,64 @@ function makeSaveStamp() {
   return '[SALVATAGGIO ' + new Date().toLocaleString('it-IT') + ']';
 }
 
+function baseFileName(path) {
+  return (path || 'nuovo_file.txt').replace(/^.*[\\/]/, '') || 'nuovo_file.txt';
+}
+
+/** Always-available fallback: hands the user a real, recoverable .txt via a download. */
+function downloadTextFile(path, content) {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = baseFileName(path);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+async function writeViaHandle(handle, content) {
+  const writable = await handle.createWritable();
+  await writable.write(content);
+  await writable.close();
+}
+
 /**
  * Cosmetic UI updates only: if anything here fails (missing element, timing…)
  * it must NOT make the save look like it failed, since the file has already
- * been written to disk successfully by this point.
+ * been written to disk (or downloaded) successfully by this point.
+ * @param {'handle'|'server'|'download'} method how the file actually got saved,
+ *   so the status line can be honest about a download not being an in-place save.
  */
-function afterSaveUI(path, stamped) {
+function afterSaveUI(path, stamped, method) {
   try {
     const editor = $('editor');
     if (editor) editor.value = stamped; else console.error('[afterSaveUI] elemento mancante: #editor');
     clearDirty();
     targetFilePath = path;
     setText('file-label', path);
-    saveCount++;
     setText('saveState', new Date().toLocaleTimeString('it-IT'));
 
     const status = $('status');
     if (status) status.className = 'status-bar status-ok';
-    setHtml('status', '> File salvato: <span>' + escapeHtml(path) + '</span> | ' + new Date().toLocaleTimeString('it-IT'));
-
-    if (isSessionRunning()) appendSession('SAVE ' + new Date().toLocaleTimeString('it-IT'));
+    const verb = method === 'download' ? 'File scaricato' : 'File salvato';
+    const note = method === 'download'
+      ? ' <span class="muted">(nuova copia — questo browser non supporta il salvataggio diretto sul file originale)</span>'
+      : '';
+    setHtml('status', '> ' + verb + ': <span>' + escapeHtml(path) + '</span>' + note + ' | ' + new Date().toLocaleTimeString('it-IT'));
   } catch (uiErr) {
     console.error('[afterSaveUI] aggiornamento interfaccia fallito (il file però è stato salvato correttamente):', uiErr);
   }
 }
 
+/**
+ * Writes the editor's content to disk, trying — in order — the most direct
+ * method still available: an existing file handle, then (only for a file that
+ * came from the local server) the server itself, then a one-time native save
+ * dialog (File System Access API), then a plain download as the universal
+ * last resort. Each step falls through to the next on failure instead of
+ * giving up, so saving never *requires* the local server to be running.
+ */
 async function writeFile(path, addStamp = true) {
   const editorEl = $('editor');
   if (!editorEl) throw new Error('Elemento #editor non trovato nel DOM: impossibile leggere il testo da salvare.');
@@ -51,22 +85,55 @@ async function writeFile(path, addStamp = true) {
   const base = original.trimEnd();
   const stamped = addStamp ? (base ? base + '\n' : '') + makeSaveStamp() : original;
 
+  // 1) An existing handle (from "Apri File" or a previous Save As) — direct disk write.
   if (targetFileHandle) {
-    const writable = await targetFileHandle.createWritable();
-    await writable.write(stamped);
-    await writable.close();
-    afterSaveUI(path, stamped);
+    await writeViaHandle(targetFileHandle, stamped);
+    afterSaveUI(path, stamped, 'handle');
     return stamped;
   }
 
-  const r = await fetch(LOCAL_SERVER + '/save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain; charset=utf-8', 'X-File-Path': encodeURIComponent(path) },
-    body: stamped
-  });
-  if (!r.ok) throw new Error('HTTP ' + r.status);
+  // 2) A file originally loaded from the local server — keep using it, but if the
+  //    server has since gone offline, fall through to (3)/(4) instead of failing.
+  if (isServerBackedFile) {
+    try {
+      const r = await fetch(LOCAL_SERVER + '/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain; charset=utf-8', 'X-File-Path': encodeURIComponent(path) },
+        body: stamped
+      });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      afterSaveUI(path, stamped, 'server');
+      return stamped;
+    } catch (serverErr) {
+      console.warn('[writeFile] server locale non raggiungibile, provo un salvataggio dal browser:', serverErr);
+    }
+  }
 
-  afterSaveUI(path, stamped);
+  // 3) File System Access API: one native "save as" dialog, then a direct disk write.
+  if (window.showSaveFilePicker) {
+    let handle = null;
+    try {
+      handle = await window.showSaveFilePicker({
+        suggestedName: baseFileName(path),
+        types: [{ description: 'File di testo', accept: { 'text/plain': ['.txt'] } }]
+      });
+    } catch (pickerErr) {
+      if (pickerErr.name === 'AbortError') { const e = new Error('Salvataggio annullato.'); e.userCancelled = true; throw e; }
+      console.warn('[writeFile] File System Access non disponibile per questo salvataggio, scarico una copia:', pickerErr);
+    }
+    if (handle) {
+      await writeViaHandle(handle, stamped);
+      targetFileHandle = handle;
+      isServerBackedFile = false;
+      afterSaveUI(handle.name, stamped, 'handle');
+      return stamped;
+    }
+  }
+
+  // 4) Last resort, always available offline: a real, recoverable download.
+  downloadTextFile(path, stamped);
+  isServerBackedFile = false;
+  afterSaveUI(baseFileName(path), stamped, 'download');
   return stamped;
 }
 
@@ -75,6 +142,7 @@ export async function salvaFile() {
   try {
     await writeFile(targetFilePath, true);
   } catch (e) {
+    if (e.userCancelled) return;
     console.error('[salvaFile] salvataggio effettivo fallito:', e);
     const status = $('status');
     if (status) { status.className = 'status-bar status-error'; status.innerText = '> Errore salvataggio: ' + e.message; }
@@ -86,7 +154,7 @@ export function salvaCome() {
   $('saveModal').classList.add('show');
   selectedSaveDirectory = null;
   targetFileHandle = null;
-  $('saveFolderStatus').innerText = 'Desktop — predefinito';
+  $('saveFolderStatus').innerText = 'Scelta al momento del salvataggio';
   $('saveFolderStatus').classList.add('default');
   $('newFileName').focus();
   $('newFileName').select();
@@ -98,7 +166,7 @@ export function chiudiSalvaCome() {
 
 export async function selezionaCartellaSalvataggio() {
   if (!window.showDirectoryPicker) {
-    alert('La selezione della cartella non è supportata da questa versione di Edge. Il file verrà comunque salvato sul Desktop se lasci la cartella predefinita.');
+    alert('La selezione della cartella non è supportata da questo browser. Lasciando il campo vuoto, al salvataggio ti verrà comunque chiesto dove salvare (o il file verrà scaricato).');
     return;
   }
   try {
@@ -116,24 +184,81 @@ export async function confermaSalvaCome() {
   if (!/\.txt$/i.test(name)) name += '.txt';
 
   try {
+    isServerBackedFile = false;
     if (selectedSaveDirectory) {
       targetFileHandle = await selectedSaveDirectory.getFileHandle(name, { create: true });
       const folderPath = selectedSaveDirectory.name + '\\' + name;
       await writeFile(folderPath, true);
-      history.replaceState(null, '', '#' + encodeURIComponent(folderPath));
     } else {
       targetFileHandle = null;
       await writeFile(name, true);
-      history.replaceState(null, '', '#' + encodeURIComponent(name));
     }
+    history.replaceState(null, '', '#' + encodeURIComponent(targetFilePath));
     chiudiSalvaCome();
   } catch (e) {
+    if (e.userCancelled) return;
     console.error('[confermaSalvaCome] creazione/salvataggio file fallito:', e);
     targetFileHandle = null;
     const status = $('status');
     if (status) { status.className = 'status-bar status-error'; status.innerText = '> Errore creazione file: ' + e.message; }
     alert('Impossibile creare il file: ' + e.message);
   }
+}
+
+/**
+ * Opens an existing .txt file directly from disk — no server involved. Uses
+ * the File System Access API (showOpenFilePicker) when available, which also
+ * gives us a handle so subsequent "Salva Modifiche" writes back in place;
+ * falls back to a plain <input type=file> (see onOpenFileSelected) on
+ * browsers without it, which can read the file but not write back to it.
+ */
+export async function apriFile() {
+  if (window.showOpenFilePicker) {
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{ description: 'File di testo', accept: { 'text/plain': ['.txt', '.text'] } }],
+        excludeAcceptAllOption: false,
+        multiple: false
+      });
+      const file = await handle.getFile();
+      const text = await file.text();
+      applyOpenedFile(file.name, text, handle);
+    } catch (e) {
+      if (e.name !== 'AbortError') alert('Impossibile aprire il file: ' + e.message);
+    }
+    return;
+  }
+  $('openFileInput').click();
+}
+
+/** Change handler for the fallback <input type=file id="openFileInput">. */
+export async function onOpenFileSelected(event) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+  try {
+    const text = await file.text();
+    applyOpenedFile(file.name, text, null);
+  } catch (e) {
+    alert('Impossibile leggere il file: ' + e.message);
+  }
+}
+
+function applyOpenedFile(name, text, handle) {
+  targetFileHandle = handle;
+  isServerBackedFile = false;
+  targetFilePath = name;
+
+  const editor = $('editor');
+  if (editor) editor.value = text;
+  clearDirty();
+  setText('file-label', name);
+  history.replaceState(null, '', '#' + encodeURIComponent(name));
+
+  const status = $('status');
+  if (status) status.className = 'status-bar status-ok';
+  const note = handle ? '' : ' <span class="muted">(il salvataggio creerà una nuova copia — questo browser non supporta la scrittura diretta)</span>';
+  setHtml('status', '> File aperto: <span>' + escapeHtml(name) + '</span>' + note);
 }
 
 export async function loadTargetFile(path) {
@@ -149,6 +274,7 @@ export async function loadTargetFile(path) {
 
     $('editor').value = text;
     clearDirty();
+    isServerBackedFile = true;
     $('editorState').innerText = '● LOADED';
     $('status').className = 'status-bar status-ok';
     $('status').innerText = '> File caricato correttamente | ' + path;
@@ -156,7 +282,7 @@ export async function loadTargetFile(path) {
     $('editorState').innerText = '● LOAD ERROR';
     $('status').className = 'status-bar status-error';
     if (e.message === 'FILE_NOT_FOUND') $('status').innerText = '> FILE NON TROVATO: ' + path;
-    else if (e instanceof TypeError) $('status').innerText = '> SERVER OFFLINE o richiesta bloccata | Avvia il tool tramite il .bat';
+    else if (e instanceof TypeError) $('status').innerHTML = '> SERVER LOCALE OFFLINE | Usa <b>📂 Apri File</b> per aprirlo comunque, o <b>📁 Salva Come</b> per crearne uno nuovo.';
     else $('status').innerText = '> ERRORE APERTURA: ' + e.message;
   }
 }

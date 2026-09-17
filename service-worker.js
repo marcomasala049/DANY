@@ -1,7 +1,8 @@
 /**
  * DANI service worker — app-shell cache for the editor, procedure-runner,
- * data-analysis and incoming_report_tool apps, so all four keep working
- * (and can be launched) offline after the first successful online visit.
+ * data-analysis, incoming_report_tool and pin-check apps, so all five keep
+ * working (and can be launched) offline after the first successful online
+ * visit.
  *
  * Bump CACHE_VERSION whenever the precached file list changes — activate()
  * deletes every cache that doesn't match it, so a stale version can never
@@ -12,7 +13,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v8';
+const CACHE_VERSION = 'dani-v9';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 
@@ -26,6 +27,7 @@ const EDITOR_URL = new URL('apps/editor/index.html', SCOPE).href;
 const PROCEDURE_RUNNER_URL = new URL('apps/procedure-runner/index.html', SCOPE).href;
 const DATA_ANALYSIS_URL = new URL('apps/data-analysis/index.html', SCOPE).href;
 const INCOMING_REPORT_URL = new URL('apps/incoming_report_tool/index.html', SCOPE).href;
+const PIN_CHECK_URL = new URL('apps/pin-check/index.html', SCOPE).href;
 
 // Paths are relative to SCOPE (the directory this script itself lives in).
 const PRECACHE_PATHS = [
@@ -50,7 +52,6 @@ const PRECACHE_PATHS = [
   'apps/editor/js/main.js',
   'apps/editor/js/core/dom-helpers.js',
   'apps/editor/js/logic/calculator-display.js',
-  'apps/editor/js/logic/csv-data.js',
   'apps/editor/js/logic/editor-stats.js',
   'apps/editor/js/logic/engineering-formulas.js',
   'apps/editor/js/logic/expression-evaluator.js',
@@ -62,18 +63,14 @@ const PRECACHE_PATHS = [
   'apps/editor/js/ui/calculator.js',
   'apps/editor/js/ui/clock.js',
   'apps/editor/js/ui/converter.js',
-  'apps/editor/js/ui/data-inspector.js',
   'apps/editor/js/ui/editor-stats.js',
   'apps/editor/js/ui/engineering.js',
   'apps/editor/js/ui/file-io.js',
   'apps/editor/js/ui/find-replace.js',
   'apps/editor/js/ui/formulas.js',
   'apps/editor/js/ui/panel.js',
-  'apps/editor/js/ui/pins.js',
-  'apps/editor/js/ui/procedure.js',
+  'apps/editor/js/ui/panel-resize.js',
   'apps/editor/js/ui/quick-calculator.js',
-  'apps/editor/js/ui/session.js',
-  'apps/editor/js/ui/threshold.js',
   'apps/editor/js/ui/timer.js',
   'apps/editor/js/ui/todo.js',
   'apps/editor/js/ui/widget-order.js',
@@ -116,6 +113,23 @@ const PRECACHE_PATHS = [
   'apps/incoming_report_tool/js/checklist.js',
   'apps/incoming_report_tool/js/report.js',
   'apps/incoming_report_tool/js/main.js',
+
+  // Pin Function Tool app shell
+  'apps/pin-check/index.html',
+  'apps/pin-check/css/styles.css',
+  'apps/pin-check/js/main.js',
+  'apps/pin-check/js/core/dom-helpers.js',
+  'apps/pin-check/js/core/time.js',
+  'apps/pin-check/js/data/connectors.js',
+  'apps/pin-check/js/data/measure-types.js',
+  'apps/pin-check/js/logic/layout.js',
+  'apps/pin-check/js/logic/measurement.js',
+  'apps/pin-check/js/logic/report.js',
+  'apps/pin-check/js/ui/diagram.js',
+  'apps/pin-check/js/ui/export.js',
+  'apps/pin-check/js/ui/screens.js',
+  'apps/pin-check/js/ui/sequence.js',
+  'apps/pin-check/js/ui/state.js',
 
   // Shared helpers
   'shared/css/dani-theme.css',
@@ -203,7 +217,7 @@ self.addEventListener('fetch', event => {
   }
 
   // HTML navigations: prefer the freshest copy, fall back to the cached
-  // app shell when offline so all four apps still launch.
+  // app shell when offline so all five apps still launch.
   if (request.mode === 'navigate') {
     event.respondWith(
       networkFirst(request, CACHE_VERSION).catch(async () => {
@@ -213,9 +227,11 @@ self.addEventListener('fetch', event => {
             ? DATA_ANALYSIS_URL
             : url.pathname.includes('/incoming_report_tool/')
               ? INCOMING_REPORT_URL
-              : url.pathname.includes('/editor/')
-                ? EDITOR_URL
-                : HOME_URL;
+              : url.pathname.includes('/pin-check/')
+                ? PIN_CHECK_URL
+                : url.pathname.includes('/editor/')
+                  ? EDITOR_URL
+                  : HOME_URL;
         const fallback = await caches.match(fallbackUrl);
         return fallback || Response.error();
       })

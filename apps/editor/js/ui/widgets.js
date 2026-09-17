@@ -8,14 +8,8 @@ const helpDescriptions = {
   'Calcolatrice Scientifica': 'Calcolatrice scientifica con modalita DEG/RAD, trigonometria, inverse trigonometriche, log, ln, radice, potenze e memoria.',
   'Engineering Tools': 'Calcolatori dedicati a motori, riduttori, caduta di tensione, potenza elettrica, termica e libreria formule. I valori inseriti restano modificabili.',
   'Quick Engineering Calculator': 'Calcolatore rapido per espressioni ingegneristiche. Supporta pi, pi greco, sqrt(), sin(), cos(), tan(), log(), ln(), abs() e potenze.',
-  'Pinned Engineering Data': 'Area per fissare rapidamente parametri importanti, ad esempio tensione bus, coppia, rapporto riduzione o limiti di corrente.',
-  'System Monitor': 'Panoramica dello stato del server locale, dell editor, dell ultimo salvataggio e della sessione di test. Esporta/importa lo stato del workspace (promemoria, pin, procedura, widget collassati) come file .json per portarlo su un altra postazione.',
-  'Test Session': 'Gestisce una sessione di test con ID, avvio/arresto e log temporale delle note e dei salvataggi.',
-  'Threshold Monitor': 'Controllo manuale di una soglia: imposta valore corrente, warning e alarm per evidenziare rapidamente condizioni anomale.',
-  'Mini Data Inspector': 'Carica un CSV/TXT/TSV, rileva o seleziona il delimitatore, imposta quante righe vedere, consulta min/max/media/σ per ogni colonna numerica, disegna un grafico a barre della colonna scelta ed esporta i dati puliti in CSV.',
-  'Editor Stats': 'Contatore live di righe, parole e caratteri del testo, più indicatore di stato: ● OK quando il file è salvato, ● MOD (giallo) quando ci sono modifiche non ancora salvate.',
+  'System Monitor': 'Panoramica dello stato del server locale e dell editor. Esporta/importa lo stato del workspace (promemoria, widget collassati) come file .json per portarlo su un altra postazione.',
   'Trova & Sostituisci': 'Cerca una stringa nel testo (Enter o Ctrl/Cmd+F per il campo, poi Enter per il match successivo con wrap-around), sostituisci il match selezionato oppure sostituisci tutte le occorrenze con conteggio.',
-  'Procedura di Test': 'Checklist di step per una procedura di test: aggiungi step, segnali PASS/FAIL/N.A. e note, controlli il riepilogo e esporti un report .txt timestampato (si integra con la Test Session).',
   'Scientific Formula Library': 'Libreria rapida di formule scientifiche e ingegneristiche organizzate per meccanica, motori, gearbox, elettrica, termica, fluidi, dinamica e geometria.'
 };
 

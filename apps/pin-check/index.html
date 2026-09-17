@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<script>try{if(localStorage.getItem('dani_theme')==='light')document.documentElement.setAttribute('data-theme','light')}catch(e){}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, interactive-widget=resizes-content">
+<title>Pin Function Tool — DANI</title>
+<meta name="description" content="Verifica elettrica pin-to-pin dei connettori: diagramma interattivo, sequenza di test guidata ed export XLSX/TXT.">
+
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#110808">
+<meta name="color-scheme" content="dark">
+
+<!-- iOS / iPadOS -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DANI">
+<link rel="apple-touch-icon" href="../../icons/apple-touch-icon.png">
+
+<!-- Android / Chrome -->
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- Windows -->
+<meta name="msapplication-TileColor" content="#110808">
+<meta name="msapplication-TileImage" content="../../icons/icon-192.png">
+<meta name="msapplication-tap-highlight" content="no">
+
+<!-- Favicons -->
+<link rel="icon" type="image/png" sizes="32x32" href="../../icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../../icons/favicon-16.png">
+<link rel="shortcut icon" href="../../icons/favicon.ico">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="../../shared/css/dani-theme.css">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="topbar" id="topbar">
+  <span class="brand">
+    <span class="brand-logo-wrap"><img src="../../icons/icon-192.png" alt="" class="brand-logo"></span>
+    <span class="brand-word">🔌 PIN FUNCTION TOOL</span>
+  </span>
+  <span class="spacer"></span>
+  <button class="btn" id="themeToggleBtn">☀️ Tema Chiaro</button>
+  <button class="btn" id="installBtn" hidden>📲 Installa App</button>
+  <button class="btn btn-danger" id="btnRestart" onclick="restartTool()" hidden>↺ Nuova Verifica</button>
+  <button class="btn btn-home" onclick="window.location.href='../../index.html'">🏠 Home</button>
+</div>
+
+<!-- ============ Screen 1: connector selection ============ -->
+<div id="screenSelect" class="screen active">
+  <div class="load-card">
+    <h2>Seleziona un Connettore</h2>
+    <p>Scegli il connettore da verificare per aprire il diagramma pin interattivo e costruire la sequenza di test.</p>
+    <div class="connector-grid" id="connectorGrid"></div>
+  </div>
+</div>
+
+<!-- ============ Screen 2: interactive diagram + test sequence ============ -->
+<div id="screenTest" class="screen">
+  <div class="test-head">
+    <h2 id="connectorTitle">Connettore</h2>
+    <div class="test-head-actions">
+      <button class="btn" onclick="backToSelect()">◀ Cambia Connettore</button>
+      <button class="btn btn-primary" onclick="goToEnd()">Report &amp; Export ▶</button>
+    </div>
+  </div>
+
+  <div class="test-grid">
+    <div class="panel diagram-panel">
+      <div class="panel-title">🔎 Diagramma Pin — passa il mouse o clicca un pin</div>
+      <div class="diagram-wrap" id="diagramWrap"></div>
+      <div class="pin-info" id="pinInfo">Nessun pin selezionato.</div>
+    </div>
+
+    <div class="sequence-col">
+      <div class="panel">
+        <div class="panel-title">➕ Aggiungi Controllo alla Sequenza</div>
+        <div class="add-step-grid">
+          <label>Pin A<select id="newPinA"></select></label>
+          <label>Pin B<select id="newPinB"></select></label>
+          <label>Tipo Misura<select id="newMeasureType" onchange="onNewMeasureTypeChange()"></select></label>
+          <label>Atteso <span class="muted">(opz.)</span><input type="text" id="newExpected" placeholder="es. 120"></label>
+          <label>Tolleranza <span class="muted">(opz.)</span><input type="text" id="newTolerance" placeholder="es. 5% o 0.5"></label>
+          <label>Note <span class="muted">(opz.)</span><input type="text" id="newNotes" placeholder="note..."></label>
+        </div>
+        <button class="btn btn-primary" onclick="addStep()">+ Aggiungi alla Sequenza</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">📋 Sequenza di Test (<span id="stepCount">0</span>)</div>
+        <div class="sequence-table-wrap">
+          <table class="sequence-table" id="sequenceTable">
+            <thead><tr><th>#</th><th>Pin A ↔ B</th><th>Misura</th><th>Esito</th><th></th></tr></thead>
+            <tbody id="sequenceBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="panel" id="measurePanel" hidden>
+        <div class="panel-title">✍️ Inserisci Misura — Step <span id="measureStepNum"></span></div>
+        <div class="measure-summary" id="measureSummary"></div>
+        <label class="measure-value-label" id="measureValueLabel">Valore Misurato</label>
+        <div id="measureValueInputWrap"></div>
+        <div class="measure-result" id="measureResult"></div>
+        <div class="measure-actions">
+          <button class="btn" onclick="deleteSelectedStep()">🗑 Elimina Step</button>
+          <button class="btn btn-primary" onclick="saveMeasurement()">💾 Salva Misura</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ Screen 3: report + export ============ -->
+<div id="screenEnd" class="screen">
+  <div class="end-title">🏁 Report Verifica Connettore</div>
+  <div class="cards" id="endCards">
+    <div class="card signed"><div class="n" id="countPass">0</div><div class="lbl">PASS</div></div>
+    <div class="card skipped"><div class="n" id="countFail">0</div><div class="lbl">FAIL</div></div>
+    <div class="card modified"><div class="n" id="countPending">0</div><div class="lbl">Non Valutate</div></div>
+  </div>
+  <div id="reportBox"></div>
+  <div class="end-actions">
+    <button class="btn" onclick="backToTest()">◀ Torna alla Sequenza</button>
+    <button class="btn btn-primary" onclick="exportXlsx()">📊 Esporta XLSX</button>
+    <button class="btn btn-accent" onclick="exportTxt()">📄 Esporta Report .TXT</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

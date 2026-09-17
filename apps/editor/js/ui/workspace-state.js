@@ -1,12 +1,10 @@
 import { STORAGE_KEY as TODOS_KEY } from './todo.js';
-import { STORAGE_KEY as PINS_KEY } from './pins.js';
-import { STORAGE_KEY as PROCEDURE_KEY } from './procedure.js';
 import { getWidgetEntries, isWidgetVisible } from './widgets.js';
 import { widgetStorageKey, widgetKeyFromTitle } from '../logic/widget-storage-keys.js';
 
-const PERSISTED_KEYS = [TODOS_KEY, PINS_KEY, PROCEDURE_KEY];
+const PERSISTED_KEYS = [TODOS_KEY];
 
-/** Downloads a .json snapshot of todos, pins, the procedure checklist and widget layout. */
+/** Downloads a .json snapshot of todos and widget layout. */
 export function exportWorkspaceState() {
   const state = {};
   PERSISTED_KEYS.forEach(key => {
