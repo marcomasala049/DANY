@@ -1,0 +1,132 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 650" role="img" aria-labelledby="title desc">
+<title id="title">DANI Robotic Hands</title>
+<desc id="desc">Two precision robotic forearms and articulated hands reach toward one another, with a small gap between their index fingertips.</desc>
+<defs>
+  <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#ffffff"/>
+    <stop offset=".48" stop-color="#e8ebee"/>
+    <stop offset="1" stop-color="#bcc2c8"/>
+  </linearGradient>
+  <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#6d747b"/>
+    <stop offset=".45" stop-color="#252b31"/>
+    <stop offset="1" stop-color="#0f1317"/>
+  </linearGradient>
+  <linearGradient id="steel" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#c9ced2"/>
+    <stop offset=".5" stop-color="#f8f9fa"/>
+    <stop offset="1" stop-color="#858d94"/>
+  </linearGradient>
+  <filter id="softShadow" x="-20%" y="-30%" width="140%" height="160%">
+    <feGaussianBlur in="SourceAlpha" stdDeviation="5"/>
+    <feOffset dy="6"/>
+    <feComponentTransfer><feFuncA type="linear" slope=".18"/></feComponentTransfer>
+    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <style>
+    .outline{stroke:#1e252b;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+    .fine{fill:none;stroke:#5d666e;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+    .shell{fill:url(#shell)}
+    .dark{fill:url(#metal)}
+    .steel{fill:url(#steel)}
+    .joint{fill:#20262c;stroke:#8c949b;stroke-width:4}
+    .hub{fill:#dfe3e6;stroke:#333a40;stroke-width:5}
+    .accent{fill:#c8102e;stroke:#8e0b20;stroke-width:3}
+  </style>
+</defs>
+
+<!-- LEFT ROBOTIC ARM -->
+<g id="left-arm" filter="url(#softShadow)">
+  <path class="shell outline" d="M-55 342 C70 280 168 252 282 250 L424 263 C470 267 500 300 494 337 C488 374 451 397 407 393 L267 382 C151 389 65 414-55 462 Z"/>
+  <path class="dark outline" d="M171 285 L285 274 L398 287 L390 360 L273 353 L169 377 Z"/>
+  <path class="shell outline" d="M239 251 L302 225 L435 240 L473 278 L452 321 L312 312 L250 337 Z"/>
+  <path class="fine" d="M284 269 L310 247 M322 272 L350 247 M365 277 L391 252"/>
+  <circle class="hub" cx="451" cy="318" r="58"/>
+  <circle class="joint" cx="451" cy="318" r="35"/>
+  <circle class="steel outline" cx="451" cy="318" r="15"/>
+  <path class="accent" d="M420 271 A58 58 0 0 1 474 263 L465 281 A38 38 0 0 0 431 286 Z"/>
+
+  <!-- forearm -->
+  <path class="shell outline" d="M480 288 C560 271 632 276 699 306 L733 335 L711 381 L668 393 C601 371 546 359 477 358 Z"/>
+  <path class="dark outline" d="M515 303 L648 303 L690 321 L676 365 L537 348 Z"/>
+  <path class="steel outline" d="M527 278 L648 281 L681 298 L666 318 L540 312 Z"/>
+  <circle class="hub" cx="708" cy="355" r="45"/>
+  <circle class="joint" cx="708" cy="355" r="25"/>
+</g>
+
+<!-- LEFT HAND -->
+<g id="left-hand" filter="url(#softShadow)">
+  <path class="shell outline" d="M721 320 C754 290 793 275 830 281 C859 286 877 306 873 329 C869 352 846 362 821 357 L791 350 C814 368 819 391 804 407 C787 424 759 413 744 392 L710 363 Z"/>
+  <path class="dark outline" d="M738 326 C758 307 781 298 805 301 L815 330 L783 348 L753 350 Z"/>
+  <circle class="joint" cx="819" cy="316" r="18"/>
+
+  <!-- left index -->
+  <g id="left-index">
+    <path class="shell outline" d="M823 294 C855 276 888 262 920 254 L930 281 C901 292 872 307 845 326 Z"/>
+    <circle class="joint" cx="929" cy="267" r="16"/>
+    <path class="shell outline" d="M942 256 C974 248 1005 246 1036 251 L1033 277 C1005 275 979 278 951 284 Z"/>
+    <circle class="joint" cx="1040" cy="264" r="14"/>
+    <path class="shell outline" d="M1052 253 C1077 253 1097 258 1114 267 C1097 275 1077 278 1053 276 Z"/>
+    <path class="accent" d="M1102 263 C1111 265 1118 268 1125 272 C1117 276 1110 278 1102 278 Z"/>
+  </g>
+
+  <!-- other fingers -->
+  <path class="shell outline" d="M816 337 C849 344 873 354 893 369 L880 392 C855 379 834 371 804 367 Z"/>
+  <circle class="joint" cx="888" cy="382" r="13"/>
+  <path class="shell outline" d="M797 359 C827 374 847 389 860 408 L842 425 C823 405 806 393 779 383 Z"/>
+  <path class="shell outline" d="M773 374 C795 393 808 410 814 430 L792 440 C781 419 768 405 747 391 Z"/>
+  <path class="fine" d="M747 314 L766 335 M757 300 L782 323"/>
+</g>
+
+<!-- RIGHT ROBOTIC ARM -->
+<g id="right-arm" filter="url(#softShadow)" transform="translate(1800 0) scale(-1 1)">
+  <path class="shell outline" d="M-55 342 C70 280 168 252 282 250 L424 263 C470 267 500 300 494 337 C488 374 451 397 407 393 L267 382 C151 389 65 414-55 462 Z"/>
+  <path class="dark outline" d="M171 285 L285 274 L398 287 L390 360 L273 353 L169 377 Z"/>
+  <path class="shell outline" d="M239 251 L302 225 L435 240 L473 278 L452 321 L312 312 L250 337 Z"/>
+  <path class="fine" d="M284 269 L310 247 M322 272 L350 247 M365 277 L391 252"/>
+  <circle class="hub" cx="451" cy="318" r="58"/>
+  <circle class="joint" cx="451" cy="318" r="35"/>
+  <circle class="steel outline" cx="451" cy="318" r="15"/>
+  <path class="accent" d="M420 271 A58 58 0 0 1 474 263 L465 281 A38 38 0 0 0 431 286 Z"/>
+  <path class="shell outline" d="M480 288 C560 271 632 276 699 306 L733 335 L711 381 L668 393 C601 371 546 359 477 358 Z"/>
+  <path class="dark outline" d="M515 303 L648 303 L690 321 L676 365 L537 348 Z"/>
+  <path class="steel outline" d="M527 278 L648 281 L681 298 L666 318 L540 312 Z"/>
+  <circle class="hub" cx="708" cy="355" r="45"/>
+  <circle class="joint" cx="708" cy="355" r="25"/>
+</g>
+
+<!-- RIGHT HAND, intentionally different articulation -->
+<g id="right-hand" filter="url(#softShadow)">
+  <path class="shell outline" d="M1079 320 C1046 290 1007 275 970 281 C941 286 923 306 927 329 C931 352 954 362 979 357 L1009 350 C986 368 981 391 996 407 C1013 424 1041 413 1056 392 L1090 363 Z"/>
+  <path class="dark outline" d="M1062 326 C1042 307 1019 298 995 301 L985 330 L1017 348 L1047 350 Z"/>
+  <circle class="joint" cx="981" cy="316" r="18"/>
+
+  <!-- right index -->
+  <g id="right-index">
+    <path class="shell outline" d="M977 294 C945 276 912 262 880 254 L870 281 C899 292 928 307 955 326 Z"/>
+    <circle class="joint" cx="871" cy="267" r="16"/>
+    <path class="shell outline" d="M858 256 C826 248 795 246 764 251 L767 277 C795 275 821 278 849 284 Z"/>
+    <circle class="joint" cx="760" cy="264" r="14"/>
+    <path class="shell outline" d="M748 253 C723 253 703 258 686 267 C703 275 723 278 747 276 Z"/>
+    <path class="accent" d="M698 263 C689 265 682 268 675 272 C683 276 690 278 698 278 Z"/>
+  </g>
+
+  <path class="shell outline" d="M984 337 C951 344 927 354 907 369 L920 392 C945 379 966 371 996 367 Z"/>
+  <circle class="joint" cx="912" cy="382" r="13"/>
+  <path class="shell outline" d="M1003 359 C973 374 953 389 940 408 L958 425 C977 405 994 393 1021 383 Z"/>
+  <path class="shell outline" d="M1027 374 C1005 393 992 410 986 430 L1008 440 C1019 419 1032 405 1053 391 Z"/>
+  <path class="fine" d="M1053 314 L1034 335 M1043 300 L1018 323"/>
+</g>
+
+<!-- central symbolic gap / alignment marks -->
+<g id="central-detail" opacity=".65">
+  <circle cx="900" cy="272" r="3.5" fill="#c8102e"/>
+  <path d="M900 242 V252 M900 292 V302 M870 272 H880 M920 272 H930" stroke="#c8102e" stroke-width="2" stroke-linecap="round" opacity=".35"/>
+</g>
+
+<!-- subtle construction lines -->
+<g opacity=".22" fill="none" stroke="#69727a" stroke-width="2" stroke-dasharray="5 10">
+  <path d="M80 505 C370 465 570 458 735 476"/>
+  <path d="M1720 505 C1430 465 1230 458 1065 476"/>
+</g>
+</svg>
