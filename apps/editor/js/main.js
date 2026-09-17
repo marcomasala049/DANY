@@ -68,10 +68,18 @@ Object.assign(window, {
  * mobile on-screen keyboard opens — the CSS uses this instead of 100vh so
  * panels resize above the keyboard instead of being clipped by it, and so
  * a mobile browser's toolbar showing/hiding doesn't leave dead space.
+ *
+ * Also subtracts the topbar's own rendered height, measured live rather
+ * than guessed as a CSS constant — so every existing `calc(var(--app-height)
+ * - ...)` in styles.css keeps meaning "space left for the panels" without
+ * having to know or hardcode how tall the topbar is (which changes if it
+ * wraps to two lines on a narrow window, or if its content changes).
  */
 function adaptWorkspace() {
   const height = (window.visualViewport && window.visualViewport.height) || window.innerHeight;
-  document.documentElement.style.setProperty('--app-height', height + 'px');
+  const topbar = $('editorTopbar');
+  const topbarHeight = topbar ? topbar.getBoundingClientRect().height : 0;
+  document.documentElement.style.setProperty('--app-height', (height - topbarHeight) + 'px');
 }
 
 function initKeyboardShortcuts() {
@@ -100,7 +108,7 @@ function init() {
     loadTargetFile(targetFilePath);
   } else {
     $('file-label').innerText = 'Nessun file collegato — pronto per creare un .txt';
-    $('status').innerHTML = '> Nessun file aperto | Usa “Salva come nuovo .txt” per crearne uno';
+    $('status').innerHTML = '> Nessun file aperto | Usa “📁 Salva Come” per crearne uno';
   }
 
   renderTodos();
