@@ -51,29 +51,36 @@
 </div>
 
 <div id="screenBuilder">
-  <div class="load-card">
-    <h2>Crea una nuova procedura</h2>
-    <p>Definisci gli step uno a uno, oppure importa una procedura CSV/XLSX esistente per modificarla. Puoi associare un'immagine locale a ogni step.</p>
+  <div class="builder-layout">
+    <aside class="builder-index" aria-label="Indice degli step">
+      <div class="builder-index-title"><span data-dani-icon="checklist" data-dani-size="14"></span><span>Step</span></div>
+      <ol id="builderIndexList"></ol>
+    </aside>
 
-    <div class="builder-proc-name">
-      <label for="builderProcName"><span data-dani-icon="file" data-dani-size="14"></span> Nome procedura</label>
-      <input type="text" id="builderProcName" placeholder="Es. Test_AIT_Modulo1" oninput="scheduleDraftSave()">
+    <div class="load-card">
+      <h2>Crea una nuova procedura</h2>
+      <p>Definisci gli step uno a uno, oppure importa una procedura CSV/XLSX esistente per modificarla. Puoi associare un'immagine locale a ogni step.</p>
+
+      <div class="builder-proc-name">
+        <label for="builderProcName"><span data-dani-icon="file" data-dani-size="14"></span> Nome procedura</label>
+        <input type="text" id="builderProcName" placeholder="Es. Test_AIT_Modulo1" oninput="scheduleDraftSave()">
+      </div>
+
+      <div class="builder-actions-row">
+        <button class="btn" onclick="importIntoBuilder()"><span data-dani-icon="folder-open" data-dani-size="16"></span><span>Importa</span></button>
+        <button class="btn" onclick="exportBuilderXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
+        <button class="btn btn-danger" onclick="newBuilderProcedure()"><span data-dani-icon="delete" data-dani-size="16"></span><span>Nuova</span></button>
+      </div>
+      <input type="file" id="builderImportInput" accept=".csv,.txt,.xlsx" style="display:none" onchange="onBuilderImportFile(event)">
+
+      <div id="builderList"></div>
+      <button class="btn" onclick="addBuilderRow()"><span data-dani-icon="add" data-dani-size="16"></span><span>Aggiungi Step</span></button>
+
+      <div class="builder-start-row">
+        <button class="btn btn-primary" onclick="startInRunner()"><span data-dani-icon="play" data-dani-size="16"></span><span>Avvia in Procedure Runner</span></button>
+      </div>
+      <div class="builder-draft-info" id="builderDraftInfo"></div>
     </div>
-
-    <div class="builder-actions-row">
-      <button class="btn" onclick="importIntoBuilder()"><span data-dani-icon="folder-open" data-dani-size="16"></span><span>Importa</span></button>
-      <button class="btn" onclick="exportBuilderXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
-      <button class="btn btn-danger" onclick="newBuilderProcedure()"><span data-dani-icon="delete" data-dani-size="16"></span><span>Nuova</span></button>
-    </div>
-    <input type="file" id="builderImportInput" accept=".csv,.txt,.xlsx" style="display:none" onchange="onBuilderImportFile(event)">
-
-    <div id="builderList"></div>
-    <button class="btn" onclick="addBuilderRow()"><span data-dani-icon="add" data-dani-size="16"></span><span>Aggiungi Step</span></button>
-
-    <div class="builder-start-row">
-      <button class="btn btn-primary" onclick="startInRunner()"><span data-dani-icon="play" data-dani-size="16"></span><span>Avvia in Procedure Runner</span></button>
-    </div>
-    <div class="builder-draft-info" id="builderDraftInfo"></div>
   </div>
 </div>
 

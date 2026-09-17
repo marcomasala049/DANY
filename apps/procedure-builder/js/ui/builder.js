@@ -45,6 +45,54 @@ function renumberBuilderRows() {
     if (down) down.disabled = i === rows.length - 1;
   });
   builderRows = rows.length;
+  renderIndex();
+}
+
+/**
+ * Left-side step index — one entry per row, showing its number and a short
+ * preview of its description, clicking scrolls the page (not an inner
+ * scroll box, see index.html) to that step and focuses it.
+ */
+function renderIndex() {
+  const list = $('builderIndexList');
+  if (!list) return;
+  const rows = collectBuilderRowEls();
+
+  list.innerHTML = '';
+  if (!rows.length) {
+    const empty = document.createElement('li');
+    empty.className = 'builder-index-empty';
+    empty.textContent = 'Nessuno step';
+    list.appendChild(empty);
+    return;
+  }
+
+  rows.forEach((r, i) => {
+    const desc = r.querySelector('.b-desc').value.trim();
+
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'builder-index-item';
+
+    const num = document.createElement('span');
+    num.className = 'builder-index-num';
+    num.textContent = i + 1;
+
+    const label = document.createElement('span');
+    label.className = 'builder-index-label';
+    label.textContent = desc || 'Senza descrizione';
+    if (!desc) label.classList.add('builder-index-label-empty');
+
+    btn.append(num, label);
+    btn.onclick = () => {
+      r.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      r.querySelector('.b-desc').focus();
+    };
+
+    li.appendChild(btn);
+    list.appendChild(li);
+  });
 }
 
 function moveBuilderRow(row, dir) {
@@ -192,6 +240,7 @@ function replaceBuilderRows(steps) {
 
 /** Debounced auto-save, called on every field edit. Exposed on window for the procName input. */
 export function scheduleDraftSave() {
+  renderIndex();
   clearTimeout(draftSaveTimer);
   draftSaveTimer = setTimeout(saveDraft, 300);
 }
