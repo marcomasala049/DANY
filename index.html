@@ -122,7 +122,9 @@ button{font:inherit;cursor:pointer;background:none;border:none;color:inherit}
   width:34px;height:34px;border-radius:10px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(155deg,var(--accent-soft),transparent);
   border:1px solid var(--border-strong);
+  transition:box-shadow .3s ease,border-color .3s ease;
 }
+.topbar:hover .brand-logo-wrap{box-shadow:0 0 16px -2px var(--accent-soft);border-color:var(--border-strong)}
 .brand-logo{width:22px;height:22px;border-radius:5px;display:block}
 .brand-word{font-family:'Sora',sans-serif;font-weight:700;font-size:1.05em;letter-spacing:.5px;color:var(--text-primary)}
 .topbar .spacer{flex:1}
@@ -165,55 +167,70 @@ main .tagline{
   animation:fadeUp .6s ease .26s both;
 }
 
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,260px));gap:18px;width:100%;max-width:560px}
-@media(max-width:760px){.cards{grid-template-columns:minmax(0,1fr);max-width:400px}}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;width:100%;max-width:1180px}
+@media(max-width:980px){.cards{grid-template-columns:repeat(2,minmax(0,1fr));max-width:620px;gap:18px}}
+@media(max-width:480px){.cards{grid-template-columns:minmax(0,1fr);max-width:400px}}
 
 .card{
-  --mx:50%;--my:30%;
-  position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:14px;text-align:left;
+  --mx:50%;--my:30%;--rx:0deg;--ry:0deg;
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:13px;text-align:left;
   background:var(--panel-glass);border:1px solid var(--border-strong);border-radius:18px;
-  padding:26px 24px;text-decoration:none;color:inherit;
+  padding:24px 22px;text-decoration:none;color:inherit;
   backdrop-filter:blur(14px);box-shadow:var(--shadow);
-  transition:border-color .2s ease,transform .2s ease,background .2s ease,box-shadow .2s ease;
-  opacity:0;transform:translateY(14px);animation:cardIn .5s ease forwards;
+  transform-style:preserve-3d;perspective:800px;
+  transition:border-color .25s ease,transform .35s cubic-bezier(.16,1,.3,1),background .25s ease,box-shadow .35s ease;
+  opacity:0;transform:translateY(18px) scale(.96);animation:cardIn .6s cubic-bezier(.16,1,.3,1) forwards;
 }
-.card:nth-child(1){animation-delay:.36s}
-.card:nth-child(2){animation-delay:.44s}
-.card:nth-child(3){animation-delay:.52s}
-.card:nth-child(4){animation-delay:.60s}
-@keyframes cardIn{to{opacity:1;transform:translateY(0)}}
+.card:nth-child(1){animation-delay:.34s}
+.card:nth-child(2){animation-delay:.42s}
+.card:nth-child(3){animation-delay:.50s}
+.card:nth-child(4){animation-delay:.58s}
+@keyframes cardIn{to{opacity:1;transform:translateY(0) scale(1)}}
 
-/* Cursor-following glow, purely decorative — see the tiny pointermove
-   listener near the bottom of the page; degrades to just the plain hover
-   border/lift below if JS never runs. */
+/* Cursor-following glow + a gentle 3D tilt toward the pointer — both purely
+   decorative, see the pointermove/pointerleave listeners near the bottom of
+   the page; --rx/--ry default to 0deg so with JS disabled (or on touch,
+   where the listener is skipped) the cards just keep the plain hover
+   border/lift below. */
 .card::before{
   content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   background:radial-gradient(220px circle at var(--mx) var(--my),var(--accent-soft),transparent 70%);
   opacity:0;transition:opacity .3s ease;
 }
+/* Thin glowing accent line that sweeps in under the card on hover/focus. */
+.card::after{
+  content:'';position:absolute;left:18px;right:18px;bottom:0;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,var(--accent),var(--accent-2),transparent);
+  opacity:0;transform:scaleX(.5);transition:opacity .3s ease,transform .3s ease;
+}
 .card>*{position:relative;z-index:1}
 
 .card:hover,.card:focus-visible{
-  border-color:var(--accent);background:var(--panel-glass-hover);transform:translateY(-4px);outline:none;
+  border-color:var(--accent);background:var(--panel-glass-hover);outline:none;
+  transform:translateY(-5px) scale(1.015) perspective(800px) rotateX(var(--ry)) rotateY(var(--rx));
   box-shadow:var(--shadow),0 0 0 1px var(--accent-soft);
 }
 .card:hover::before,.card:focus-visible::before{opacity:1}
+.card:hover::after,.card:focus-visible::after{opacity:1;transform:scaleX(1)}
 .card:active{transform:translateY(-1px) scale(.985)}
 
 .card-icon-badge{
-  width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;
   background:linear-gradient(155deg,var(--accent-soft),transparent);
   border:1px solid var(--border-strong);color:var(--accent);
-  transition:transform .25s ease,background .25s ease;
+  transition:transform .3s cubic-bezier(.16,1,.3,1),background .25s ease,box-shadow .3s ease;
 }
-.card-icon-badge svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.card:hover .card-icon-badge{transform:scale(1.08) rotate(-4deg);background:linear-gradient(155deg,var(--accent-soft),var(--accent-soft))}
+.card-icon-badge svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.card:hover .card-icon-badge{
+  transform:scale(1.1) rotate(-6deg);background:linear-gradient(155deg,var(--accent-soft),var(--accent-soft));
+  box-shadow:0 0 18px -4px var(--accent-soft);
+}
 
-.card-title{font-family:'Sora',sans-serif;font-size:1.02em;font-weight:600;color:var(--text-primary);letter-spacing:.2px}
-.card-desc{font-size:.82em;color:var(--text-tertiary);line-height:1.55}
+.card-title{font-family:'Sora',sans-serif;font-size:1em;font-weight:600;color:var(--text-primary);letter-spacing:.2px}
+.card-desc{font-size:.8em;color:var(--text-tertiary);line-height:1.55}
 
 .card-cta{
-  margin-top:2px;display:inline-flex;align-items:center;gap:6px;font-size:.76em;font-weight:600;
+  margin-top:1px;display:inline-flex;align-items:center;gap:6px;font-size:.76em;font-weight:600;
   color:var(--accent);letter-spacing:.2px;
 }
 .card-cta svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s ease}
@@ -224,8 +241,10 @@ main .tagline{
   margin-top:40px;color:var(--text-tertiary);font-size:.76em;
   animation:fadeUp .6s ease .62s both;
 }
-.feature-strip span{display:inline-flex;align-items:center;gap:6px}
-.feature-strip svg{width:14px;height:14px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.feature-strip span{display:inline-flex;align-items:center;gap:6px;transition:color .2s ease}
+.feature-strip span:hover{color:var(--text-secondary)}
+.feature-strip svg{width:14px;height:14px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:filter .2s ease}
+.feature-strip span:hover svg{filter:drop-shadow(0 0 4px var(--accent-soft))}
 
 footer{
   position:relative;z-index:1;padding:18px;text-align:center;font-size:.72em;color:var(--text-tertiary);
@@ -237,7 +256,8 @@ footer{
   .topbar,.eyebrow,main h1,main .subtitle,main .tagline,.card,.feature-strip{
     animation:none;opacity:1;transform:none;
   }
-  .card-icon-badge,.card-cta svg,.btn-bar,.card{transition:none}
+  .card-icon-badge,.card-cta svg,.btn-bar,.card,.card::after,.brand-logo-wrap{transition:none}
+  .card:hover,.card:focus-visible{transform:none}
 }
 </style>
 </head>
@@ -314,14 +334,28 @@ registerServiceWorker();
 initInstallPrompt(document.getElementById('installBtn'));
 initTheme(document.getElementById('themeToggleBtn'));
 
-// Cursor-following glow on each card — purely decorative, see .card::before
-// above; if this never runs (JS disabled) the cards still work as plain
-// links with the CSS-only hover border/lift.
+// Cursor-following glow + a gentle pointer-toward tilt on each card — both
+// purely decorative, see .card::before/:hover above; if this never runs (JS
+// disabled) the cards still work as plain links with the CSS-only hover
+// border/lift. The tilt is skipped on touch/coarse pointers (no hover to
+// drive it) and when the user prefers reduced motion.
+const fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+const reducedMotion = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
 document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('pointermove', e => {
     const r = card.getBoundingClientRect();
-    card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
-    card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    card.style.setProperty('--mx', (px * 100) + '%');
+    card.style.setProperty('--my', (py * 100) + '%');
+    if (fine && !reducedMotion) {
+      card.style.setProperty('--rx', ((px - 0.5) * 8) + 'deg');
+      card.style.setProperty('--ry', ((0.5 - py) * 8) + 'deg');
+    }
+  });
+  card.addEventListener('pointerleave', () => {
+    card.style.setProperty('--rx', '0deg');
+    card.style.setProperty('--ry', '0deg');
   });
 });
 </script>
