@@ -3,6 +3,7 @@ import { registerServiceWorker, initInstallPrompt } from '../../../shared/js/pwa
 import { initTheme } from '../../../shared/js/theme.js';
 import { daniIcon, mountIcons } from '../../../shared/js/dani-icons.js';
 import { renderSidebar, renderHomeButton } from '../../../shared/js/sidebar.js';
+import { daniAlert } from '../../../shared/js/dialog.js';
 
 // ==================== STATE ====================
 let loadedData=[];

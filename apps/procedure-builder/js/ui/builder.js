@@ -16,6 +16,7 @@ import { mapHeader, extractStep } from '../../../../shared/js/column-mapping.js'
 import { downloadBlob } from '../../../../shared/js/download.js';
 import { excelValue, recoverEmbeddedImages, buildProcedureWorksheet } from '../../../../shared/js/procedure-xlsx.js';
 import { daniIcon } from '../../../../shared/js/dani-icons.js';
+import { daniAlert, daniConfirm, daniPrompt } from '../../../../shared/js/dialog.js';
 
 const DRAFT_KEY = 'procbuilder_draft';
 // Must match Procedure Runner's own ui/session-storage.js SESSION_KEY — this
@@ -346,9 +347,9 @@ function clearDraft() {
 }
 
 /** "Nuova" — clears the builder back to two blank rows, confirming first if there's content. */
-export function newBuilderProcedure() {
+export async function newBuilderProcedure() {
   const hasContent = collectBuilderSteps().some(s => s.desc || s.expected || s.image);
-  if (hasContent && !confirm('Creare una nuova procedura? Gli step correnti verranno eliminati.')) return;
+  if (hasContent && !(await daniConfirm('Creare una nuova procedura? Gli step correnti verranno eliminati.', { danger: true, okText: 'Elimina' }))) return;
   replaceBuilderRows([]);
   if ($('builderProcName')) $('builderProcName').value = '';
   addBuilderRow();
@@ -375,15 +376,15 @@ export async function onBuilderImportFile(e) {
     }
   } catch (err) {
     console.error(err);
-    alert('Impossibile leggere il file: ' + (err?.message || err));
+    await daniAlert('Impossibile leggere il file: ' + (err?.message || err));
   }
 }
 
 /** Only desc/expected/image are kept on import — the same fields the builder UI edits
  *  (a richer file, e.g. one exported mid-run, still imports cleanly; the rest is dropped). */
-function replaceBuilderStepsFromImport(parsed, filename) {
+async function replaceBuilderStepsFromImport(parsed, filename) {
   const hasContent = collectBuilderSteps().some(s => s.desc || s.expected || s.image);
-  if (hasContent && !confirm('Sostituire gli step attuali con quelli importati?')) return;
+  if (hasContent && !(await daniConfirm('Sostituire gli step attuali con quelli importati?'))) return;
   replaceBuilderRows(parsed);
   if ($('builderProcName') && !$('builderProcName').value) {
     $('builderProcName').value = filename.replace(/\.[^.]+$/, '');
@@ -391,11 +392,11 @@ function replaceBuilderStepsFromImport(parsed, filename) {
   scheduleDraftSave();
 }
 
-function importBuilderFromCSV(text, filename) {
+async function importBuilderFromCSV(text, filename) {
   const rows = parseCSV(text);
-  if (rows.length < 2) { alert('Il file CSV è vuoto o non contiene righe dati.'); return; }
+  if (rows.length < 2) { await daniAlert('Il file CSV è vuoto o non contiene righe dati.'); return; }
   const idx = mapHeader(rows[0]);
-  if (idx.desc === -1) { alert('Colonna "Descrizione" non trovata nell\'intestazione del CSV.'); return; }
+  if (idx.desc === -1) { await daniAlert('Colonna "Descrizione" non trovata nell\'intestazione del CSV.'); return; }
 
   const parsed = [];
   for (let r = 1; r < rows.length; r++) {
@@ -404,13 +405,13 @@ function importBuilderFromCSV(text, filename) {
     const step = extractStep(idx, row, parsed.length + 1);
     parsed.push({ desc: step.desc, expected: step.expected, image: step.image });
   }
-  if (!parsed.length) { alert('Nessuno step valido trovato nel CSV.'); return; }
-  replaceBuilderStepsFromImport(parsed, filename);
+  if (!parsed.length) { await daniAlert('Nessuno step valido trovato nel CSV.'); return; }
+  await replaceBuilderStepsFromImport(parsed, filename);
 }
 
 async function importBuilderFromXLSX(file) {
   if (typeof ExcelJS === 'undefined') {
-    alert('La libreria XLSX non è disponibile. Controlla la connessione Internet e riprova.');
+    await daniAlert('La libreria XLSX non è disponibile. Controlla la connessione Internet e riprova.');
     return;
   }
 
@@ -419,11 +420,11 @@ async function importBuilderFromXLSX(file) {
   await workbook.xlsx.load(buffer);
 
   const worksheet = workbook.worksheets[0];
-  if (!worksheet) { alert('Il file XLSX non contiene fogli di lavoro.'); return; }
+  if (!worksheet) { await daniAlert('Il file XLSX non contiene fogli di lavoro.'); return; }
 
   const headerRow = worksheet.getRow(1).values.slice(1).map(excelValue);
   const idx = mapHeader(headerRow);
-  if (idx.desc === -1) { alert('Colonna "Descrizione" non trovata nel primo foglio XLSX.'); return; }
+  if (idx.desc === -1) { await daniAlert('Colonna "Descrizione" non trovata nel primo foglio XLSX.'); return; }
 
   const parsed = [];
   for (let r = 2; r <= worksheet.rowCount; r++) {
@@ -436,11 +437,11 @@ async function importBuilderFromXLSX(file) {
     const step = extractStep(idx, values, parsed.length + 1);
     parsed.push({ desc: step.desc, expected: step.expected, image: step.image });
   }
-  if (!parsed.length) { alert('Nessuno step valido trovato nel XLSX.'); return; }
+  if (!parsed.length) { await daniAlert('Nessuno step valido trovato nel XLSX.'); return; }
 
   recoverEmbeddedImages(workbook, worksheet, parsed);
 
-  replaceBuilderStepsFromImport(parsed, file.name);
+  await replaceBuilderStepsFromImport(parsed, file.name);
 }
 
 /* ==================== Export straight from the builder ==================== */
@@ -453,21 +454,21 @@ function builderBaseName() {
 /** "Esporta XLSX" — exports the draft as a procedure file without starting it. */
 export async function exportBuilderXlsx() {
   const valid = collectBuilderSteps().filter(s => s.desc);
-  if (!valid.length) { alert('Aggiungi almeno uno step con una descrizione prima di esportare.'); return; }
+  if (!valid.length) { await daniAlert('Aggiungi almeno uno step con una descrizione prima di esportare.'); return; }
   if (typeof ExcelJS === 'undefined') {
-    alert('La libreria XLSX non è disponibile. Controlla la connessione Internet e riprova.');
+    await daniAlert('La libreria XLSX non è disponibile. Controlla la connessione Internet e riprova.');
     return;
   }
 
   const defaultName = builderBaseName();
-  const inputName = prompt('Conferma il nome del file da salvare (senza estensione):', defaultName);
+  const inputName = await daniPrompt('Conferma il nome del file da salvare (senza estensione):', { defaultValue: defaultName });
   if (inputName === null) return;
 
   let baseName = inputName.trim();
-  if (!baseName) { alert('Nome non valido. Operazione annullata.'); return; }
+  if (!baseName) { await daniAlert('Nome non valido. Operazione annullata.'); return; }
   baseName = baseName.replace(/\.xlsx$/i, '');
 
-  const confirmed = confirm(
+  const confirmed = await daniConfirm(
     'Confermi di voler salvare il file come:\n\n' + baseName + '.xlsx\n\nStep: ' + valid.length
   );
   if (!confirmed) return;
@@ -486,7 +487,7 @@ export async function exportBuilderXlsx() {
     );
   } catch (err) {
     console.error(err);
-    alert('Errore durante l’esportazione XLSX: ' + (err?.message || err));
+    await daniAlert('Errore durante l’esportazione XLSX: ' + (err?.message || err));
   }
 }
 
@@ -494,7 +495,7 @@ export async function exportBuilderXlsx() {
  * "Avvia in Procedure Runner" — hands the draft off to Test Procedure Runner
  * as a resumable session (see module docstring) instead of running it here.
  */
-export function startInRunner() {
+export async function startInRunner() {
   const rows = collectBuilderSteps();
   const parsed = [];
 
@@ -515,7 +516,7 @@ export function startInRunner() {
     });
   });
 
-  if (!parsed.length) { alert('Inserisci almeno uno step con una descrizione.'); return; }
+  if (!parsed.length) { await daniAlert('Inserisci almeno uno step con una descrizione.'); return; }
 
   const procName = ($('builderProcName') ? $('builderProcName').value : '').trim();
   try {
@@ -526,7 +527,7 @@ export function startInRunner() {
       savedAt: new Date().toISOString()
     }));
   } catch (e) {
-    alert('Impossibile passare la procedura al Runner: ' + (e?.message || e));
+    await daniAlert('Impossibile passare la procedura al Runner: ' + (e?.message || e));
     return;
   }
   clearDraft();

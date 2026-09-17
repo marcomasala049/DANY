@@ -2,6 +2,7 @@ import { nowStamp } from '../core/time.js';
 import { buildExportRows, buildTxtReport, EXPORT_COLUMNS } from '../logic/report.js';
 import { state } from './state.js';
 import { getCurrentConnector } from './diagram.js';
+import { daniAlert } from '../../../../shared/js/dialog.js';
 
 function downloadBlob(blob, filename) {
   const url = URL.createObjectURL(blob);
@@ -15,8 +16,8 @@ function downloadBlob(blob, filename) {
 }
 
 /** Downloads the full human-readable .txt report — works fully offline (Blob + local download). */
-export function exportTxt() {
-  if (!state.steps.length) { alert('Nessuna misura da esportare.'); return; }
+export async function exportTxt() {
+  if (!state.steps.length) { await daniAlert('Nessuna misura da esportare.'); return; }
   const connector = getCurrentConnector();
   const text = buildTxtReport(connector, state.steps, { generatedAt: nowStamp() });
   downloadBlob(new Blob([text], { type: 'text/plain;charset=utf-8' }), 'verifica_' + (connector ? connector.id : 'connettore') + '_' + Date.now() + '.txt');
@@ -24,9 +25,9 @@ export function exportTxt() {
 
 /** Downloads the measurement table as .xlsx (needs the ExcelJS CDN script; falls back to an alert if it never loaded). */
 export async function exportXlsx() {
-  if (!state.steps.length) { alert('Nessuna misura da esportare.'); return; }
+  if (!state.steps.length) { await daniAlert('Nessuna misura da esportare.'); return; }
   if (typeof ExcelJS === 'undefined') {
-    alert('La libreria XLSX non è disponibile (serve una connessione Internet la prima volta). Puoi comunque esportare il report in .TXT, che funziona offline.');
+    await daniAlert('La libreria XLSX non è disponibile (serve una connessione Internet la prima volta). Puoi comunque esportare il report in .TXT, che funziona offline.');
     return;
   }
 
@@ -49,6 +50,6 @@ export async function exportXlsx() {
     );
   } catch (err) {
     console.error(err);
-    alert('Errore durante l’esportazione XLSX: ' + (err?.message || err));
+    await daniAlert('Errore durante l’esportazione XLSX: ' + (err?.message || err));
   }
 }

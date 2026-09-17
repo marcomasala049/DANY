@@ -1,5 +1,6 @@
 import { widgetKeyFromTitle } from '../logic/widget-storage-keys.js';
 import { WIDGET_ORDER_KEY, sortIdsByOrder } from '../logic/widget-order.js';
+import { daniConfirm } from '../../../../shared/js/dialog.js';
 
 let dragEl = null;
 
@@ -61,8 +62,8 @@ function applyWidgetOrder() {
 }
 
 /** "↺ RESET ORDINE" in the widget manager: drops the saved order and reloads. */
-export function resetWidgetOrder() {
-  if (!confirm("Ripristinare l'ordine originale dei widget?")) return;
+export async function resetWidgetOrder() {
+  if (!(await daniConfirm("Ripristinare l'ordine originale dei widget?"))) return;
   try { localStorage.removeItem(WIDGET_ORDER_KEY); } catch { /* ignore */ }
   location.reload();
 }

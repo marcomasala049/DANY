@@ -385,8 +385,14 @@ body.sidebar-expanded .dani-sb-label{opacity:1}
 .modal-box.danger{border-color:var(--danger-border)}
 .modal-title{font-family:var(--font-display);color:var(--text-primary);font-size:1.05em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .modal-box.danger .modal-title{color:var(--danger)}
-.modal-text{color:var(--text-secondary);font-size:.86em;line-height:1.6;margin-bottom:12px}
+.modal-text{color:var(--text-secondary);font-size:.86em;line-height:1.6;margin-bottom:12px;white-space:pre-wrap}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+
+/* shared/js/dialog.js — the app's own alert()/confirm()/prompt() replacements. */
+.dani-dialog-input-wrap{margin:-4px 0 12px}
+.dani-dialog-input{width:100%}
+.dani-dialog-overlay .dani-dialog-icon{color:var(--accent)}
+.dani-dialog-overlay .dani-dialog-box.danger .dani-dialog-icon{color:var(--danger)}
 
 /* ==========================================================================
    Form controls. Baseline look only (color/border/radius) — sizing

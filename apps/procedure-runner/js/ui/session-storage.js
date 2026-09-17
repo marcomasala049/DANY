@@ -3,6 +3,7 @@ import { escapeHtml } from '../../../../shared/js/dom-utils.js';
 import { findFirstUnsigned } from '../logic/steps.js';
 import { state } from './state.js';
 import { enterExecution } from './execution.js';
+import { daniAlert, daniConfirm } from '../../../../shared/js/dialog.js';
 
 export const SESSION_KEY = 'procrunner_session';
 
@@ -44,7 +45,7 @@ export function checkForSavedSession() {
   }
 }
 
-export function resumeSession() {
+export async function resumeSession() {
   const raw = localStorage.getItem(SESSION_KEY);
   if (!raw) return;
 
@@ -55,17 +56,17 @@ export function resumeSession() {
     state.currentIndex = Number.isInteger(s.currentIndex) ? s.currentIndex : findFirstUnsigned(state.steps);
     state.sourceName = s.sourceName || 'procedura.csv';
 
-    if (!state.steps.length) { discardSession(); return; }
+    if (!state.steps.length) { await discardSession(); return; }
 
     enterExecution();
   } catch (e) {
-    alert('La sessione salvata non è leggibile.');
+    await daniAlert('La sessione salvata non è leggibile.');
     localStorage.removeItem(SESSION_KEY);
   }
 }
 
-export function discardSession() {
-  if (!confirm('Eliminare la sessione salvata? L\'operazione non è reversibile.')) return;
+export async function discardSession() {
+  if (!(await daniConfirm('Eliminare la sessione salvata? L\'operazione non è reversibile.', { danger: true, okText: 'Elimina' }))) return;
   localStorage.removeItem(SESSION_KEY);
   $('resumeBox').style.display = 'none';
 }

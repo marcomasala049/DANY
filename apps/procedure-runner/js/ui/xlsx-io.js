@@ -5,13 +5,14 @@ import { saveSession } from './session-storage.js';
 import { enterExecution } from './execution.js';
 import { downloadBlob } from '../../../../shared/js/download.js';
 import { excelValue, recoverEmbeddedImages, buildProcedureWorksheet } from '../../../../shared/js/procedure-xlsx.js';
+import { daniAlert } from '../../../../shared/js/dialog.js';
 
 export { excelValue, recoverEmbeddedImages, buildProcedureWorksheet };
 
 /** Loads a procedure from an .xlsx file (first worksheet), recovering embedded images when present. */
 export async function loadFromXLSXFile(file) {
   if (typeof ExcelJS === 'undefined') {
-    alert('La libreria XLSX non è disponibile. Controlla la connessione Internet e riprova.');
+    await daniAlert('La libreria XLSX non è disponibile. Controlla la connessione Internet e riprova.');
     return;
   }
 
@@ -20,11 +21,11 @@ export async function loadFromXLSXFile(file) {
   await workbook.xlsx.load(buffer);
 
   const worksheet = workbook.worksheets[0];
-  if (!worksheet) { alert('Il file XLSX non contiene fogli di lavoro.'); return; }
+  if (!worksheet) { await daniAlert('Il file XLSX non contiene fogli di lavoro.'); return; }
 
   const headerRow = worksheet.getRow(1).values.slice(1).map(excelValue);
   const idx = mapHeader(headerRow);
-  if (idx.desc === -1) { alert('Colonna "Descrizione" non trovata nel primo foglio XLSX.'); return; }
+  if (idx.desc === -1) { await daniAlert('Colonna "Descrizione" non trovata nel primo foglio XLSX.'); return; }
 
   const parsed = [];
   for (let r = 2; r <= worksheet.rowCount; r++) {
@@ -37,7 +38,7 @@ export async function loadFromXLSXFile(file) {
     parsed.push(extractStep(idx, values, parsed.length + 1));
   }
 
-  if (!parsed.length) { alert('Nessuno step valido trovato nel XLSX.'); return; }
+  if (!parsed.length) { await daniAlert('Nessuno step valido trovato nel XLSX.'); return; }
 
   recoverEmbeddedImages(workbook, worksheet, parsed);
 
@@ -51,7 +52,7 @@ export async function loadFromXLSXFile(file) {
 /** Downloads a starter .xlsx template with sample rows and frozen header. */
 export async function downloadXlsxTemplate() {
   if (typeof ExcelJS === 'undefined') {
-    alert('La libreria XLSX non è disponibile. Controlla la connessione Internet e riprova.');
+    await daniAlert('La libreria XLSX non è disponibile. Controlla la connessione Internet e riprova.');
     return;
   }
 

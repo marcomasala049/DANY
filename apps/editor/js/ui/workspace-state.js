@@ -1,6 +1,7 @@
 import { STORAGE_KEY as TODOS_KEY } from './todo.js';
 import { getWidgetEntries, isWidgetVisible } from './widgets.js';
 import { widgetStorageKey, widgetKeyFromTitle } from '../logic/widget-storage-keys.js';
+import { daniAlert } from '../../../../shared/js/dialog.js';
 
 const PERSISTED_KEYS = [TODOS_KEY];
 
@@ -53,9 +54,9 @@ export async function importWorkspaceState(event) {
       Object.entries(state._widgetVisibility).forEach(([title, v]) => localStorage.setItem(widgetStorageKey(title), v ? '1' : '0'));
     }
 
-    alert('Stato importato correttamente. La pagina verrà ricaricata.');
+    await daniAlert('Stato importato correttamente. La pagina verrà ricaricata.');
     location.reload();
   } catch (err) {
-    alert('File di stato non valido: ' + err.message);
+    await daniAlert('File di stato non valido: ' + err.message);
   }
 }

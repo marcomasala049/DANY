@@ -1,4 +1,5 @@
 import { $ } from '../core/dom-helpers.js';
+import { daniAlert } from '../../../../shared/js/dialog.js';
 
 export function openModal(id) {
   $(id).classList.add('show');
@@ -15,6 +16,6 @@ export function closeAllModals() {
 export function closeTab() {
   window.close();
   setTimeout(() => {
-    if (!window.closed) alert('Puoi chiudere questa scheda manualmente.');
+    if (!window.closed) daniAlert('Puoi chiudere questa scheda manualmente.');
   }, 200);
 }

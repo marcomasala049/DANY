@@ -7,6 +7,7 @@ import { saveSession } from './session-storage.js';
 import { enterExecution } from './execution.js';
 import { downloadBlob } from '../../../../shared/js/download.js';
 import { loadFromXLSXFile } from './xlsx-io.js';
+import { daniAlert } from '../../../../shared/js/dialog.js';
 
 export async function onFileSelected(e) {
   const file = e.target.files[0];
@@ -21,20 +22,20 @@ export async function loadProcedureFile(file) {
       await loadFromXLSXFile(file);
     } else {
       const text = await file.text();
-      loadFromCSVText(text, file.name);
+      await loadFromCSVText(text, file.name);
     }
   } catch (err) {
     console.error(err);
-    alert('Impossibile leggere il file: ' + (err?.message || err));
+    await daniAlert('Impossibile leggere il file: ' + (err?.message || err));
   }
 }
 
-export function loadFromCSVText(text, filename) {
+export async function loadFromCSVText(text, filename) {
   const rows = parseCSV(text);
-  if (rows.length < 2) { alert('Il file CSV è vuoto o non contiene righe dati.'); return; }
+  if (rows.length < 2) { await daniAlert('Il file CSV è vuoto o non contiene righe dati.'); return; }
 
   const idx = mapHeader(rows[0]);
-  if (idx.desc === -1) { alert('Colonna "Descrizione" non trovata nell\'intestazione del CSV. Controlla il formato.'); return; }
+  if (idx.desc === -1) { await daniAlert('Colonna "Descrizione" non trovata nell\'intestazione del CSV. Controlla il formato.'); return; }
 
   const parsed = [];
   for (let r = 1; r < rows.length; r++) {
@@ -43,7 +44,7 @@ export function loadFromCSVText(text, filename) {
     parsed.push(extractStep(idx, row, parsed.length + 1));
   }
 
-  if (!parsed.length) { alert('Nessuno step valido trovato nel CSV.'); return; }
+  if (!parsed.length) { await daniAlert('Nessuno step valido trovato nel CSV.'); return; }
 
   state.steps = parsed;
   state.sourceName = filename;

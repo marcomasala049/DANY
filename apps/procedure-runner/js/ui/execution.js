@@ -11,6 +11,7 @@ import { saveSession } from './session-storage.js';
 import { openModal, closeModal } from './modal.js';
 import { renderSummary } from './summary.js';
 import { evaluateEnd } from './end-screen.js';
+import { daniAlert, daniConfirm } from '../../../../shared/js/dialog.js';
 
 // Set only while the anomaly/skip modals are open on behalf of a *linked*
 // (repositioned) step's inline panel, rather than the current step — null
@@ -213,9 +214,9 @@ function buildLinkedStepBlock(stepData, originalIndex) {
 }
 
 /** "✍ Firma e Chiudi questo Step" on a linked panel — same anomaly check as the main flow. */
-function signLinkedStep(originalIndex) {
+async function signLinkedStep(originalIndex) {
   if (!state.username) {
-    alert('Inserisci il nome operatore in alto prima di firmare uno step.');
+    await daniAlert('Inserisci il nome operatore in alto prima di firmare uno step.');
     $('usernameField').focus();
     return;
   }
@@ -230,7 +231,7 @@ function signLinkedStep(originalIndex) {
 
   const evaluation = evaluateMeasurement(s.expected, measuredStr);
   if (evaluation.kind === 'invalid-number') {
-    alert('Errore: il valore inserito ("' + evaluation.measuredStr + '") non è un numero valido.\nPer questo passo è richiesto un riscontro numerico.');
+    await daniAlert('Errore: il valore inserito ("' + evaluation.measuredStr + '") non è un numero valido.\nPer questo passo è richiesto un riscontro numerico.');
     return;
   }
   if (evaluation.kind === 'anomaly' && !(s.anomaly && s.anomaly.trim())) {
@@ -313,7 +314,7 @@ export function onNoteChange() {
   checkForModification();
 }
 
-export function handleAction() {
+export async function handleAction() {
   if (state.currentIndex >= state.steps.length) return;
 
   const s = state.steps[state.currentIndex];
@@ -321,7 +322,7 @@ export function handleAction() {
   const evaluation = evaluateMeasurement(s.expected, measuredStr);
 
   if (evaluation.kind === 'invalid-number') {
-    alert('Errore: il valore inserito ("' + evaluation.measuredStr + '") non è un numero valido.\nPer questo passo è richiesto un riscontro numerico.');
+    await daniAlert('Errore: il valore inserito ("' + evaluation.measuredStr + '") non è un numero valido.\nPer questo passo è richiesto un riscontro numerico.');
     return;
   }
 
@@ -333,12 +334,12 @@ export function handleAction() {
     return;
   }
 
-  performSave();
+  await performSave();
 }
 
-function performSave() {
+async function performSave() {
   if (!state.username) {
-    alert('Inserisci il nome operatore in alto prima di firmare uno step.');
+    await daniAlert('Inserisci il nome operatore in alto prima di firmare uno step.');
     $('usernameField').focus();
     return;
   }
@@ -399,13 +400,13 @@ function openReSkipModal(originalIndex) {
   openModal('modalSkip');
 }
 
-export function confirmSkip() {
+export async function confirmSkip() {
   const isReskip = reSkipTargetIndex !== null;
   if (!isReskip && state.currentIndex >= state.steps.length) return;
 
   const reason = $('skipReasonInput').value.trim();
   const targetStep = $('skipTargetStepSelect').value;
-  if (!reason) { alert('È obbligatorio inserire una motivazione per poter saltare lo step.'); return; }
+  if (!reason) { await daniAlert('È obbligatorio inserire una motivazione per poter saltare lo step.'); return; }
 
   const s = isReskip ? state.steps[reSkipTargetIndex] : state.steps[state.currentIndex];
   if (!s) return;
@@ -414,10 +415,11 @@ export function confirmSkip() {
   if (targetStep) {
     const targetIdx = state.steps.findIndex(x => String(x.step) === String(targetStep));
     if (targetIdx !== -1 && targetIdx < state.currentIndex) {
-      const proceed = confirm(
-        '⚠ Attenzione\n\nLo Step ' + targetStep + ' è già stato superato (posizione ' + (targetIdx + 1) +
+      const proceed = await daniConfirm(
+        'Lo Step ' + targetStep + ' è già stato superato (posizione ' + (targetIdx + 1) +
         ', mentre sei allo step ' + (state.currentIndex + 1) + ').\n\n' +
-        'Lo step riposizionato non comparirà in nessun banner futuro: verrà considerato saltato definitivamente.\n\nProcedere comunque?'
+        'Lo step riposizionato non comparirà in nessun banner futuro: verrà considerato saltato definitivamente.\n\nProcedere comunque?',
+        { title: 'Attenzione', danger: true, okText: 'Procedi' }
       );
       if (!proceed) return;
     }
@@ -464,11 +466,11 @@ export function prevStep() {
   }
 }
 
-export function confirmAnomaly() {
+export async function confirmAnomaly() {
   if (state.currentIndex >= state.steps.length && anomalyTargetIndex === null) return;
 
   const reason = $('anomalyReasonInput').value.trim();
-  if (!reason) { alert('Inserisci una motivazione per l\'anomalia.'); return; }
+  if (!reason) { await daniAlert('Inserisci una motivazione per l\'anomalia.'); return; }
 
   const idx = anomalyTargetIndex !== null ? anomalyTargetIndex : state.currentIndex;
   state.steps[idx].anomaly = '[ANOMALIA 5%] ' + reason;
@@ -484,7 +486,7 @@ export function confirmAnomaly() {
     anomalyTargetIndex = null;
     applyLinkedSign(savedIdx, measuredStr, newNote);
   } else {
-    performSave();
+    await performSave();
   }
 }
 
@@ -495,11 +497,11 @@ export function openCorrectionModal() {
   openModal('modalCorrection');
 }
 
-export function saveCorrection() {
+export async function saveCorrection() {
   if (state.currentIndex >= state.steps.length) return;
 
   const value = $('correctionInput').value.trim();
-  if (!value) { alert('La proposta di modifica non può essere vuota.'); return; }
+  if (!value) { await daniAlert('La proposta di modifica non può essere vuota.'); return; }
 
   state.steps[state.currentIndex].correction = value;
 

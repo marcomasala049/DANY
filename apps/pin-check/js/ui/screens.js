@@ -5,6 +5,7 @@ import { summarize, buildTxtReport } from '../logic/report.js';
 import { state } from './state.js';
 import { renderDiagram, highlightPins, getCurrentConnector } from './diagram.js';
 import { populatePinSelects, populateMeasureTypeSelect, renderSequenceTable } from './sequence.js';
+import { daniConfirm } from '../../../../shared/js/dialog.js';
 
 export function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -74,8 +75,8 @@ export function goToEnd() {
   showScreen('screenEnd');
 }
 
-export function restartTool() {
-  if (state.steps.length && !confirm('Ricominciare? La sequenza di test corrente andrà persa.')) return;
+export async function restartTool() {
+  if (state.steps.length && !(await daniConfirm('Ricominciare? La sequenza di test corrente andrà persa.', { danger: true, okText: 'Ricomincia' }))) return;
   state.connectorId = null;
   state.steps = [];
   state.selectedStepId = null;

@@ -7,6 +7,7 @@ import { evaluateResult } from '../logic/measurement.js';
 import { nowStamp } from '../core/time.js';
 import { state, nextId } from './state.js';
 import { getCurrentConnector, highlightPins } from './diagram.js';
+import { daniAlert } from '../../../../shared/js/dialog.js';
 
 /** Fills the Pin A / Pin B selects on the "add step" form from the current connector's pins. */
 export function populatePinSelects() {
@@ -28,14 +29,14 @@ export function populateMeasureTypeSelect() {
 /** No-op hook kept for the form's onchange — reserved for future per-type UI tweaks. */
 export function onNewMeasureTypeChange() { /* intentionally empty for now */ }
 
-export function addStep() {
+export async function addStep() {
   const connector = getCurrentConnector();
   if (!connector) return;
 
   const pinA = $('newPinA').value;
   const pinB = $('newPinB').value;
-  if (!pinA || !pinB) { alert('Seleziona entrambi i pin.'); return; }
-  if (pinA === pinB) { alert('Pin A e Pin B devono essere diversi.'); return; }
+  if (!pinA || !pinB) { await daniAlert('Seleziona entrambi i pin.'); return; }
+  if (pinA === pinB) { await daniAlert('Pin A e Pin B devono essere diversi.'); return; }
 
   state.steps.push({
     id: nextId(),
@@ -170,13 +171,13 @@ function renderMeasurePanel(step) {
   $('measureResult').innerHTML = step.result ? resultBadge(step.result) : '';
 }
 
-export function saveMeasurement() {
+export async function saveMeasurement() {
   const step = state.steps.find(s => s.id === state.selectedStepId);
   if (!step) return;
 
   const field = $('measureValueField');
   const value = field ? field.value.trim() : '';
-  if (!value) { alert('Inserisci un valore misurato.'); return; }
+  if (!value) { await daniAlert('Inserisci un valore misurato.'); return; }
 
   step.measuredValue = value;
   step.measuredAt = nowStamp();

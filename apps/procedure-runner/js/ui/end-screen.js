@@ -5,6 +5,7 @@ import { state } from './state.js';
 import { SESSION_KEY } from './session-storage.js';
 import { showScreen, switchTab, renderStep, updateProgress } from './execution.js';
 import { exportUpdatedCsv } from './export.js';
+import { daniAlert } from '../../../../shared/js/dialog.js';
 
 export function evaluateEnd() {
   const summary = summarizeSteps(state.steps);
@@ -26,8 +27,8 @@ export function backFromEnd() {
   renderStep();
 }
 
-export function forceCloseProcedure() {
-  exportUpdatedCsv();
+export async function forceCloseProcedure() {
+  await exportUpdatedCsv();
   localStorage.removeItem(SESSION_KEY);
-  alert('CSV esportato. La sessione salvata è stata rimossa. Puoi chiudere questa scheda quando vuoi.');
+  await daniAlert('CSV esportato. La sessione salvata è stata rimossa. Puoi chiudere questa scheda quando vuoi.');
 }

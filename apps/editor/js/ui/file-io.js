@@ -2,6 +2,7 @@ import { $, setText, setHtml } from '../core/dom-helpers.js';
 import { escapeHtml } from '../../../../shared/js/dom-utils.js';
 import { daniIcon } from '../../../../shared/js/dani-icons.js';
 import { clearDirty } from './editor-stats.js';
+import { daniAlert } from '../../../../shared/js/dialog.js';
 
 const LOCAL_SERVER = 'http://127.0.0.1:8080';
 
@@ -147,7 +148,7 @@ export async function salvaFile() {
     console.error('[salvaFile] salvataggio effettivo fallito:', e);
     const status = $('status');
     if (status) { status.className = 'status-bar status-error'; status.innerText = '> Errore salvataggio: ' + e.message; }
-    alert('Errore durante il salvataggio: ' + e.message);
+    await daniAlert('Errore durante il salvataggio: ' + e.message);
   }
 }
 
@@ -167,7 +168,7 @@ export function chiudiSalvaCome() {
 
 export async function selezionaCartellaSalvataggio() {
   if (!window.showDirectoryPicker) {
-    alert('La selezione della cartella non è supportata da questo browser. Lasciando il campo vuoto, al salvataggio ti verrà comunque chiesto dove salvare (o il file verrà scaricato).');
+    await daniAlert('La selezione della cartella non è supportata da questo browser. Lasciando il campo vuoto, al salvataggio ti verrà comunque chiesto dove salvare (o il file verrà scaricato).');
     return;
   }
   try {
@@ -175,13 +176,13 @@ export async function selezionaCartellaSalvataggio() {
     $('saveFolderStatus').innerHTML = daniIcon('folder', { size: 13 }) + '<span>' + escapeHtml(selectedSaveDirectory.name) + '</span>';
     $('saveFolderStatus').classList.remove('default');
   } catch (e) {
-    if (e.name !== 'AbortError') alert('Impossibile selezionare la cartella: ' + e.message);
+    if (e.name !== 'AbortError') await daniAlert('Impossibile selezionare la cartella: ' + e.message);
   }
 }
 
 export async function confermaSalvaCome() {
   let name = $('newFileName').value.trim();
-  if (!name) { alert('Inserisci un nome file.'); return; }
+  if (!name) { await daniAlert('Inserisci un nome file.'); return; }
   if (!/\.txt$/i.test(name)) name += '.txt';
 
   try {
@@ -202,7 +203,7 @@ export async function confermaSalvaCome() {
     targetFileHandle = null;
     const status = $('status');
     if (status) { status.className = 'status-bar status-error'; status.innerText = '> Errore creazione file: ' + e.message; }
-    alert('Impossibile creare il file: ' + e.message);
+    await daniAlert('Impossibile creare il file: ' + e.message);
   }
 }
 
@@ -225,7 +226,7 @@ export async function apriFile() {
       const text = await file.text();
       applyOpenedFile(file.name, text, handle);
     } catch (e) {
-      if (e.name !== 'AbortError') alert('Impossibile aprire il file: ' + e.message);
+      if (e.name !== 'AbortError') await daniAlert('Impossibile aprire il file: ' + e.message);
     }
     return;
   }
@@ -241,7 +242,7 @@ export async function onOpenFileSelected(event) {
     const text = await file.text();
     applyOpenedFile(file.name, text, null);
   } catch (e) {
-    alert('Impossibile leggere il file: ' + e.message);
+    await daniAlert('Impossibile leggere il file: ' + e.message);
   }
 }
 
