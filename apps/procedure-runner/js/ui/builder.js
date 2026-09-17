@@ -6,6 +6,7 @@ import { parseCSV } from '../logic/csv.js';
 import { mapHeader, extractStep } from '../logic/column-mapping.js';
 import { downloadBlob } from './download.js';
 import { excelValue, recoverEmbeddedImages, buildProcedureWorksheet } from './xlsx-io.js';
+import { daniIcon } from '../../../../shared/js/dani-icons.js';
 
 const DRAFT_KEY = 'procbuilder_draft';
 
@@ -83,7 +84,9 @@ export function addBuilderRow(initial) {
   const imageBtn = document.createElement('button');
   imageBtn.className = 'btn builder-img-btn';
   imageBtn.type = 'button';
-  imageBtn.textContent = div._imageData ? '🖼 Cambia' : '🖼 Immagine';
+  imageBtn.innerHTML = div._imageData
+    ? daniIcon('image', { size: 14 }) + '<span>Cambia</span>'
+    : daniIcon('image', { size: 14 }) + '<span>Immagine</span>';
 
   const thumb = document.createElement('img');
   thumb.className = 'builder-thumb';
@@ -107,7 +110,7 @@ export function addBuilderRow(initial) {
     thumb.removeAttribute('src');
     thumb.style.display = 'none';
     removeImgBtn.style.display = 'none';
-    imageBtn.textContent = '🖼 Immagine';
+    imageBtn.innerHTML = daniIcon('image', { size: 14 }) + '<span>Immagine</span>';
     scheduleDraftSave();
   };
 
@@ -125,7 +128,7 @@ export function addBuilderRow(initial) {
       thumb.src = reader.result;
       thumb.style.display = 'block';
       removeImgBtn.style.display = 'flex';
-      imageBtn.textContent = '🖼 Cambia';
+      imageBtn.innerHTML = daniIcon('image', { size: 14 }) + '<span>Cambia</span>';
       scheduleDraftSave();
     };
     reader.readAsDataURL(file);
@@ -201,7 +204,7 @@ function saveDraft() {
   } catch (e) {
     console.warn('Bozza builder non salvata:', e);
     const el = $('builderDraftInfo');
-    if (el) el.innerHTML = '<b>⚠ Bozza troppo grande per l\'auto-salvataggio (immagini pesanti).</b>';
+    if (el) el.innerHTML = daniIcon('warning', { size: 13 }) + '<b>Bozza troppo grande per l\'auto-salvataggio (immagini pesanti).</b>';
   }
 }
 

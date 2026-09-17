@@ -1,133 +1,142 @@
 /**
- * DANI shared design system — the same "elegant" look used on the home
- * screen (index.html), factored out so every app imports one canonical
- * source instead of duplicating it. Load this BEFORE an app's own
- * css/styles.css: this file sets tokens + a handful of low-level chrome
- * components (topbar, buttons, panel/widget shell, modal shell, form
- * controls); each app's own stylesheet keeps its app-specific layout
- * (grids, widths, per-widget internals) and reads these custom properties
- * instead of redefining its own palette.
+ * DANI Design System — shared tokens + chrome components, loaded BEFORE
+ * each app's own css/styles.css so every app reads the same palette,
+ * typography and component shells instead of redefining its own.
  *
- * Dark tokens on :root mirror index.html's :root block exactly (same
- * hex/rgba values) so all apps stay visually identical to the home
- * screen; :root[data-theme="light"] mirrors its light block the same way.
- * The extra tokens below (danger/warning/info, well/elevated surfaces)
- * don't exist on the home screen — it has no status states or embedded
- * inputs — so they're new, chosen to sit in the same soft/desaturated
- * family as --accent/--accent-2 rather than the old neon-terminal hues.
+ * Two fully-supported, equally professional theme variants:
+ *   :root                    → dark (the app's current default)
+ *   :root[data-theme="light"] → light (bianco / rosa molto chiaro)
+ * Neither is a "lesser" fallback of the other — both are first-class,
+ * tuned independently. Which one applies is a per-user choice persisted by
+ * shared/js/theme.js (dani_theme in localStorage); this file never changes
+ * that default, only the values each variant resolves to.
+ *
+ * Visual language: clean technical surfaces, delicate 1px borders, DANI red
+ * reserved for primary action / selected state / focus / small accents —
+ * not for decoration. No glassmorphism (backdrop-filter blur), no glow/
+ * shimmer/orbs, no 3D tilt. Motion is limited to short (120-200ms) hover/
+ * focus/expand transitions.
  */
 
 :root{
-  /* --- copied 1:1 from index.html --- */
-  --page-bg:#110808;
-  --panel-bg:#1c0e0e;
-  --panel-glass:rgba(255,255,255,.035);
-  --panel-glass-hover:rgba(255,255,255,.065);
-  --border:#2b1517;
-  --border-strong:rgba(255,214,214,.16);
-  --text:#ff3b4e;
-  --text-primary:#f6ecec;
-  --text-secondary:#b39696;
-  --text-tertiary:#7d6262;
+  /* ---- dark (default) ---------------------------------------------- */
+  --page-bg:#161011;
+  --panel-bg:#1d1516;
+  --panel-glass:#1d1516;
+  --panel-glass-hover:#241a1b;
+  --border:#2c2020;
+  --border-strong:rgba(255,214,214,.14);
+  --text-primary:#f2e9e9;
+  --text-secondary:#b7a3a3;
+  --text-tertiary:#8a7575;
   --accent:#e0263f;
-  --accent-strong:#b81f34;
-  --accent-soft:rgba(224,38,63,.16);
+  --accent-strong:#ff4d63;
+  --accent-soft:rgba(224,38,63,.15);
   --accent-2:#ff6b6b;
   --accent-contrast:#ffffff;
-  --shadow:0 24px 60px -24px rgba(0,0,0,.65);
-  --glow-1:rgba(224,38,63,.20);
-  --glow-2:rgba(255,107,107,.14);
+  --shadow:0 10px 24px -14px rgba(0,0,0,.55);
   color-scheme:dark;
 
-  /* --- new: surfaces the bench apps need that the home screen doesn't --- */
-  --well-bg:#000;              /* recessed surface: text inputs, readouts, canvases */
-  --elevated-bg:#1c0e0f;       /* raised surface: modals, popovers */
-  --table-head-bg:#201011;
-  --row-hover-bg:#1f1011;
+  /* recessed / raised surfaces */
+  --well-bg:#100c0c;
+  --elevated-bg:#211819;
+  --table-head-bg:#241a1b;
+  --row-hover-bg:#221718;
 
-  /* --- new: semantic status colors, same warm red/rose family as --accent --- */
-  --danger:#ff4444;
+  /* semantic status — distinct hues from --accent on purpose (accent is
+     reserved for primary/selected/focus, not for pass/fail/info states) */
+  --success:#3ecf7e;
+  --success-soft:rgba(62,207,126,.14);
+  --success-border:rgba(62,207,126,.4);
+  --danger:#ff5c5c;
   --danger-soft:rgba(255,68,68,.14);
   --danger-border:rgba(255,68,68,.4);
   --warning:#ffab4d;
   --warning-soft:rgba(255,171,77,.14);
   --warning-border:rgba(255,171,77,.4);
-  --info:#f2748c;
-  --info-soft:rgba(242,116,140,.14);
-  --info-border:rgba(242,116,140,.4);
+  --info:#5db8d8;
+  --info-soft:rgba(93,184,216,.14);
+  --info-border:rgba(93,184,216,.4);
+
+  /* interaction states */
+  --hover-bg:rgba(255,255,255,.045);
+  --focus-ring:rgba(224,38,63,.35);
+  --disabled-bg:#241a1b;
+  --disabled-text:#6b5a5a;
 
   --radius-sm:8px;
   --radius-md:12px;
-  --radius-lg:18px;
+  --radius-lg:16px;
   --font-display:'Sora',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --font-body:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   --font-mono:Consolas,'SF Mono','Courier New',monospace;
+
+  --sidebar-w-collapsed:64px;
+  --sidebar-w-expanded:212px;
 }
 
 :root[data-theme="light"]{
-  --page-bg:#fbf4f3;
+  --page-bg:#f8f2f1;
   --panel-bg:#ffffff;
   --panel-glass:#ffffff;
-  --panel-glass-hover:#ffffff;
-  --border:#ecdada;
-  --border-strong:rgba(120,20,30,.16);
-  --text:#b3122a;
-  --text-primary:#1c1010;
+  --panel-glass-hover:#fdf6f6;
+  --border:#ede0df;
+  --border-strong:rgba(120,20,30,.14);
+  --text-primary:#1c1414;
   --text-secondary:#6e5555;
   --text-tertiary:#a08787;
   --accent:#b3122a;
   --accent-strong:#8a0e20;
-  --accent-soft:rgba(179,18,42,.10);
-  --accent-2:#e0435a;
+  --accent-soft:rgba(179,18,42,.09);
+  --accent-2:#c8465a;
   --accent-contrast:#ffffff;
-  --shadow:0 24px 45px -28px rgba(60,10,15,.18);
-  --glow-1:rgba(179,18,42,.10);
-  --glow-2:rgba(224,67,90,.08);
+  --shadow:0 8px 20px -14px rgba(60,10,15,.14);
   color-scheme:light;
 
-  --well-bg:#ffffff;
+  --well-bg:#fffdfd;
   --elevated-bg:#ffffff;
-  --table-head-bg:#fbeef0;
-  --row-hover-bg:#fdf3f3;
+  --table-head-bg:#f8ecec;
+  --row-hover-bg:#fdf5f5;
 
-  --danger:#dc2626;
-  --danger-soft:rgba(220,38,38,.08);
-  --danger-border:rgba(220,38,38,.35);
-  --warning:#b45309;
-  --warning-soft:rgba(180,83,9,.08);
-  --warning-border:rgba(180,83,9,.35);
-  --info:#b0184a;
-  --info-soft:rgba(176,24,74,.08);
-  --info-border:rgba(176,24,74,.35);
+  --success:#1f8a4c;
+  --success-soft:rgba(31,138,76,.09);
+  --success-border:rgba(31,138,76,.35);
+  --danger:#c62828;
+  --danger-soft:rgba(198,40,40,.08);
+  --danger-border:rgba(198,40,40,.35);
+  --warning:#a15c00;
+  --warning-soft:rgba(161,92,0,.08);
+  --warning-border:rgba(161,92,0,.32);
+  --info:#1c6e8c;
+  --info-soft:rgba(28,110,140,.08);
+  --info-border:rgba(28,110,140,.3);
+
+  --hover-bg:#fbeef0;
+  --focus-ring:rgba(179,18,42,.25);
+  --disabled-bg:#f1eaea;
+  --disabled-text:#b7a7a7;
 }
 
 /* ==========================================================================
-   Topbar — same shell on every app: brand mark on the left, pill buttons
-   on the right, wraps on narrow widths, respects safe-area insets.
+   Typography scale
+   ========================================================================== */
+h1,h2,h3{font-family:var(--font-display);color:var(--text-primary);font-weight:700;letter-spacing:.2px}
+.dani-title{font-family:var(--font-display);font-size:1.35em;font-weight:700;color:var(--text-primary);letter-spacing:.2px}
+.dani-eyebrow{font-size:.7em;letter-spacing:1.6px;text-transform:uppercase;font-weight:600;color:var(--text-tertiary)}
+
+/* ==========================================================================
+   Topbar / header — flat surface, delicate bottom border, no blur/glow.
    ========================================================================== */
 .topbar{
-  position:relative;overflow:hidden;
+  position:relative;
   display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   padding:12px 20px;
   padding-top:max(12px,env(safe-area-inset-top));
   padding-left:max(20px,env(safe-area-inset-left));
   padding-right:max(20px,env(safe-area-inset-right));
-  background:var(--panel-glass);
-  border-bottom:1px solid var(--border-strong);
-  backdrop-filter:blur(14px);
-  animation:fadeUp .5s ease both;
+  background:var(--panel-bg);
+  border-bottom:1px solid var(--border);
 }
-/* Soft ambient glow echoing the home screen's hero orbs, contained to the
-   topbar's own box so it's safe to drop into any app without touching
-   stacking/z-index elsewhere on the page. */
-.topbar::before{
-  content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(120px 120px at 0% 0%,var(--glow-1),transparent 70%),
-    radial-gradient(140px 140px at 100% 0%,var(--glow-2),transparent 70%);
-  pointer-events:none;z-index:0;
-}
-.topbar>*{position:relative;z-index:1}
 .topbar .brand,.brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
 .brand-logo-wrap{
   width:30px;height:30px;border-radius:9px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
@@ -139,29 +148,41 @@
 .topbar .spacer,.spacer{flex:1}
 
 /* ==========================================================================
-   Buttons — every button-ish class already used across the four apps
-   (.btn, .btn-bar, .small-btn, .btn-primary, .btn-danger, .btn-warn,
-   .btn-accent, .btn-ghost) styled as one pill-button family so no app
-   markup needs renaming.
+   Buttons — one pill-button family covering every button class already
+   used across the apps (.btn, .btn-bar, .small-btn, .btn-ghost, plus the
+   semantic .btn-primary/.btn-danger/.btn-warn/.btn-accent). Icon + label:
+   a <span class="dani-icon"> child (from shared/js/dani-icons.js) sits
+   left of the text with a small fixed gap.
    ========================================================================== */
 .btn,.btn-bar,.small-btn,.btn-ghost{
-  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
   background:var(--panel-glass);color:var(--text-primary);border:1px solid var(--border-strong);
-  border-radius:999px;padding:8px 16px;font-family:var(--font-body);font-size:.8em;font-weight:500;
-  backdrop-filter:blur(10px);transition:border-color .15s,background .15s,transform .15s;
+  border-radius:999px;padding:8px 16px;font-family:var(--font-body);font-size:.85em;font-weight:500;
+  transition:border-color .15s ease,background-color .15s ease,color .15s ease;
   line-height:1.3;
 }
 .btn:hover,.btn-bar:hover,.small-btn:hover,.btn-ghost:hover{
-  border-color:var(--accent);background:var(--panel-glass-hover);transform:translateY(-1px);
+  border-color:var(--accent);background:var(--hover-bg);
 }
-.btn:active,.btn-bar:active,.small-btn:active,.btn-ghost:active{transform:translateY(0) scale(.96)}
+.btn:focus-visible,.btn-bar:focus-visible,.small-btn:focus-visible,.btn-ghost:focus-visible,
+.btn-primary:focus-visible,.btn-danger:focus-visible,.btn-warn:focus-visible,.btn-accent:focus-visible{
+  outline:none;box-shadow:0 0 0 3px var(--focus-ring);
+}
+.btn:active,.btn-bar:active,.small-btn:active,.btn-ghost:active{transform:scale(.97)}
+.btn .dani-icon,.btn-bar .dani-icon,.small-btn .dani-icon,.btn-ghost .dani-icon,
+.btn-primary .dani-icon,.btn-danger .dani-icon,.btn-warn .dani-icon,.btn-accent .dani-icon{
+  flex:0 0 auto;
+}
 
 .btn-primary{
-  background:var(--accent);color:var(--accent-contrast);border:none;font-weight:700;
-  box-shadow:0 10px 24px -12px var(--accent-soft);
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  background:var(--accent);color:var(--accent-contrast);border:1px solid transparent;font-weight:600;
+  border-radius:999px;padding:8px 16px;font-family:var(--font-body);font-size:.85em;
+  transition:background-color .15s ease;
 }
-.btn-primary:hover:not(:disabled){background:var(--accent-strong);transform:translateY(-1px)}
-.btn-primary:disabled{background:var(--panel-glass);color:var(--text-tertiary);cursor:not-allowed;box-shadow:none}
+.btn-primary:hover:not(:disabled){background:var(--accent-strong)}
+.btn-primary:active:not(:disabled){transform:scale(.97)}
+.btn-primary:disabled{background:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed}
 
 .btn-danger{background:var(--danger-soft);color:var(--danger);border:1px solid var(--danger-border)}
 .btn-danger:hover{border-color:var(--danger);background:var(--danger-soft)}
@@ -170,113 +191,225 @@
 .btn-accent{background:var(--info-soft);color:var(--info);border:1px solid var(--info-border)}
 .btn-accent:hover{border-color:var(--info)}
 
-/* Home always sits last in the topbar (far right, after the .spacer pushes
-   everything else left) — a small divider + tighter margin sets it apart
-   as the one constant, always-there anchor, like a window control. */
+/* Home always sits last in the topbar — a small divider sets it apart as
+   the one constant anchor, like a window control. */
 .btn-home{margin-left:10px;position:relative}
 .btn-home::before{
   content:'';position:absolute;left:-7px;top:50%;transform:translateY(-50%);
-  width:1px;height:60%;background:var(--border-strong);
+  width:1px;height:60%;background:var(--border);
+}
+
+/* Icon-only buttons (no visible label — tooltip required, see below) */
+.dani-icon-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:36px;height:36px;flex:0 0 auto;
+  background:var(--panel-glass);color:var(--text-secondary);border:1px solid var(--border-strong);
+  border-radius:var(--radius-sm);transition:border-color .15s ease,background-color .15s ease,color .15s ease;
+}
+.dani-icon-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--hover-bg)}
+.dani-icon-btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--focus-ring)}
+
+/* ==========================================================================
+   Tooltips — for any icon-only control. `data-tooltip="label"` on the
+   element; pure CSS, no JS/library. Positioned above by default.
+   ========================================================================== */
+[data-tooltip]{position:relative}
+[data-tooltip]::after{
+  content:attr(data-tooltip);
+  position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%) translateY(4px);
+  background:var(--elevated-bg);color:var(--text-primary);border:1px solid var(--border-strong);
+  border-radius:var(--radius-sm);padding:5px 9px;font-size:.72em;font-family:var(--font-body);
+  white-space:nowrap;box-shadow:var(--shadow);pointer-events:none;z-index:200;
+  opacity:0;visibility:hidden;transition:opacity .15s ease,transform .15s ease;
+}
+[data-tooltip]:hover::after,[data-tooltip]:focus-visible::after{
+  opacity:1;visibility:visible;transform:translateX(-50%) translateY(0);
+}
+@media(prefers-reduced-motion:reduce){[data-tooltip]::after{transition:none}}
+
+/* ==========================================================================
+   Sidebar — thin vertical nav shared by every tool page (not the home
+   screen). Fixed overlay + body padding-left so it drops into any app's
+   existing flex/grid body without restructuring it.
+   ========================================================================== */
+body.dani-has-sidebar{padding-left:var(--sidebar-w-collapsed);transition:padding-left .18s ease}
+body.dani-has-sidebar.sidebar-expanded{padding-left:var(--sidebar-w-expanded)}
+.dani-sidebar{
+  position:fixed;top:0;left:0;bottom:0;z-index:60;
+  width:var(--sidebar-w-collapsed);
+  background:var(--panel-bg);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  padding-top:max(10px,env(safe-area-inset-top));
+  padding-bottom:max(10px,env(safe-area-inset-bottom));
+  transition:width .18s ease;
+}
+body.sidebar-expanded .dani-sidebar{width:var(--sidebar-w-expanded)}
+.dani-sb-toggle{
+  display:flex;align-items:center;justify-content:center;
+  width:40px;height:40px;margin:2px 12px 8px;flex:0 0 auto;
+  background:transparent;color:var(--text-secondary);border:1px solid transparent;border-radius:var(--radius-sm);
+  transition:background-color .15s ease,color .15s ease;
+}
+.dani-sb-toggle:hover{background:var(--hover-bg);color:var(--accent)}
+.dani-sb-nav{display:flex;flex-direction:column;gap:2px;padding:0 8px;overflow-y:auto}
+.dani-sb-item{
+  display:flex;align-items:center;gap:12px;
+  height:40px;padding:0 12px;border-radius:var(--radius-sm);
+  color:var(--text-secondary);text-decoration:none;white-space:nowrap;overflow:hidden;
+  border-left:2px solid transparent;
+  transition:background-color .15s ease,color .15s ease,border-color .15s ease;
+}
+.dani-sb-item:hover{background:var(--hover-bg);color:var(--text-primary)}
+.dani-sb-item.active{
+  background:var(--accent-soft);color:var(--accent);border-left-color:var(--accent);font-weight:600;
+}
+.dani-sb-icon{display:flex;flex:0 0 auto}
+.dani-sb-label{
+  font-size:.85em;opacity:0;transition:opacity .15s ease;
+}
+body.sidebar-expanded .dani-sb-label{opacity:1}
+@media(max-width:700px){
+  body.dani-has-sidebar,body.dani-has-sidebar.sidebar-expanded{padding-left:var(--sidebar-w-collapsed)}
+  .dani-sidebar,body.sidebar-expanded .dani-sidebar{width:var(--sidebar-w-collapsed)}
+  .dani-sb-label{display:none}
 }
 
 /* ==========================================================================
-   Panel / widget shell — the glass card every widget, panel and load-card
-   already uses (class names vary per app: .widget, .panel, .load-card,
-   .action-card); the header row pattern (.widget-title/.panel-title +
-   .collapse-arrow + .title-text) is shared by editor/runner/data-analysis.
+   Panel / widget shell — flat surface + delicate border + very discreet
+   shadow (no glass blur, no entrance-cascade animation).
    ========================================================================== */
 .widget,.panel,.load-card,.action-card,.card{
-  background:var(--panel-glass);border:1px solid var(--border-strong);border-radius:var(--radius-md);
+  background:var(--panel-glass);border:1px solid var(--border);border-radius:var(--radius-md);
   box-shadow:var(--shadow);
-  transition:border-color .2s ease,box-shadow .2s ease;
-  animation:panelIn .5s cubic-bezier(.16,1,.3,1) both;
 }
-/* Gentle stagger so a screen full of widgets/cards cascades in rather than
-   popping at once — approximate (counts ALL siblings, e.g. editor's
-   .group-label dividers too), which is fine since it's purely decorative. */
-.widget:nth-child(2),.panel:nth-child(2),.card:nth-child(2),.action-card:nth-child(2){animation-delay:.05s}
-.widget:nth-child(3),.panel:nth-child(3),.card:nth-child(3),.action-card:nth-child(3){animation-delay:.1s}
-.widget:nth-child(4),.panel:nth-child(4){animation-delay:.15s}
-.widget:nth-child(5){animation-delay:.2s}
-.widget:nth-child(6){animation-delay:.25s}
-.widget:nth-child(7){animation-delay:.3s}
-.widget:nth-child(8){animation-delay:.35s}
-.widget:nth-child(9){animation-delay:.4s}
-.widget:nth-child(10){animation-delay:.45s}
-.widget:nth-child(n+11){animation-delay:.5s}
+
 .widget-title,.panel-title{
-  font-family:var(--font-body);font-size:.72em;color:var(--text-secondary);text-transform:uppercase;
-  letter-spacing:1.5px;font-weight:600;
+  font-family:var(--font-body);font-size:.78em;color:var(--text-secondary);text-transform:uppercase;
+  letter-spacing:1.2px;font-weight:600;
   border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:8px;
-  display:flex;align-items:center;gap:7px;
+  display:flex;align-items:center;gap:8px;
 }
+.widget-title .dani-icon,.panel-title .dani-icon{color:var(--accent);flex:0 0 auto}
 .collapse-arrow{color:var(--accent)}
 .title-text{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
+/* Numbered workflow step badge — small circled index preceding a
+   widget/section title, e.g. "① Carica dati". Purely presentational. */
+.dani-step-num{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:20px;height:20px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
+  font-size:.85em;font-weight:700;font-family:var(--font-body);
+}
+
 /* ==========================================================================
-   Modal shell. Visibility itself stays app-owned (`.modal.show{display:flex}`
-   in procedure-runner/data-analysis; incoming_report_tool toggles the
-   `hidden` attribute instead and adds its own small local
-   `.modal:not([hidden]){display:flex}` override for that — see its
-   css/style.css — since a shared `[hidden]`-based rule here would force
-   every `.modal` in the `.show`-based apps permanently open, as they never
-   set `hidden` in the first place). This shell only supplies the shared
-   look once an app's own rule decides an instance is visible.
+   Status badges — icon + text + color, used for READY/RUNNING/WARNING/
+   ERROR and PASS/FAIL/NOT TESTED across every app. Color alone never
+   carries the meaning: the label text always names the state too.
+   ========================================================================== */
+.dani-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 10px;border-radius:999px;font-size:.78em;font-weight:600;
+  border:1px solid var(--border-strong);background:var(--panel-glass);color:var(--text-secondary);
+  white-space:nowrap;
+}
+.dani-badge .dani-icon{flex:0 0 auto}
+.dani-badge--success{background:var(--success-soft);color:var(--success);border-color:var(--success-border)}
+.dani-badge--danger{background:var(--danger-soft);color:var(--danger);border-color:var(--danger-border)}
+.dani-badge--warning{background:var(--warning-soft);color:var(--warning);border-color:var(--warning-border)}
+.dani-badge--info{background:var(--info-soft);color:var(--info);border-color:var(--info-border)}
+.dani-badge--accent{background:var(--accent-soft);color:var(--accent);border-color:var(--border-strong)}
+.dani-badge--neutral{background:var(--panel-glass);color:var(--text-tertiary)}
+
+/* ==========================================================================
+   Stepper — numbered progress across ordered stages (e.g. Incoming
+   Inspection's 4 tabs). Completed = check, active = DANI red, future =
+   neutral. Pure CSS on top of existing markup (adds a .dani-step-dot child
+   with a number; JS tab-switching logic is untouched).
+   ========================================================================== */
+.dani-stepper{display:flex;align-items:center;gap:0;flex-wrap:wrap}
+.dani-step{
+  display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;
+  color:var(--text-tertiary);font-size:.82em;font-weight:600;border:1px solid transparent;
+  transition:color .15s ease,background-color .15s ease;
+}
+.dani-step-dot{
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:22px;height:22px;border-radius:50%;font-size:.75em;font-weight:700;
+  border:1.5px solid var(--border-strong);color:var(--text-tertiary);background:var(--panel-glass);
+}
+.dani-step.done .dani-step-dot{background:var(--success);border-color:var(--success);color:var(--accent-contrast)}
+.dani-step.done{color:var(--text-secondary)}
+.dani-step.active{color:var(--accent);background:var(--accent-soft)}
+.dani-step.active .dani-step-dot{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+.dani-step-sep{width:20px;height:1px;background:var(--border-strong);flex:0 0 auto;margin:0 2px}
+@media(max-width:640px){.dani-step-sep{width:10px}}
+
+/* ==========================================================================
+   Empty states — icon + short message + primary action, for panels that
+   would otherwise be a blank surface (no data loaded yet, nothing
+   selected, ...).
+   ========================================================================== */
+.dani-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  gap:10px;padding:36px 20px;color:var(--text-tertiary);
+}
+.dani-empty .dani-icon{color:var(--text-tertiary);opacity:.7}
+.dani-empty-title{font-size:.9em;font-weight:600;color:var(--text-secondary)}
+.dani-empty-desc{font-size:.8em;max-width:340px;line-height:1.55}
+
+/* ==========================================================================
+   Modal shell.
    ========================================================================== */
 .modal{
-  position:fixed;inset:0;background:rgba(4,6,5,.72);backdrop-filter:blur(4px);
+  position:fixed;inset:0;background:rgba(10,6,6,.55);
   display:none;align-items:center;justify-content:center;z-index:90;padding:20px;
 }
 .modal.show{display:flex}
 .modal-box{
   width:min(560px,92vw);background:var(--elevated-bg);border:1px solid var(--border-strong);
   border-radius:var(--radius-lg);padding:22px;box-shadow:var(--shadow);
-  animation:modalIn .28s cubic-bezier(.16,1,.3,1) both;
+  animation:modalIn .16s ease both;
 }
 .modal-box.danger{border-color:var(--danger-border)}
-.modal-title{font-family:var(--font-display);color:var(--text-primary);font-size:1em;font-weight:700;margin-bottom:10px}
+.modal-title{font-family:var(--font-display);color:var(--text-primary);font-size:1.05em;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .modal-box.danger .modal-title{color:var(--danger)}
-.modal-text{color:var(--text-secondary);font-size:.82em;line-height:1.6;margin-bottom:12px}
+.modal-text{color:var(--text-secondary);font-size:.86em;line-height:1.6;margin-bottom:12px}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 
 /* ==========================================================================
-   Form controls — text/number/select/textarea share one look; the
-   per-app stylesheets keep sizing (width/columns) but not color/radius.
+   Form controls.
    ========================================================================== */
 input[type=text],input[type=number],input[type=email],input[type=search],
 select,textarea,.field-input{
   background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);
-  border-radius:var(--radius-sm);padding:7px 10px;outline:none;font-family:var(--font-body);
-  transition:border-color .15s;
+  border-radius:var(--radius-sm);padding:9px 11px;outline:none;font-family:var(--font-body);font-size:.9em;
+  min-height:40px;box-sizing:border-box;
+  transition:border-color .15s ease,box-shadow .15s ease;
 }
+textarea{min-height:auto}
 input[type=text]:focus,input[type=number]:focus,input[type=email]:focus,input[type=search]:focus,
-select:focus,textarea:focus,.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+select:focus,textarea:focus,.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--focus-ring)}
+input:disabled,select:disabled,textarea:disabled{background:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed}
+label{color:var(--text-secondary)}
 
 ::selection{background:var(--accent-soft)}
 
 /* ==========================================================================
-   Motion — entrance/transition keyframes shared by every app (home screen
-   included, though it keeps its own copy of fadeUp inline). Tab/pane/screen
-   switches (.screen.active, .pane.active, .eng-panel.active, .tab-panel.active
-   — the class names each app happens to use for its own show/hide toggle)
-   get a quick fade so switching views feels alive instead of an instant cut.
+   Motion — short, functional transitions only (hover/focus/expand/loading).
+   No entrance choreography, no decorative shimmer.
    ========================================================================== */
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-@keyframes panelIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-@keyframes modalIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes paneIn{from{opacity:0}to{opacity:1}}
-
-.screen.active,.pane.active,.eng-panel.active,.tab-panel.active{animation:paneIn .3s ease both}
+@keyframes modalIn{from{opacity:0;transform:translateY(6px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.screen.active,.pane.active,.eng-panel.active,.tab-panel.active{animation:paneIn .15s ease both}
 
 @media(prefers-reduced-motion:reduce){
-  .topbar,.widget,.panel,.load-card,.action-card,.card,.modal-box,
-  .screen.active,.pane.active,.eng-panel.active,.tab-panel.active{animation:none}
-  .widget,.panel,.load-card,.action-card,.card{transition:none}
+  .screen.active,.pane.active,.eng-panel.active,.tab-panel.active,.modal-box{animation:none}
+  body.dani-has-sidebar,.dani-sidebar,.dani-sb-label{transition:none}
 }
 
 /* Scrollbars used by several apps' scrollable columns/tables */
 .left-col::-webkit-scrollbar,.right-col::-webkit-scrollbar,.preview-wrap::-webkit-scrollbar,
-.ytable-wrap::-webkit-scrollbar,.right-panel::-webkit-scrollbar{width:8px;height:8px}
+.ytable-wrap::-webkit-scrollbar,.right-panel::-webkit-scrollbar,.dani-sb-nav::-webkit-scrollbar{width:8px;height:8px}
 .left-col::-webkit-scrollbar-track,.right-col::-webkit-scrollbar-track,.preview-wrap::-webkit-scrollbar-track,
 .ytable-wrap::-webkit-scrollbar-track,.right-panel::-webkit-scrollbar-track{background:var(--page-bg)}
 .left-col::-webkit-scrollbar-thumb,.right-col::-webkit-scrollbar-thumb,.preview-wrap::-webkit-scrollbar-thumb,

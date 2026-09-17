@@ -14,26 +14,39 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 
 /* ---------- Topbar ---------- */
-.topbar{
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  background:var(--panel-glass);border:1px solid var(--border-strong);border-radius:var(--radius-md);
-  padding:10px 16px;backdrop-filter:blur(14px);box-shadow:var(--shadow);
-}
 .status-bar{
+  display:inline-flex;align-items:center;gap:6px;
   font-size:.75em;color:var(--text-secondary);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%;
 }
-.status-ok{color:var(--accent)}
+.status-ok{color:var(--success)}
 .status-error{color:var(--danger)}
 
-/* ---------- Tabs ---------- */
-.tabs{display:flex;gap:4px;background:var(--panel-glass);border:1px solid var(--border-strong);
-  border-radius:var(--radius-md);padding:4px;flex-wrap:wrap}
-.tab{background:transparent;color:var(--text-secondary);border:1px solid transparent;
-  border-radius:999px;padding:8px 16px;font-size:.8em;font-family:var(--font-body);transition:.12s}
-.tab:hover{color:var(--accent);background:var(--panel-glass-hover)}
-.tab.active{color:var(--accent-contrast);background:var(--accent);
-  border-color:var(--accent);font-weight:700}
+/* ---------- Stepper (was a plain pill-tab bar) ----------
+   Same .tab / data-tab markup and JS toggle (js/main.js setupTabs) as
+   before — this only restyles it as a numbered progress stepper.
+   .done is added by setupTabs to a tab you've navigated away from. */
+.tabs.dani-stepper{
+  display:flex;gap:0;background:var(--panel-glass);border:1px solid var(--border);
+  border-radius:var(--radius-md);padding:6px;flex-wrap:wrap;margin-bottom:4px;
+}
+.tab{
+  display:inline-flex;align-items:center;gap:9px;
+  background:transparent;color:var(--text-tertiary);border:1px solid transparent;
+  border-radius:999px;padding:8px 16px 8px 8px;font-size:.85em;font-weight:600;font-family:var(--font-body);
+  transition:color .15s ease,background-color .15s ease;
+}
+.tab:hover{color:var(--text-primary);background:var(--hover-bg)}
+.tab-num{
+  display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;
+  width:22px;height:22px;border-radius:50%;font-size:.78em;font-weight:700;
+  border:1.5px solid var(--border-strong);color:var(--text-tertiary);background:var(--panel-glass);
+}
+.tab.active{color:var(--accent);background:var(--accent-soft)}
+.tab.active .tab-num{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+.tab.done{color:var(--text-secondary)}
+.tab.done .tab-num{background:var(--success);border-color:var(--success);color:var(--accent-contrast);font-size:0}
+.tab.done .tab-num::before{content:'✓';font-size:13px}
 
 /* ---------- Panels ---------- */
 main{flex:1;min-height:0;position:relative}
@@ -42,21 +55,30 @@ main{flex:1;min-height:0;position:relative}
   box-shadow:var(--shadow)}
 .tab-panel.active{display:block}
 
-/* ---------- Form anagrafica ---------- */
-#infoForm{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:18px}
-.field-row{display:grid;grid-template-columns:240px 1fr;gap:12px;align-items:center}
+/* ---------- Form anagrafica ----------
+   Two columns on desktop (Project | Supplier, Location | Equipment, ...);
+   the last field (Description, moved to the end of CONFIG.fields so it
+   renders last) spans both columns. Pure layout — js/form.js still just
+   appends one .field-row per CONFIG.fields entry, in order. */
+#infoForm{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:18px}
+.field-row{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center}
 .field-row label{color:var(--text-secondary);font-size:.82em}
 .field-row input{width:100%;font-size:.85em}
+#infoForm .field-row:last-child{grid-column:1/-1}
+@media(max-width:700px){#infoForm{grid-template-columns:1fr}}
 
 /* ---------- Fieldset / radio ---------- */
-fieldset{border:1px solid var(--border-strong);border-radius:var(--radius-md);
+fieldset{border:1px solid var(--border);border-radius:var(--radius-md);
   padding:14px 16px;background:var(--panel-glass);margin-top:14px}
-fieldset legend{padding:0 8px;color:var(--accent);font-size:.8em;
+fieldset legend{display:flex;align-items:center;gap:6px;padding:0 8px;color:var(--accent);font-size:.8em;
   letter-spacing:1px;font-weight:700;font-family:var(--font-body)}
-.radio-item{display:inline-flex;align-items:center;gap:6px;margin-right:22px;
-  font-size:.85em;cursor:pointer;color:var(--text-secondary);transition:color .15s ease}
+.radio-item{display:inline-flex;align-items:center;gap:6px;margin-right:10px;margin-bottom:8px;
+  font-size:.85em;cursor:pointer;color:var(--text-secondary);
+  padding:8px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-md);
+  background:var(--panel-glass);transition:color .15s ease,border-color .15s ease,background-color .15s ease}
 .radio-item input{accent-color:var(--accent)}
-.radio-item:hover{color:var(--accent)}
+.radio-item:hover{color:var(--accent);border-color:var(--accent)}
+.radio-item:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
 .radio-item.compact{margin-right:8px;font-size:.78em}
 .decision-group .radio-item{display:flex;margin:8px 0}
 
@@ -67,6 +89,7 @@ fieldset legend{padding:0 8px;color:var(--accent);font-size:.8em;
 .radio-item input[value="N/A"]:checked + span{color:var(--text-tertiary);font-weight:600}
 
 /* ---------- Checklist ---------- */
+.checklist-header span:first-child{display:inline-flex;align-items:center;gap:6px}
 .checklist-header{display:grid;grid-template-columns:1fr 240px;gap:12px;
   padding:8px;border-bottom:1px solid var(--border);
   font-size:.72em;letter-spacing:1.5px;color:var(--text-tertiary);text-transform:uppercase}
@@ -83,13 +106,13 @@ fieldset legend{padding:0 8px;color:var(--accent);font-size:.8em;
 
 /* ---------- Comments ---------- */
 .field-block{display:flex;flex-direction:column;gap:6px;margin-top:6px}
-.field-block > span{color:var(--accent);font-size:.8em;font-weight:700;letter-spacing:1px}
+.field-block > span{display:flex;align-items:center;gap:6px;color:var(--accent);font-size:.8em;font-weight:700;letter-spacing:1px}
 .field-block textarea{resize:vertical;min-height:220px;font-size:.85em}
 
 /* ---------- Action tab ---------- */
 .action-card{padding:18px;margin-bottom:12px}
-.action-card h3{color:var(--accent);font-size:.85em;letter-spacing:1.5px;
-  text-transform:uppercase;margin-bottom:10px;font-family:var(--font-body)}
+.action-card h3{display:flex;align-items:center;gap:9px;color:var(--text-primary);font-size:.95em;
+  margin-bottom:10px;font-family:var(--font-display);font-weight:700}
 .action-card p{color:var(--text-secondary);font-size:.82em;line-height:1.55;margin-bottom:10px}
 .action-card code{background:var(--well-bg);border:1px solid var(--border-strong);
   border-radius:var(--radius-sm);padding:1px 6px;color:var(--accent);font-size:.9em;font-family:var(--font-mono)}
@@ -111,7 +134,7 @@ input[type=file]:hover{border-color:var(--accent)}
 /* ---------- Buttons ----------
    .small-btn / .btn-primary come dalla famiglia di bottoni condivisa
    (shared/css/dani-theme.css): qui resta solo il modificatore "big". */
-.btn-primary.big{font-size:.95em;padding:14px 22px;width:100%}
+.btn-primary.big{font-size:.95em;padding:14px 22px;width:100%;gap:9px}
 
 /* ---------- Modal ----------
    shared/css/dani-theme.css definisce .modal{display:none} di base e lo

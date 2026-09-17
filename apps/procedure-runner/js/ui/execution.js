@@ -1,5 +1,6 @@
 import { $ } from '../core/dom-helpers.js';
 import { nowStamp } from '../core/time.js';
+import { daniIcon } from '../../../../shared/js/dani-icons.js';
 import {
   evaluateMeasurement, appendNoteLine, buildSkipReason, extractSkipReasonText,
   skipTargetOptions, findPendingRepositioned
@@ -142,7 +143,7 @@ function buildLinkedStepBlock(stepData, originalIndex) {
 
   const title = document.createElement('div');
   title.className = 'lsb-title';
-  title.textContent = '▶ STEP N° ' + stepData.step + ' — da eseguire ora';
+  title.innerHTML = daniIcon('step', { size: 15 }) + '<span>Step N° ' + stepData.step + ' — da eseguire ora</span>';
   block.appendChild(title);
 
   block.appendChild(lsbPanel('Descrizione Operativa', stepData.desc || '—'));
@@ -190,18 +191,18 @@ function buildLinkedStepBlock(stepData, originalIndex) {
 
   const btnSign = document.createElement('button');
   btnSign.className = 'btn btn-primary';
-  btnSign.textContent = '✍ Firma e Chiudi questo Step';
+  btnSign.innerHTML = daniIcon('edit', { size: 16 }) + '<span>Firma e Chiudi questo Step</span>';
   btnSign.onclick = () => signLinkedStep(originalIndex);
 
   const btnReskip = document.createElement('button');
   btnReskip.className = 'btn btn-warn';
-  btnReskip.textContent = '⏭ Salta di nuovo';
+  btnReskip.innerHTML = daniIcon('arrow-right', { size: 16 }) + '<span>Salta di nuovo</span>';
   btnReskip.title = 'Cambia motivo e/o punto di riposizionamento di questo step';
   btnReskip.onclick = () => openReSkipModal(originalIndex);
 
   const btnJump = document.createElement('button');
   btnJump.className = 'btn btn-accent';
-  btnJump.textContent = '↪ Apri in vista completa';
+  btnJump.innerHTML = daniIcon('expand', { size: 16 }) + '<span>Apri in vista completa</span>';
   btnJump.onclick = () => { state.currentIndex = originalIndex; renderStep(); };
 
   actions.append(btnSign, btnReskip, btnJump);
@@ -273,13 +274,13 @@ function refreshSignatureUI() {
 
   if (sig) {
     status.className = 'sig-status sig-signed';
-    status.innerText = '✓ Approvato da: ' + sig;
-    btn.innerText = 'Avanza (Già Firmato) ▶';
+    status.innerHTML = daniIcon('check', { size: 15 }) + '<span>Approvato da: ' + sig + '</span>';
+    btn.innerHTML = daniIcon('arrow-right', { size: 16 }) + '<span>Avanza (Già Firmato)</span>';
     btn.className = 'btn btn-accent';
   } else {
     status.className = 'sig-status sig-pending';
-    status.innerText = '⚠ Stato: Non Firmato';
-    btn.innerText = '✍ Firma e Successivo ▶';
+    status.innerHTML = daniIcon('warning', { size: 15 }) + '<span>Stato: Non Firmato</span>';
+    btn.innerHTML = daniIcon('edit', { size: 16 }) + '<span>Firma e Successivo</span>';
     btn.className = 'btn btn-primary';
   }
 }
@@ -295,8 +296,8 @@ function checkForModification() {
     const status = $('sigStatus');
     const btn = $('btnAction');
     status.className = 'sig-status sig-remodify';
-    status.innerText = '🔄 Modifica Rilevata! Richiesta Nuova Firma';
-    btn.innerText = '✍ Rifirma e Avanza ▶';
+    status.innerHTML = daniIcon('reset', { size: 15 }) + '<span>Modifica Rilevata! Richiesta Nuova Firma</span>';
+    btn.innerHTML = daniIcon('edit', { size: 16 }) + '<span>Rifirma e Avanza</span>';
     btn.className = 'btn btn-warn';
 
     saveSession();
@@ -378,7 +379,7 @@ function populateSkipTargetSelect(excludeIndexes, selectedStep) {
 export function openSkipModal() {
   reSkipTargetIndex = null;
   $('skipReasonInput').value = '';
-  $('skipModalTitle').textContent = '⏭ Salta Passaggio';
+  $('skipModalTitle').innerHTML = daniIcon('arrow-right', { size: 16 }) + '<span>Salta Passaggio</span>';
   $('skipModalText').textContent = 'Motiva perché stai saltando questo step (obbligatorio):';
   populateSkipTargetSelect([state.currentIndex], null);
   openModal('modalSkip');
@@ -391,7 +392,7 @@ function openReSkipModal(originalIndex) {
 
   reSkipTargetIndex = originalIndex;
   $('skipReasonInput').value = extractSkipReasonText(s.skipReason);
-  $('skipModalTitle').textContent = '⏭ Salta di nuovo — Step ' + s.step;
+  $('skipModalTitle').innerHTML = daniIcon('arrow-right', { size: 16 }) + '<span>Salta di nuovo — Step ' + s.step + '</span>';
   $('skipModalText').textContent = 'Modifica motivo e/o punto di riposizionamento dello Step ' + s.step + ':';
   populateSkipTargetSelect([originalIndex, state.currentIndex], s.repositionedTo);
   openModal('modalSkip');

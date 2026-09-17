@@ -1,6 +1,8 @@
 import { $, escapeHtml } from '../../../shared/js/dom-utils.js';
 import { registerServiceWorker, initInstallPrompt } from '../../../shared/js/pwa.js';
 import { initTheme } from '../../../shared/js/theme.js';
+import { daniIcon, mountIcons } from '../../../shared/js/dani-icons.js';
+import { renderSidebar } from '../../../shared/js/sidebar.js';
 
 // ==================== STATE ====================
 let loadedData=[];
@@ -43,6 +45,9 @@ const MAX_PANELS=6;
 const mainView=$('mainView'), plotView=$('plotView');
 const yTableBody=document.querySelector('#yTable tbody');
 const previewWrap=$('previewWrap');
+const PREVIEW_EMPTY_HTML='<div class="dani-empty">'+daniIcon('table',{size:32})+
+  '<div class="dani-empty-title">Nessun dato da visualizzare</div>'+
+  '<div class="dani-empty-desc">Carica uno o più file CSV, TXT o XLSX per vedere qui l\'anteprima dei campioni.</div></div>';
 const statusLabel=$('statusLabel');
 const plotCanvas=$('plotCanvas');
 const plotContainer=$('plotContainer');
@@ -2135,13 +2140,13 @@ function openPopup(){
     'body{padding:8px;display:flex;flex-direction:column;gap:8px}'+
     'button{font:inherit;cursor:pointer}'+
     '.popup-header{display:flex;align-items:center;gap:10px;background:#121212;border:1px solid #222;border-radius:6px;padding:7px 12px;font-size:.8em;flex-shrink:0}'+
-    '.popup-title{color:#00ff66;font-weight:bold;letter-spacing:2px;text-transform:uppercase;font-size:.95em}'+
+    '.popup-title{display:inline-flex;align-items:center;gap:7px;color:#00ff66;font-weight:bold;letter-spacing:2px;text-transform:uppercase;font-size:.95em}'+
     '.popup-spacer{flex:1}'+
-    '.popup-btn{background:#1a1a1a;color:#00ff66;border:1px solid #333;border-radius:4px;padding:6px 14px;font-size:.85em}'+
+    '.popup-btn{display:inline-flex;align-items:center;gap:6px;background:#1a1a1a;color:#00ff66;border:1px solid #333;border-radius:4px;padding:6px 14px;font-size:.85em}'+
     '.popup-btn:hover{border-color:#00ff66;background:#222}'+
     '.popup-tabs-container{background:#121212;border:1px solid #222;border-radius:6px;display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}'+
     '.popup-tabs{display:flex;background:#0c0c0c;border-bottom:1px solid #1e1e1e;flex-shrink:0}'+
-    '.popup-tab{padding:9px 18px;border:none;background:transparent;color:#666;cursor:pointer;font-size:.75em;font-family:inherit;text-transform:uppercase;letter-spacing:1.5px;border-bottom:2px solid transparent}'+
+    '.popup-tab{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border:none;background:transparent;color:#666;cursor:pointer;font-size:.75em;font-family:inherit;text-transform:uppercase;letter-spacing:1.5px;border-bottom:2px solid transparent}'+
     '.popup-tab.active{color:#00ff66;border-bottom-color:#00ff66;background:#121212}'+
     '.popup-tab:hover{color:#00ff66}'+
     '.popup-tab-body{flex:1;position:relative;min-height:0}'+
@@ -2154,14 +2159,14 @@ function openPopup(){
     '.popup-fft-chart canvas{display:block}'+
     '</style></head><body>'+
     '<div class="popup-header">'+
-      '<span class="popup-title">📊 Analisi Avanzata</span>'+
+      '<span class="popup-title">'+daniIcon('chart',{size:15})+'<span>Analisi Avanzata</span></span>'+
       '<span class="popup-spacer"></span>'+
-      '<button class="popup-btn" id="popupRedock">⇲ REINTEGRA</button>'+
+      '<button class="popup-btn" id="popupRedock">'+daniIcon('collapse',{size:14})+'<span>Reintegra</span></button>'+
     '</div>'+
     '<div class="popup-tabs-container">'+
       '<div class="popup-tabs">'+
-        '<button class="popup-tab active" data-tab="stats">📊 Statistiche Temporali</button>'+
-        '<button class="popup-tab" data-tab="fft">📈 Analisi FFT</button>'+
+        '<button class="popup-tab active" data-tab="stats">'+daniIcon('chart',{size:14})+'<span>Statistiche Temporali</span></button>'+
+        '<button class="popup-tab" data-tab="fft">'+daniIcon('spectrum',{size:14})+'<span>Analisi FFT</span></button>'+
       '</div>'+
       '<div class="popup-tab-body">'+
         '<div class="popup-tab-pane active" id="popupStatsPane"><pre id="popupStatsText"></pre></div>'+
@@ -2201,8 +2206,8 @@ function openPopup(){
     if(pc && pc.parentElement.clientWidth>0) renderFFTChartOn(pc,lastFFTTraces);
   });
 
-  $('btnPopupTabs').textContent='⇲ CHIUDI POPUP';
-  $('btnPopupTabs').title='Chiudi la finestra separata';
+  $('btnPopupTabs').innerHTML=daniIcon('collapse',{size:14})+'<span>Chiudi Popup</span>';
+  $('btnPopupTabs').setAttribute('data-tooltip','Chiudi la finestra separata');
 
   if(popupCloseChecker) clearInterval(popupCloseChecker);
   popupCloseChecker=setInterval(()=>{
@@ -2210,8 +2215,8 @@ function openPopup(){
       clearInterval(popupCloseChecker);
       popupCloseChecker=null;
       popupWindow=null;
-      $('btnPopupTabs').textContent='⇱ FINESTRA';
-      $('btnPopupTabs').title='Apri pannello in finestra separata';
+      $('btnPopupTabs').innerHTML=daniIcon('expand',{size:14})+'<span>Finestra</span>';
+      $('btnPopupTabs').setAttribute('data-tooltip','Apri pannello in finestra separata');
     }
   },500);
 
@@ -2246,7 +2251,7 @@ function confirmReset(){
   if(popupWindow && !popupWindow.closed){
     try{ popupWindow.close(); }catch(e){}
     popupWindow=null;
-    $('btnPopupTabs').textContent='⇱ FINESTRA';
+    $('btnPopupTabs').innerHTML=daniIcon('expand',{size:14})+'<span>Finestra</span>';
   }
   loadedData=[];currentTracks=[];lastFFTTraces=[];
   lastStatsText='';lastFFTText='';
@@ -2254,7 +2259,7 @@ function confirmReset(){
   viewYMinLeft=null;viewYMaxLeft=null;
   viewYMinRight=null;viewYMaxRight=null;
   viewYByPanel={};
-  yTableBody.innerHTML='';previewWrap.innerHTML='';
+  yTableBody.innerHTML='';previewWrap.innerHTML=PREVIEW_EMPTY_HTML;
   $('fileInfo').textContent='Nessun file caricato.';
   setStatus('> In attesa di file...');
   $('btnPlot').disabled=true;
@@ -2308,6 +2313,8 @@ Object.assign(window,{toggleWidget,confirmReset});
 registerServiceWorker();
 initInstallPrompt($('installBtn'));
 initTheme($('themeToggleBtn'));
+renderSidebar({ active: 'analysis', base: '../../' });
+mountIcons();
 
 // Init
 applyPlotModeUI();

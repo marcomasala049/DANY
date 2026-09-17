@@ -9,6 +9,8 @@
  * index.html — so the page never flashes dark-then-light on load; the
  * functions here keep localStorage and any toggle button in sync after that.
  */
+import { daniIcon } from './dani-icons.js';
+
 const STORAGE_KEY = 'dani_theme';
 
 export function getStoredTheme() {
@@ -19,7 +21,7 @@ export function getStoredTheme() {
   }
 }
 
-const THEME_COLOR = { dark: '#110808', light: '#fbf4f3' };
+const THEME_COLOR = { dark: '#161011', light: '#f8f2f1' };
 
 export function applyTheme(theme) {
   const resolved = theme === 'light' ? 'light' : 'dark';
@@ -45,7 +47,9 @@ function currentTheme() {
 function updateButtonLabel(button) {
   const isLight = currentTheme() === 'light';
   // Label always names the theme the button will switch TO.
-  button.textContent = isLight ? '🌙 Tema Scuro' : '☀️ Tema Chiaro';
+  const icon = daniIcon(isLight ? 'theme-dark' : 'theme-light', { size: 16 });
+  const text = isLight ? 'Tema Scuro' : 'Tema Chiaro';
+  button.innerHTML = `${icon}<span>${text}</span>`;
   button.setAttribute('aria-pressed', String(isLight));
 }
 

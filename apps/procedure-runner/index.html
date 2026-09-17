@@ -38,49 +38,61 @@
 </head>
 <body>
 
+<div id="daniSidebar"></div>
+<script type="module">
+  import { renderSidebar } from '../../shared/js/sidebar.js';
+  import { mountIcons } from '../../shared/js/dani-icons.js';
+  renderSidebar({ active: 'procedure', base: '../../' });
+  mountIcons();
+</script>
 
 <div id="topbar" class="topbar">
   <span class="brand">
     <span class="brand-logo-wrap"><img src="../../icons/icon-192.png" alt="" class="brand-logo"></span>
-    <span class="brand-word">TEST PROCEDURE RUNNER</span>
+    <span class="brand-word">Test Procedure Runner</span>
   </span>
   <div class="spacer"></div>
   <div class="tb-field">Operatore: <input id="usernameField" placeholder="nome.cognome" oninput="onUsernameChange()"></div>
-  <button class="btn" id="btnExportCsv" style="display:none" onclick="exportUpdatedCsv()">💾 Esporta CSV</button>
-  <button class="btn" id="btnExportXlsx" style="display:none" onclick="exportUpdatedXlsx()">📊 Esporta XLSX</button>
-  <button class="btn" id="themeToggleBtn">☀️ Tema Chiaro</button>
-  <button class="btn btn-danger" onclick="closeTab()">✕ Chiudi Tab</button>
-  <button class="btn btn-home" onclick="window.location.href='../../index.html'">🏠 Home</button>
+  <button class="btn" id="btnExportCsv" style="display:none" onclick="exportUpdatedCsv()"><span data-dani-icon="save" data-dani-size="16"></span><span>Esporta CSV</span></button>
+  <button class="btn" id="btnExportXlsx" style="display:none" onclick="exportUpdatedXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
+  <button class="btn" id="themeToggleBtn"></button>
+  <button class="btn btn-danger" onclick="closeTab()"><span data-dani-icon="close" data-dani-size="16"></span><span>Chiudi Tab</span></button>
 </div>
 
 <div id="progressWrap"><div id="progressFill"></div></div>
 
 <div id="screenLoad" class="screen active">
-  <div class="load-card">
-    <h2>Carica una Procedura di Test</h2>
-    <p>Funziona come lo strumento MATLAB dell'AIT e ora supporta <b>CSV e XLSX</b>. Le immagini possono essere associate agli step e, nei file XLSX creati dal tool, vengono incorporate direttamente nel documento.</p>
+  <div class="load-card" style="max-width:820px">
+    <h2>Avvia una procedura di test</h2>
+    <p>Carica una procedura esistente in <b>CSV o XLSX</b> oppure creane una da zero. Le immagini possono essere associate agli step e, nei file XLSX creati dal tool, vengono incorporate direttamente nel documento.</p>
     <div id="resumeBox">
       <div><b>Sessione in corso trovata</b></div>
       <div class="muted" id="resumeInfo" style="margin:4px 0"></div>
       <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn btn-primary" onclick="resumeSession()">▶ Riprendi Sessione</button>
+        <button class="btn btn-primary" onclick="resumeSession()"><span data-dani-icon="play" data-dani-size="16"></span><span>Riprendi Sessione</span></button>
         <button class="btn btn-danger" onclick="discardSession()">Scarta</button>
       </div>
     </div>
 
-    <label class="drop-zone" id="dropZone" for="csvFile">
-      📂 Trascina qui il file <b>.csv</b>, <b>.txt</b> o <b>.xlsx</b> della procedura, o clicca per selezionarlo
-      <input type="file" id="csvFile" accept=".csv,.txt,.xlsx" style="display:none" onchange="onFileSelected(event)">
-    </label>
+    <div class="load-tiles">
+      <label class="load-tile drop-zone" id="dropZone" for="csvFile">
+        <span class="load-tile-icon"><span data-dani-icon="folder-open" data-dani-size="22"></span></span>
+        <span class="load-tile-title">Apri procedura</span>
+        <span class="load-tile-desc">CSV, XLSX o TXT — trascina qui il file o clicca per selezionarlo</span>
+        <input type="file" id="csvFile" accept=".csv,.txt,.xlsx" style="display:none" onchange="onFileSelected(event)">
+      </label>
+      <button type="button" class="load-tile" onclick="openBuilder()">
+        <span class="load-tile-icon"><span data-dani-icon="add" data-dani-size="22"></span></span>
+        <span class="load-tile-title">Nuova procedura</span>
+        <span class="load-tile-desc">Crea una procedura da zero, definendo gli step uno a uno</span>
+      </button>
+    </div>
 
-    <div class="load-actions">
-      <button class="btn" onclick="downloadTemplate()">⬇ Modello CSV</button>
-      <button class="btn btn-primary" onclick="downloadXlsxTemplate()">⬇ Modello XLSX</button>
+    <div class="load-secondary">
+      <button class="small-btn" onclick="downloadTemplate()"><span data-dani-icon="download" data-dani-size="14"></span><span>Scarica modello CSV</span></button>
+      <button class="small-btn" onclick="downloadXlsxTemplate()"><span data-dani-icon="download" data-dani-size="14"></span><span>Scarica modello XLSX</span></button>
     </div>
-    <div class="load-divider">oppure</div>
-    <div class="load-actions">
-      <button class="btn" onclick="openBuilder()">✎ Crea una Nuova Procedura Vuota</button>
-    </div>
+
     <div class="hint">
       Colonne riconosciute (prima riga, nomi in italiano o inglese, ordine libero):<br>
       <b>Step, Descrizione, Atteso, Misurato, Note, Immagine, Timestamp, Firma, Correzione, Anomalia, MotivoSalto</b><br><span class="muted">Nel XLSX l’immagine può essere incorporata direttamente.</span>
@@ -89,22 +101,22 @@
 
   <div class="load-card" id="builderCard" style="display:none;max-width:760px;margin-top:18px;text-align:left">
     <h2 style="text-align:center">Nuova Procedura — Definisci gli Step</h2>
-    <div class="muted" style="font-size:.78em;margin-bottom:8px;text-align:center">Descrizione e valore atteso sono testuali; con 🖼 puoi associare un’immagine locale allo step.</div>
+    <div class="muted" style="font-size:.78em;margin-bottom:8px;text-align:center">Descrizione e valore atteso sono testuali; puoi associare un'immagine locale a ogni step.</div>
     <div class="builder-proc-name">
-      <label for="builderProcName">📄 Nome procedura</label>
+      <label for="builderProcName"><span data-dani-icon="file" data-dani-size="14"></span> Nome procedura</label>
       <input type="text" id="builderProcName" placeholder="Es. Test_AIT_Modulo1" oninput="scheduleDraftSave()">
     </div>
     <div class="builder-actions-row">
-      <button class="btn" onclick="importIntoBuilder()">📂 Importa</button>
-      <button class="btn" onclick="exportBuilderXlsx()">📊 Esporta XLSX</button>
-      <button class="btn btn-danger" onclick="newBuilderProcedure()">🗑 Nuova</button>
+      <button class="btn" onclick="importIntoBuilder()"><span data-dani-icon="folder-open" data-dani-size="16"></span><span>Importa</span></button>
+      <button class="btn" onclick="exportBuilderXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
+      <button class="btn btn-danger" onclick="newBuilderProcedure()"><span data-dani-icon="delete" data-dani-size="16"></span><span>Nuova</span></button>
     </div>
     <input type="file" id="builderImportInput" accept=".csv,.txt,.xlsx" style="display:none" onchange="onBuilderImportFile(event)">
     <div id="builderList"></div>
-    <button class="btn" onclick="addBuilderRow()">+ Aggiungi Step</button>
+    <button class="btn" onclick="addBuilderRow()"><span data-dani-icon="add" data-dani-size="16"></span><span>Aggiungi Step</span></button>
     <div style="display:flex;gap:8px;margin-top:14px;justify-content:center">
       <button class="btn" onclick="closeBuilder()">Annulla</button>
-      <button class="btn btn-primary" onclick="startFromBuilder()">▶ Avvia Procedura</button>
+      <button class="btn btn-primary" onclick="startFromBuilder()"><span data-dani-icon="play" data-dani-size="16"></span><span>Avvia Procedura</span></button>
     </div>
     <div class="builder-draft-info" id="builderDraftInfo"></div>
   </div>
@@ -112,33 +124,33 @@
 
 <div id="screenExec" class="screen">
   <div class="tabbar">
-    <button class="tabbtn active" id="tabBtnExec" onclick="switchTab('exec')">📋 Esecuzione Passi</button>
-    <button class="tabbtn" id="tabBtnSummary" onclick="switchTab('summary')">📊 Sommario</button>
+    <button class="tabbtn active" id="tabBtnExec" onclick="switchTab('exec')"><span data-dani-icon="checklist" data-dani-size="15"></span><span>Esecuzione Passi</span></button>
+    <button class="tabbtn" id="tabBtnSummary" onclick="switchTab('summary')"><span data-dani-icon="table" data-dani-size="15"></span><span>Sommario</span></button>
   </div>
 
   <div class="pane active" id="paneExec">
     <div id="linkedSkipAlert" style="display:none">
-      <div class="lsa-title">⚠️ STEP ARRETRATO/I DA ESEGUIRE ORA</div>
+      <div class="lsa-title"><span data-dani-icon="warning" data-dani-size="16"></span><span>Step arretrato/i da eseguire ora</span></div>
       <div id="linkedSkipSteps"></div>
     </div>
 
     <div class="exec-head">
       <div class="exec-head-title"><span class="step-progress" id="stepProgress"></span><h2 id="stepTitle">STEP N° —</h2></div>
-      <button class="btn btn-accent" onclick="openCorrectionModal()">📝 Proponi Modifica Testo</button>
+      <button class="btn btn-accent" onclick="openCorrectionModal()"><span data-dani-icon="edit" data-dani-size="16"></span><span>Proponi Modifica Testo</span></button>
     </div>
 
     <div class="exec-grid">
       <div>
         <div class="panel">
-          <div class="panel-title">📄 Descrizione Operativa</div>
+          <div class="panel-title"><span data-dani-icon="file" data-dani-size="14"></span>Descrizione Operativa</div>
           <div class="panel-body" id="descBody">—</div>
         </div>
         <div class="panel">
-          <div class="panel-title">🎯 Valore Atteso / Requisito</div>
+          <div class="panel-title"><span data-dani-icon="target" data-dani-size="14"></span>Valore Atteso / Requisito</div>
           <div class="panel-body" id="expectedBody">—</div>
         </div>
         <div class="panel">
-          <div class="panel-title">✍️ Dati da Riscontrare sul Campo</div>
+          <div class="panel-title"><span data-dani-icon="edit" data-dani-size="14"></span>Dati da Riscontrare sul Campo</div>
           <span class="field-label">Valore Misurato</span>
           <input type="text" class="field-input" id="measuredInput" oninput="onMeasuredChange()">
           <span class="field-label">Aggiungi Nota</span>
@@ -155,11 +167,11 @@
       </div>
     </div>
 
-    <div class="sig-status sig-pending" id="sigStatus">⚠ Stato: Non Firmato</div>
+    <div class="sig-status sig-pending" id="sigStatus"><span data-dani-icon="warning" data-dani-size="15"></span><span>Stato: Non Firmato</span></div>
     <div class="exec-actions">
-      <button class="btn" id="btnPrev" onclick="prevStep()">◀ Precedente</button>
-      <button class="btn btn-primary" id="btnAction" onclick="handleAction()">✍ Firma e Successivo ▶</button>
-      <button class="btn btn-warn" onclick="openSkipModal()">⏭ Salta</button>
+      <button class="btn" id="btnPrev" onclick="prevStep()"><span data-dani-icon="arrow-left" data-dani-size="16"></span><span>Precedente</span></button>
+      <button class="btn btn-primary" id="btnAction" onclick="handleAction()"><span data-dani-icon="edit" data-dani-size="16"></span><span>Firma e Successivo</span></button>
+      <button class="btn btn-warn" onclick="openSkipModal()"><span data-dani-icon="arrow-right" data-dani-size="16"></span><span>Salta</span></button>
     </div>
   </div>
 
@@ -180,7 +192,7 @@
 </div>
 
 <div id="screenEnd" class="screen">
-  <div class="end-title">🏁 FINE CONTROLLI PROCEDURA</div>
+  <div class="end-title"><span data-dani-icon="completed" data-dani-size="22"></span><span>Fine Controlli Procedura</span></div>
   <div class="cards">
     <div class="card signed"><div class="n" id="countSigned">0</div><div class="lbl">Passi Completati</div></div>
     <div class="card skipped"><div class="n" id="countSkipped">0</div><div class="lbl">Step Saltati</div></div>
@@ -188,16 +200,16 @@
   </div>
   <div id="reportBox"></div>
   <div class="end-actions">
-    <button class="btn" onclick="backFromEnd()">◀ Rivedi Ultimo Passo</button>
-    <button class="btn btn-primary" onclick="forceCloseProcedure()">💾 Salva CSV e Chiudi Sessione</button>
-    <button class="btn btn-primary" onclick="exportUpdatedXlsx()">📊 Salva XLSX Aggiornato</button>
-    <button class="btn btn-accent" onclick="exportReportTxt()">📄 Esporta Report .TXT</button>
+    <button class="btn" onclick="backFromEnd()"><span data-dani-icon="arrow-left" data-dani-size="16"></span><span>Rivedi Ultimo Passo</span></button>
+    <button class="btn btn-primary" onclick="forceCloseProcedure()"><span data-dani-icon="save" data-dani-size="16"></span><span>Salva CSV e Chiudi Sessione</span></button>
+    <button class="btn btn-primary" onclick="exportUpdatedXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Salva XLSX Aggiornato</span></button>
+    <button class="btn btn-accent" onclick="exportReportTxt()"><span data-dani-icon="file" data-dani-size="16"></span><span>Esporta Report .TXT</span></button>
   </div>
 </div>
 
 <div class="modal" id="modalSkip">
   <div class="modal-box">
-    <div class="modal-title" id="skipModalTitle">⏭ Salta Passaggio</div>
+    <div class="modal-title" id="skipModalTitle"><span data-dani-icon="arrow-right" data-dani-size="16"></span><span>Salta Passaggio</span></div>
     <div class="modal-text" id="skipModalText">Motiva perché stai saltando questo step (obbligatorio):</div>
     <input type="text" class="field-input" id="skipReasonInput" placeholder="Motivazione tecnica del salto...">
     <div class="modal-text" style="margin-top:12px">Da eseguire prima dello Step (opzionale):</div>
@@ -213,7 +225,7 @@
 
 <div class="modal" id="modalAnomaly">
   <div class="modal-box danger">
-    <div class="modal-title">⚠️ Fuori Tolleranza</div>
+    <div class="modal-title"><span data-dani-icon="warning" data-dani-size="16"></span><span>Fuori Tolleranza</span></div>
     <div class="modal-text" id="anomalyText"></div>
     <input type="text" class="field-input" id="anomalyReasonInput" placeholder="Motivazione dell'anomalia...">
     <div class="modal-actions">
@@ -225,7 +237,7 @@
 
 <div class="modal" id="modalCorrection">
   <div class="modal-box">
-    <div class="modal-title">📝 Proposta Modifica Testo</div>
+    <div class="modal-title"><span data-dani-icon="edit" data-dani-size="16"></span><span>Proposta Modifica Testo</span></div>
     <div class="modal-text">Proponi una versione corretta della descrizione di questo step (verrà salvata separatamente, senza sovrascrivere l'originale):</div>
     <textarea class="field-input" id="correctionInput" style="min-height:140px"></textarea>
     <div class="modal-actions">

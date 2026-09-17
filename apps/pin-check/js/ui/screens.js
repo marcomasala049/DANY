@@ -22,9 +22,10 @@ export function renderConnectorGrid() {
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
     card.innerHTML =
-      '<span class="cc-count">' + c.pins.length + ' pin</span>' +
+      '<span class="cc-icon" data-dani-icon="connector" data-dani-size="20"></span>' +
       '<span class="cc-name">' + c.name + '</span>' +
-      '<span class="cc-desc">' + (c.description || '') + '</span>';
+      '<span class="cc-desc">' + (c.description || '') + '</span>' +
+      '<span class="cc-count">' + c.pins.length + ' pin</span>';
     card.onclick = () => selectConnector(c.id);
     card.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectConnector(c.id); } };
     grid.appendChild(card);

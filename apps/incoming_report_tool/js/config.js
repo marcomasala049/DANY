@@ -11,11 +11,11 @@ const CONFIG = {
     { id:'supplier',  label:'Fornitore (Supplier):', tag:'SUPPLIER',      def:'' },
     { id:'location',  label:'Location:',             tag:'LOCATION',      def:'Nerviano' },
     { id:'equipment', label:'Equipaggiamento:',      tag:'EQUIPMENT',     def:'' },
-    { id:'desc',      label:'Description:',          tag:'PART_DESC',     def:'' },
     { id:'pn',        label:'Part Number:',          tag:'PART_NUMBER',   def:'' },
-    { id:'dwg',       label:'DWG Issue:',            tag:'DWG_ISSUE',     def:'' },
     { id:'sn',        label:'Serial Number:',        tag:'SERIAL_NUMBER', def:'' },
-    { id:'inspector', label:'Ispettore:',            tag:'INSPECTOR',     def:'' }
+    { id:'dwg',       label:'DWG Issue:',            tag:'DWG_ISSUE',     def:'' },
+    { id:'inspector', label:'Ispettore:',            tag:'INSPECTOR',     def:'' },
+    { id:'desc',      label:'Description:',          tag:'PART_DESC',     def:'' }
   ],
 
   /* Modelli hardware — radio. */

@@ -1,5 +1,6 @@
 import { $ } from '../core/dom-helpers.js';
 import { escapeHtml } from '../../../../shared/js/dom-utils.js';
+import { daniIcon } from '../../../../shared/js/dani-icons.js';
 import { stepStatus, getRepositionBadge } from '../logic/steps.js';
 import { state } from './state.js';
 import { openModal } from './modal.js';
@@ -16,18 +17,18 @@ export function renderSummary() {
     tr.className = i === selectedSummaryRow ? 'selected' : '';
 
     let statusHtml = '';
-    if (st === 'skipped') statusHtml = '<span class="status-skipped">⏭ SKIPPED</span>';
-    else if (st === 'signed') statusHtml = '<span class="status-signed">✓ ' + escapeHtml(s.signature) + '</span>';
-    else statusHtml = '<span class="status-pending">❌ Da compilare</span>';
+    if (st === 'skipped') statusHtml = '<span class="status-skipped">' + daniIcon('arrow-right', { size: 13 }) + '<span>Skipped</span></span>';
+    else if (st === 'signed') statusHtml = '<span class="status-signed">' + daniIcon('check', { size: 13 }) + '<span>' + escapeHtml(s.signature) + '</span></span>';
+    else statusHtml = '<span class="status-pending">' + daniIcon('step', { size: 13 }) + '<span>Da compilare</span></span>';
 
     const badge = getRepositionBadge(s);
     if (badge) {
       statusHtml += badge.kind === 'executed'
-        ? ' <span class="badge-repositioned executed" title="Step originariamente saltato e firmato prima dello Step ' + escapeHtml(badge.target) + '">🔀 eseguito prima di Step ' + escapeHtml(badge.target) + '</span>'
-        : ' <span class="badge-repositioned pending" title="Da eseguire prima dello Step ' + escapeHtml(badge.target) + '">🔀 da eseguire prima di Step ' + escapeHtml(badge.target) + '</span>';
+        ? ' <span class="badge-repositioned executed" title="Step originariamente saltato e firmato prima dello Step ' + escapeHtml(badge.target) + '">' + daniIcon('swap', { size: 12 }) + '<span>eseguito prima di Step ' + escapeHtml(badge.target) + '</span></span>'
+        : ' <span class="badge-repositioned pending" title="Da eseguire prima dello Step ' + escapeHtml(badge.target) + '">' + daniIcon('swap', { size: 12 }) + '<span>da eseguire prima di Step ' + escapeHtml(badge.target) + '</span></span>';
     }
 
-    if (s.correction && s.correction.trim()) statusHtml += ' <span class="status-modified">📝</span>';
+    if (s.correction && s.correction.trim()) statusHtml += ' <span class="status-modified">' + daniIcon('edit', { size: 13 }) + '</span>';
 
     const tdStep = document.createElement('td');
     tdStep.textContent = s.step;
@@ -50,7 +51,7 @@ export function selectSummaryRow(i) {
   selectedSummaryRow = i;
   const s = state.steps[i];
 
-  $('prevTitle').innerText = '🔎 Dettagli Passo N° ' + s.step;
+  $('prevTitle').innerHTML = daniIcon('search', { size: 14 }) + '<span>Dettagli Passo N° ' + s.step + '</span>';
   $('prevBody').innerText =
     'Descrizione: ' + (s.desc || '—') + '\n\n' +
     'Atteso: ' + (s.expected || '—') + '\n' +

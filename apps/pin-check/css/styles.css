@@ -28,6 +28,11 @@ button{cursor:pointer}
   padding:14px 16px;transition:border-color .2s ease,transform .2s ease,background .2s ease;
 }
 .connector-card:hover,.connector-card:focus-visible{border-color:var(--accent);background:var(--panel-glass-hover);transform:translateY(-2px);outline:none}
+.connector-card .cc-icon{
+  width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(155deg,var(--accent-soft),transparent);border:1px solid var(--border-strong);color:var(--accent);
+  margin-bottom:2px;
+}
 .connector-card .cc-name{font-family:var(--font-display);font-weight:700;font-size:.95em;color:var(--text-primary)}
 .connector-card .cc-desc{font-size:.78em;color:var(--text-tertiary);line-height:1.45}
 .connector-card .cc-count{font-size:.68em;color:var(--accent);text-transform:uppercase;letter-spacing:1px;font-weight:600}

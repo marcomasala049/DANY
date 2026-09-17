@@ -38,18 +38,19 @@
 </head>
 <body>
 
+<div id="daniSidebar"></div>
+
 <div class="topbar">
   <span class="brand">
     <span class="brand-logo-wrap"><img src="../../icons/icon-192.png" alt="" class="brand-logo"></span>
-    <span class="brand-word">📈 DATA ANALYSIS TOOL</span>
+    <span class="brand-word">Data Analysis Tool</span>
   </span>
   <span class="spacer"></span>
-  <button class="btn-bar" id="btnMenu">🔁 Reset Tool</button>
-  <button class="btn-bar" id="btnBack" style="display:none">⬅ Torna alla selezione variabili</button>
-  <button class="btn-bar" id="themeToggleBtn">☀️ Tema Chiaro</button>
-  <button class="btn-bar" id="installBtn" hidden>📲 Installa App</button>
-  <button class="btn-bar" id="btnCloseTab">✕ Chiudi Tab</button>
-  <button class="btn-bar btn-home" onclick="window.location.href='../../index.html'">🏠 Home</button>
+  <button class="btn-bar" id="btnMenu"><span data-dani-icon="reset" data-dani-size="15"></span><span>Reset Tool</span></button>
+  <button class="btn-bar" id="btnBack" style="display:none"><span data-dani-icon="arrow-left" data-dani-size="15"></span><span>Torna alla selezione variabili</span></button>
+  <button class="btn-bar" id="themeToggleBtn"></button>
+  <button class="btn-bar" id="installBtn" hidden><span data-dani-icon="install" data-dani-size="15"></span><span>Installa App</span></button>
+  <button class="btn-bar" id="btnCloseTab"><span data-dani-icon="close" data-dani-size="15"></span><span>Chiudi Tab</span></button>
 </div>
 
 <div id="mainView">
@@ -57,10 +58,12 @@
     <div class="widget">
       <div class="widget-title" onclick="toggleWidget(this)">
         <span class="collapse-arrow">▼</span>
-        <span class="title-text">📂 Caricamento File</span>
+        <span class="dani-step-num">1</span>
+        <span data-dani-icon="upload" data-dani-size="14"></span>
+        <span class="title-text">Carica Dati</span>
       </div>
       <div class="widget-body">
-        <button class="btn-ghost" id="btnLoad">📂 CARICA FILE MULTIPLI (CSV/TXT/XLSX) ➔</button>
+        <button class="btn-ghost" id="btnLoad"><span data-dani-icon="upload" data-dani-size="15"></span><span>Carica file multipli (CSV/TXT/XLSX)</span></button>
         <div class="file-info" id="fileInfo">Nessun file caricato.</div>
       </div>
     </div>
@@ -68,7 +71,9 @@
     <div class="widget">
       <div class="widget-title" onclick="toggleWidget(this)">
         <span class="collapse-arrow">▼</span>
-        <span class="title-text">⚙ Configurazione Grafico</span>
+        <span class="dani-step-num">2</span>
+        <span data-dani-icon="settings" data-dani-size="14"></span>
+        <span class="title-text">Configura Grafico</span>
       </div>
       <div class="widget-body">
         <div class="field-row">
@@ -110,7 +115,9 @@
     <div class="widget" style="flex:1;min-height:260px;display:flex;flex-direction:column">
       <div class="widget-title" onclick="toggleWidget(this)">
         <span class="collapse-arrow">▼</span>
-        <span class="title-text">🎛 Canali Y — Scegli asse/pannello e spunta</span>
+        <span class="dani-step-num">3</span>
+        <span data-dani-icon="table" data-dani-size="14"></span>
+        <span class="title-text">Seleziona Canali — asse/pannello e spunta</span>
       </div>
       <div class="widget-body" style="flex:1;display:flex;flex-direction:column;min-height:0">
         <div class="ytable-wrap" style="flex:1">
@@ -128,7 +135,7 @@
       </div>
     </div>
 
-    <button id="btnPlot" class="btn-primary" disabled>📊 GENERA GRAFICO </button>
+    <button id="btnPlot" class="btn-primary" disabled><span data-dani-icon="chart-line" data-dani-size="16"></span><span>Genera Grafico</span></button>
     <div class="status-bar" id="statusLabel">&gt; In attesa di file...</div>
   </div>
 
@@ -136,10 +143,17 @@
     <div class="widget" style="flex:1;display:flex;flex-direction:column;min-height:0">
       <div class="widget-title" onclick="toggleWidget(this)">
         <span class="collapse-arrow">▼</span>
-        <span class="title-text">🔍 Anteprima File (Primi 50 campioni)</span>
+        <span data-dani-icon="table" data-dani-size="14"></span>
+        <span class="title-text">Anteprima File (primi 50 campioni)</span>
       </div>
       <div class="widget-body" style="flex:1;display:flex;flex-direction:column;min-height:0">
-        <div class="preview-wrap" id="previewWrap" style="flex:1"></div>
+        <div class="preview-wrap" id="previewWrap" style="flex:1">
+          <div class="dani-empty">
+            <span data-dani-icon="table" data-dani-size="32"></span>
+            <div class="dani-empty-title">Nessun dato da visualizzare</div>
+            <div class="dani-empty-desc">Carica uno o più file CSV, TXT o XLSX per vedere qui l'anteprima dei campioni.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -148,7 +162,7 @@
 <div id="plotView">
   <div class="plot-main">
     <div class="cursor-bar">
-      <span class="cursor-bar-label">🎯 Cursori</span>
+      <span class="cursor-bar-label"><span data-dani-icon="target" data-dani-size="14"></span>Cursori</span>
       <span class="c-label c1">C1</span>
       <input type="text" id="cursorInput1" placeholder="posizione X del cursore 1">
       <span class="c-label c2">C2</span>
@@ -156,10 +170,10 @@
       <button class="small-btn" id="btnApplyCursor">APPLICA</button>
       <button class="small-btn" id="btnResetCursor">RESET</button>
       <span class="zoom-sep">│</span>
-      <span class="cursor-bar-label">🔍 Zoom</span>
-      <button class="zoom-btn" id="btnZoomIn" title="Zoom in asse X">➕</button>
-      <button class="zoom-btn" id="btnZoomOut" title="Zoom out asse X">➖</button>
-      <button class="zoom-btn" id="btnZoomReset" title="Reset zoom (o doppio click)">⟲</button>
+      <span class="cursor-bar-label"><span data-dani-icon="search" data-dani-size="14"></span>Zoom</span>
+      <button class="zoom-btn" id="btnZoomIn" data-tooltip="Zoom in asse X" aria-label="Zoom in asse X"><span data-dani-icon="zoom-in" data-dani-size="14"></span></button>
+      <button class="zoom-btn" id="btnZoomOut" data-tooltip="Zoom out asse X" aria-label="Zoom out asse X"><span data-dani-icon="zoom-out" data-dani-size="14"></span></button>
+      <button class="zoom-btn" id="btnZoomReset" data-tooltip="Reset zoom (o doppio click)" aria-label="Reset zoom"><span data-dani-icon="reset" data-dani-size="14"></span></button>
       <span class="zoom-sep">│</span>
       <select id="yScaleMode" title="Modalità di visualizzazione dell'asse Y">
         <option value="auto">Auto (range comune)</option>
@@ -176,11 +190,11 @@
 
     <div class="tabs-container">
       <div class="tabs-header">
-        <button class="tab-btn active" data-tab="stats">📊 Statistiche Temporali</button>
-        <button class="tab-btn" data-tab="fft">📈 Analisi FFT</button>
+        <button class="tab-btn active" data-tab="stats"><span data-dani-icon="chart" data-dani-size="14"></span><span>Statistiche Temporali</span></button>
+        <button class="tab-btn" data-tab="fft"><span data-dani-icon="spectrum" data-dani-size="14"></span><span>Analisi FFT</span></button>
         <div class="tab-actions">
-          <button class="tab-btn tab-action" id="btnExportReport" title="Esporta report in .txt">📥 EXPORT</button>
-          <button class="tab-btn tab-action" id="btnPopupTabs" title="Apri pannello in finestra separata">⇱ FINESTRA</button>
+          <button class="tab-btn tab-action" id="btnExportReport" data-tooltip="Esporta report in .txt"><span data-dani-icon="download" data-dani-size="14"></span><span>Export</span></button>
+          <button class="tab-btn tab-action" id="btnPopupTabs" data-tooltip="Apri pannello in finestra separata"><span data-dani-icon="expand" data-dani-size="14"></span><span>Finestra</span></button>
         </div>
       </div>
       <div class="tab-body">

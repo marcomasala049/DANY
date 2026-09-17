@@ -38,54 +38,62 @@
 </head>
 <body>
 
+<div id="daniSidebar"></div>
+<script type="module">
+  import { renderSidebar } from '../../shared/js/sidebar.js';
+  import { daniIcon, mountIcons } from '../../shared/js/dani-icons.js';
+  window.daniIcon = daniIcon;
+  renderSidebar({ active: 'inspection', base: '../../' });
+  mountIcons();
+</script>
+
 <header class="topbar">
   <span class="brand">
     <span class="brand-logo-wrap"><img src="../../icons/icon-192.png" alt="" class="brand-logo"></span>
-    <span class="brand-word">🛠️ INCOMING INSPECTION REPORT</span>
+    <span class="brand-word">Incoming Inspection Report</span>
   </span>
   <span class="spacer"></span>
-  <div class="status-bar" id="statusBar">&gt; Pronto.</div>
-  <button class="small-btn" id="themeToggleBtn">☀️ Tema Chiaro</button>
-  <button class="small-btn btn-home" onclick="window.location.href='../../index.html'">🏠 Home</button>
+  <div class="status-bar" id="statusBar"><span data-dani-icon="status" data-dani-size="13"></span><span>Pronto.</span></div>
+  <button class="small-btn" id="themeToggleBtn"></button>
 </header>
 
-<nav class="tabs" role="tablist">
-  <button class="tab active" data-tab="info">1 · Anagrafica &amp; HW</button>
-  <button class="tab" data-tab="checklist">2 · Checklist</button>
-  <button class="tab" data-tab="decision">3 · Esito &amp; Note</button>
-  <button class="tab" data-tab="actions">4 · Genera Report</button>
+<nav class="tabs dani-stepper" role="tablist">
+  <button class="tab active" data-tab="info"><span class="tab-num">1</span><span>Anagrafica &amp; HW</span></button>
+  <button class="tab" data-tab="checklist"><span class="tab-num">2</span><span>Checklist</span></button>
+  <button class="tab" data-tab="decision"><span class="tab-num">3</span><span>Esito &amp; Note</span></button>
+  <button class="tab" data-tab="actions"><span class="tab-num">4</span><span>Genera Report</span></button>
 </nav>
 
 <main>
   <section class="tab-panel active" id="tab-info">
     <form id="infoForm" autocomplete="off" onsubmit="return false;"></form>
     <fieldset class="hw-group">
-      <legend>🔧 Modello Hardware</legend>
+      <legend><span data-dani-icon="tools" data-dani-size="13"></span>Modello Hardware</legend>
       <div id="hwRadios"></div>
     </fieldset>
   </section>
 
   <section class="tab-panel" id="tab-checklist">
     <div class="checklist-header">
-      <span>✅ Controllo da effettuare</span><span>Esito</span>
+      <span><span data-dani-icon="checklist" data-dani-size="14"></span>Controllo da effettuare</span><span>Esito</span>
     </div>
     <div id="checklistContainer"></div>
   </section>
 
   <section class="tab-panel" id="tab-decision">
     <fieldset class="decision-group">
-      <legend>⚖️ Decisione Finale Hardware</legend>
+      <legend><span data-dani-icon="checklist" data-dani-size="13"></span>Decisione Finale Hardware</legend>
       <div id="decisionRadios"></div>
     </fieldset>
     <label class="field-block">
-      <span>📝 Commenti / Azioni correttive</span>
+      <span><span data-dani-icon="edit" data-dani-size="14"></span>Commenti / Azioni correttive</span>
       <textarea id="comments" rows="14" placeholder="Annotazioni, azioni correttive, note tecniche..."></textarea>
     </label>
   </section>
 
   <section class="tab-panel" id="tab-actions">
     <div class="action-card">
-      <h3>📄 1 · Template Word</h3>
+      <h3><span class="dani-step-num">1</span>Template Word</h3>
       <p>Carica il template <code>.docx</code> da compilare. Il file deve contenere i tag
       <code>{{PROJECT}}</code>, <code>{{SUPPLIER}}</code>, … (vedi <em>Placeholders</em> sotto).</p>
       <input type="file" id="templateInput" accept=".docx">
@@ -94,12 +102,12 @@
     </div>
 
     <div class="action-card">
-      <h3>▶ 2 · Genera</h3>
-      <button class="btn-primary big" id="generateBtn">Compila e Scarica Report Word ⬇</button>
+      <h3><span class="dani-step-num">2</span>Genera</h3>
+      <button class="btn-primary big" id="generateBtn"><span data-dani-icon="download" data-dani-size="16"></span><span>Compila e Scarica Report Word</span></button>
     </div>
 
     <div class="action-card">
-      <h3>🏷️ 3 · Placeholders nel template</h3>
+      <h3><span class="dani-step-num">3</span>Placeholders nel template</h3>
       <p class="hint">Questi sono i tag che il tool cercherà e sostituirà. Copiali nel tuo template Word.</p>
       <div class="tags-grid" id="tagsGrid"></div>
     </div>
