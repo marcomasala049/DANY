@@ -1,12 +1,13 @@
 /**
- * Light/dark theme toggle shared by both apps. The actual colors live as
- * CSS custom properties in each app's stylesheet (:root = dark, the
- * original/default look; :root[data-theme="light"] = the light palette) —
- * this module only decides which one applies and remembers the choice.
+ * Light/dark theme toggle shared by every app. The actual colors live as
+ * CSS custom properties in shared/css/dani-theme.css (:root = dark;
+ * :root[data-theme="light"] = light) — this module only decides which one
+ * applies and remembers the choice. Light is the default when no
+ * preference is stored yet; dark stays fully available via the toggle.
  *
  * The very first thing each page's <head> does (before the stylesheet
- * loads) is re-apply a saved theme inline — see the inline script in
- * index.html — so the page never flashes dark-then-light on load; the
+ * loads) is apply the resolved theme inline — see the inline script in
+ * index.html — so the page never flashes the wrong theme on load; the
  * functions here keep localStorage and any toggle button in sync after that.
  */
 import { daniIcon } from './dani-icons.js';
@@ -53,9 +54,9 @@ function updateButtonLabel(button) {
   button.setAttribute('aria-pressed', String(isLight));
 }
 
-/** Applies the persisted theme (defaults to dark) and wires an optional toggle button. */
+/** Applies the persisted theme (defaults to light) and wires an optional toggle button. */
 export function initTheme(button) {
-  applyTheme(getStoredTheme() || 'dark');
+  applyTheme(getStoredTheme() || 'light');
 
   if (!button) return;
   updateButtonLabel(button);
