@@ -346,21 +346,30 @@ async function performSave() {
   }
 
   const s = state.steps[state.currentIndex];
+  // checkForModification() (bound to the measured/note inputs) already clears
+  // s.signature the instant the operator actually changes something on an
+  // already-signed step. So if it's still set here, nothing changed since
+  // that signature — this call is just "already firmed, advance", not a
+  // real (re-)signature, and must NOT touch the timestamp/signature.
+  const alreadySigned = !!(s.signature && s.signature.trim());
+
   s.measured = $('measuredInput').value;
 
   const newNote = $('noteInput').value.trim();
   if (newNote) s.notes = appendNoteLine(s.notes, '[' + nowStamp() + ' - ' + state.username + ']: ' + newNote);
 
-  // If this step had been repositioned, keep the skip reason in the note history for traceability.
-  if (s.repositionedTo && s.skipReason && s.skipReason.trim()) {
-    s.notes = appendNoteLine(s.notes, '[STORICO RIPOSIZIONAMENTO] ' + s.skipReason);
-  }
+  if (!alreadySigned) {
+    // If this step had been repositioned, keep the skip reason in the note history for traceability.
+    if (s.repositionedTo && s.skipReason && s.skipReason.trim()) {
+      s.notes = appendNoteLine(s.notes, '[STORICO RIPOSIZIONAMENTO] ' + s.skipReason);
+    }
 
-  s.timestamp = nowStamp();
-  s.signature = state.username;
-  s.skipReason = '';
-  // s.repositionedTo is intentionally left in place — the summary badge needs it to show
-  // this step ran out of order, even after it's been signed.
+    s.timestamp = nowStamp();
+    s.signature = state.username;
+    s.skipReason = '';
+    // s.repositionedTo is intentionally left in place — the summary badge needs it to show
+    // this step ran out of order, even after it's been signed.
+  }
 
   saveSession();
   state.currentIndex++;
