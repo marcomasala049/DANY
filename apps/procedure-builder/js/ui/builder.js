@@ -375,10 +375,6 @@ function updateDraftInfo() {
   }
 }
 
-function clearDraft() {
-  try { localStorage.removeItem(DRAFT_KEY); } catch { /* ignore */ }
-}
-
 /** "Nuova" — clears the builder back to two blank rows, confirming first if there's content. */
 export async function newBuilderProcedure() {
   const hasContent = collectBuilderSteps().some(s => s.desc || s.expected || s.image);

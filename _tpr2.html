@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html><body style="margin:0">
+<script>
+localStorage.setItem('procrunner_session', JSON.stringify({
+  steps: [{
+    step: '1',
+    desc: 'Attenzione: <b>alta tensione</b> verifica <i>con attenzione</i> e <u>sottolineato</u><table><tr><td>Fase</td><td>Valore</td></tr><tr><td>1</td><td>120V</td></tr></table>',
+    expected: '120V', measured: '', notes: '', image: '', timestamp: '', signature: '', correction: '', anomaly: '', skipReason: ''
+  }, {
+    step: '2', desc: 'Secondo step, testo semplice con < e &', expected: '', measured: '', notes: '', image: '', timestamp: '', signature: '', correction: '', anomaly: '', skipReason: ''
+  }],
+  currentIndex: 0,
+  sourceName: 'test_rich.xlsx',
+  savedAt: new Date().toISOString()
+}));
+</script>
+<iframe id="f" src="http://127.0.0.1:8123/apps/procedure-runner/index.html" style="width:1300px;height:900px;border:0"></iframe>
+<script>
+document.getElementById('f').addEventListener('load', () => {
+  setTimeout(() => {
+    const w = document.getElementById('f').contentWindow;
+    w.resumeSession();
+    setTimeout(() => { w.switchTab('summary'); }, 300);
+  }, 400);
+});
+</script>
+</body></html>
