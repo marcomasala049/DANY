@@ -38,16 +38,17 @@
 </head>
 <body>
 
+<div id="daniSidebar"></div>
+
 <div class="topbar" id="topbar">
   <span class="brand">
     <span class="brand-logo-wrap"><img src="../../icons/icon-192.png" alt="" class="brand-logo"></span>
-    <span class="brand-word">🔌 PIN FUNCTION TOOL</span>
+    <span class="brand-word">Pin Function Tool</span>
   </span>
   <span class="spacer"></span>
-  <button class="btn" id="themeToggleBtn">☀️ Tema Chiaro</button>
-  <button class="btn" id="installBtn" hidden>📲 Installa App</button>
-  <button class="btn btn-danger" id="btnRestart" onclick="restartTool()" hidden>↺ Nuova Verifica</button>
-  <button class="btn btn-home" onclick="window.location.href='../../index.html'">🏠 Home</button>
+  <button class="btn" id="themeToggleBtn"></button>
+  <button class="btn" id="installBtn" hidden><span data-dani-icon="install" data-dani-size="16"></span><span>Installa App</span></button>
+  <button class="btn btn-danger" id="btnRestart" onclick="restartTool()" hidden><span data-dani-icon="reset" data-dani-size="16"></span><span>Nuova Verifica</span></button>
 </div>
 
 <!-- ============ Screen 1: connector selection ============ -->
@@ -64,21 +65,21 @@
   <div class="test-head">
     <h2 id="connectorTitle">Connettore</h2>
     <div class="test-head-actions">
-      <button class="btn" onclick="backToSelect()">◀ Cambia Connettore</button>
-      <button class="btn btn-primary" onclick="goToEnd()">Report &amp; Export ▶</button>
+      <button class="btn" onclick="backToSelect()"><span data-dani-icon="arrow-left" data-dani-size="16"></span><span>Cambia Connettore</span></button>
+      <button class="btn btn-primary" onclick="goToEnd()"><span>Report &amp; Export</span><span data-dani-icon="arrow-right" data-dani-size="16"></span></button>
     </div>
   </div>
 
   <div class="test-grid">
     <div class="panel diagram-panel">
-      <div class="panel-title">🔎 Diagramma Pin — passa il mouse o clicca un pin</div>
+      <div class="panel-title"><span data-dani-icon="search" data-dani-size="14"></span>Diagramma Pin — passa il mouse o clicca un pin</div>
       <div class="diagram-wrap" id="diagramWrap"></div>
       <div class="pin-info" id="pinInfo">Nessun pin selezionato.</div>
     </div>
 
     <div class="sequence-col">
       <div class="panel">
-        <div class="panel-title">➕ Aggiungi Controllo alla Sequenza</div>
+        <div class="panel-title"><span data-dani-icon="add" data-dani-size="14"></span>Aggiungi Controllo alla Sequenza</div>
         <div class="add-step-grid">
           <label>Pin A<select id="newPinA"></select></label>
           <label>Pin B<select id="newPinB"></select></label>
@@ -91,7 +92,7 @@
       </div>
 
       <div class="panel">
-        <div class="panel-title">📋 Sequenza di Test (<span id="stepCount">0</span>)</div>
+        <div class="panel-title"><span data-dani-icon="checklist" data-dani-size="14"></span>Sequenza di Test (<span id="stepCount">0</span>)</div>
         <div class="sequence-table-wrap">
           <table class="sequence-table" id="sequenceTable">
             <thead><tr><th>#</th><th>Pin A ↔ B</th><th>Misura</th><th>Esito</th><th></th></tr></thead>
@@ -101,14 +102,14 @@
       </div>
 
       <div class="panel" id="measurePanel" hidden>
-        <div class="panel-title">✍️ Inserisci Misura — Step <span id="measureStepNum"></span></div>
+        <div class="panel-title"><span data-dani-icon="edit" data-dani-size="14"></span>Inserisci Misura — Step <span id="measureStepNum"></span></div>
         <div class="measure-summary" id="measureSummary"></div>
         <label class="measure-value-label" id="measureValueLabel">Valore Misurato</label>
         <div id="measureValueInputWrap"></div>
         <div class="measure-result" id="measureResult"></div>
         <div class="measure-actions">
-          <button class="btn" onclick="deleteSelectedStep()">🗑 Elimina Step</button>
-          <button class="btn btn-primary" onclick="saveMeasurement()">💾 Salva Misura</button>
+          <button class="btn" onclick="deleteSelectedStep()"><span data-dani-icon="delete" data-dani-size="16"></span><span>Elimina Step</span></button>
+          <button class="btn btn-primary" onclick="saveMeasurement()"><span data-dani-icon="save" data-dani-size="16"></span><span>Salva Misura</span></button>
         </div>
       </div>
     </div>
@@ -117,17 +118,17 @@
 
 <!-- ============ Screen 3: report + export ============ -->
 <div id="screenEnd" class="screen">
-  <div class="end-title">🏁 Report Verifica Connettore</div>
+  <div class="end-title"><span data-dani-icon="completed" data-dani-size="22"></span><span>Report Verifica Connettore</span></div>
   <div class="cards" id="endCards">
-    <div class="card signed"><div class="n" id="countPass">0</div><div class="lbl">PASS</div></div>
-    <div class="card skipped"><div class="n" id="countFail">0</div><div class="lbl">FAIL</div></div>
+    <div class="card signed"><div class="n" id="countPass">0</div><div class="lbl">Pass</div></div>
+    <div class="card skipped"><div class="n" id="countFail">0</div><div class="lbl">Fail</div></div>
     <div class="card modified"><div class="n" id="countPending">0</div><div class="lbl">Non Valutate</div></div>
   </div>
   <div id="reportBox"></div>
   <div class="end-actions">
-    <button class="btn" onclick="backToTest()">◀ Torna alla Sequenza</button>
-    <button class="btn btn-primary" onclick="exportXlsx()">📊 Esporta XLSX</button>
-    <button class="btn btn-accent" onclick="exportTxt()">📄 Esporta Report .TXT</button>
+    <button class="btn" onclick="backToTest()"><span data-dani-icon="arrow-left" data-dani-size="16"></span><span>Torna alla Sequenza</span></button>
+    <button class="btn btn-primary" onclick="exportXlsx()"><span data-dani-icon="table" data-dani-size="16"></span><span>Esporta XLSX</span></button>
+    <button class="btn btn-accent" onclick="exportTxt()"><span data-dani-icon="file" data-dani-size="16"></span><span>Esporta Report .TXT</span></button>
   </div>
 </div>
 

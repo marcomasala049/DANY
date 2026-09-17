@@ -72,7 +72,7 @@ table.sequence-table tr{cursor:pointer}
 table.sequence-table tr:hover{background:var(--row-hover-bg)}
 table.sequence-table tr.selected{background:var(--accent-soft)}
 table.sequence-table .step-del{background:none;border:none;color:var(--danger);font-size:1.05em;line-height:1;padding:2px 4px}
-.result-pass{color:var(--accent);font-weight:700}
+.result-pass{color:var(--success);font-weight:700}
 .result-fail{color:var(--danger);font-weight:700}
 .result-pending{color:var(--text-tertiary)}
 
@@ -85,7 +85,7 @@ table.sequence-table .step-del{background:none;border:none;color:var(--danger);f
 
 /* ---------- Screen 3: report ---------- */
 #screenEnd{text-align:left}
-.end-title{font-size:1.5em;text-align:center;color:var(--text-primary);font-family:var(--font-display);margin-bottom:20px}
+.end-title{display:flex;align-items:center;justify-content:center;gap:10px;font-size:1.5em;text-align:center;color:var(--text-primary);font-family:var(--font-display);margin-bottom:20px}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
 @media(max-width:700px){.cards{grid-template-columns:1fr}}
 .card{padding:16px;text-align:center}
