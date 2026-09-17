@@ -1,17 +1,19 @@
 (function(){
 
   /* ---------- Helpers ---------- */
+  function esc(s){ return window.escapeHtml ? window.escapeHtml(s) : String(s ?? ''); }
+
   function setStatus(text, cls){
     const el = document.getElementById('statusBar');
     if (!el) return;
     const icon = cls === 'status-ok' ? 'check' : cls === 'status-error' ? 'warning' : 'status';
-    el.innerHTML = (window.daniIcon ? window.daniIcon(icon, { size: 13 }) : '') + '<span>' + text + '</span>';
+    el.innerHTML = (window.daniIcon ? window.daniIcon(icon, { size: 13 }) : '') + '<span>' + esc(text) + '</span>';
     el.className = 'status-bar' + (cls ? ' ' + cls : '');
   }
 
   function showModal(title, text){
     const icon = /errore/i.test(title) ? 'warning' : /successo/i.test(title) ? 'check' : 'info';
-    document.getElementById('modalTitle').innerHTML = (window.daniIcon ? window.daniIcon(icon, { size: 16 }) : '') + '<span>' + title + '</span>';
+    document.getElementById('modalTitle').innerHTML = (window.daniIcon ? window.daniIcon(icon, { size: 16 }) : '') + '<span>' + esc(title) + '</span>';
     document.getElementById('modalText').textContent  = text;
     document.getElementById('modal').hidden = false;
   }

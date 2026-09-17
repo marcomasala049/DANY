@@ -178,10 +178,10 @@ body.panel-collapsed .panel-resize-handle{display:none}
 .save-modal-hint{font-size:.62em;color:var(--text-tertiary);margin:8px 0}
 .save-modal-actions{display:flex;justify-content:flex-end;gap:6px;margin-top:10px}
 .save-folder-row{display:flex;gap:6px;align-items:center;margin-top:4px}
-.save-folder-status{flex:1;min-width:0;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:7px;font-size:.72em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.save-folder-status{display:inline-flex;align-items:center;gap:6px;flex:1;min-width:0;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:7px;font-size:.72em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .save-folder-status.default{color:var(--text-secondary)}
 
-.calc-warn{color:var(--warning);font-size:.62em;margin-bottom:4px;padding:3px 4px;border:1px solid var(--warning-border);border-radius:3px;background:var(--warning-soft)}
+.calc-warn{display:flex;align-items:center;gap:5px;color:var(--warning);font-size:.62em;margin-bottom:4px;padding:3px 4px;border:1px solid var(--warning-border);border-radius:3px;background:var(--warning-soft)}
 #installBtn[hidden]{display:none}
 @media(min-width:1600px){body{grid-template-columns:minmax(0,1fr) clamp(600px,var(--right-panel-width),980px)}.right-panel{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}}
 @media(max-width:1250px){body{grid-template-columns:minmax(0,1fr) clamp(380px,var(--right-panel-width),560px)}.right-panel{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}

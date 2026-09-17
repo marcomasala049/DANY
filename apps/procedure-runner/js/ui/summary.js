@@ -51,7 +51,7 @@ export function selectSummaryRow(i) {
   selectedSummaryRow = i;
   const s = state.steps[i];
 
-  $('prevTitle').innerHTML = daniIcon('search', { size: 14 }) + '<span>Dettagli Passo N° ' + s.step + '</span>';
+  $('prevTitle').innerHTML = daniIcon('search', { size: 14 }) + '<span>Dettagli Passo N° ' + escapeHtml(s.step) + '</span>';
   $('prevBody').innerText =
     'Descrizione: ' + (s.desc || '—') + '\n\n' +
     'Atteso: ' + (s.expected || '—') + '\n' +

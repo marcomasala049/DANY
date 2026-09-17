@@ -1,6 +1,7 @@
 import { $ } from '../core/dom-helpers.js';
 import { nowStamp } from '../core/time.js';
 import { daniIcon } from '../../../../shared/js/dani-icons.js';
+import { escapeHtml } from '../../../../shared/js/dom-utils.js';
 import {
   evaluateMeasurement, appendNoteLine, buildSkipReason, extractSkipReasonText,
   skipTargetOptions, findPendingRepositioned
@@ -143,7 +144,7 @@ function buildLinkedStepBlock(stepData, originalIndex) {
 
   const title = document.createElement('div');
   title.className = 'lsb-title';
-  title.innerHTML = daniIcon('step', { size: 15 }) + '<span>Step N° ' + stepData.step + ' — da eseguire ora</span>';
+  title.innerHTML = daniIcon('step', { size: 15 }) + '<span>Step N° ' + escapeHtml(stepData.step) + ' — da eseguire ora</span>';
   block.appendChild(title);
 
   block.appendChild(lsbPanel('Descrizione Operativa', stepData.desc || '—'));
@@ -274,7 +275,7 @@ function refreshSignatureUI() {
 
   if (sig) {
     status.className = 'sig-status sig-signed';
-    status.innerHTML = daniIcon('check', { size: 15 }) + '<span>Approvato da: ' + sig + '</span>';
+    status.innerHTML = daniIcon('check', { size: 15 }) + '<span>Approvato da: ' + escapeHtml(sig) + '</span>';
     btn.innerHTML = daniIcon('arrow-right', { size: 16 }) + '<span>Avanza (Già Firmato)</span>';
     btn.className = 'btn btn-accent';
   } else {
@@ -392,7 +393,7 @@ function openReSkipModal(originalIndex) {
 
   reSkipTargetIndex = originalIndex;
   $('skipReasonInput').value = extractSkipReasonText(s.skipReason);
-  $('skipModalTitle').innerHTML = daniIcon('arrow-right', { size: 16 }) + '<span>Salta di nuovo — Step ' + s.step + '</span>';
+  $('skipModalTitle').innerHTML = daniIcon('arrow-right', { size: 16 }) + '<span>Salta di nuovo — Step ' + escapeHtml(s.step) + '</span>';
   $('skipModalText').textContent = 'Modifica motivo e/o punto di riposizionamento dello Step ' + s.step + ':';
   populateSkipTargetSelect([originalIndex, state.currentIndex], s.repositionedTo);
   openModal('modalSkip');

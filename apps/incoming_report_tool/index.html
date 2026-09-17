@@ -42,7 +42,9 @@
 <script type="module">
   import { renderSidebar } from '../../shared/js/sidebar.js';
   import { daniIcon, mountIcons } from '../../shared/js/dani-icons.js';
+  import { escapeHtml } from '../../shared/js/dom-utils.js';
   window.daniIcon = daniIcon;
+  window.escapeHtml = escapeHtml;
   renderSidebar({ active: 'inspection', base: '../../' });
   mountIcons();
 </script>

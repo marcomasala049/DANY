@@ -1,5 +1,6 @@
 import { $, setText, setHtml } from '../core/dom-helpers.js';
 import { escapeHtml } from '../../../../shared/js/dom-utils.js';
+import { daniIcon } from '../../../../shared/js/dani-icons.js';
 import { clearDirty } from './editor-stats.js';
 
 const LOCAL_SERVER = 'http://127.0.0.1:8080';
@@ -171,7 +172,7 @@ export async function selezionaCartellaSalvataggio() {
   }
   try {
     selectedSaveDirectory = await window.showDirectoryPicker({ mode: 'readwrite' });
-    $('saveFolderStatus').innerText = '📁 ' + selectedSaveDirectory.name;
+    $('saveFolderStatus').innerHTML = daniIcon('folder', { size: 13 }) + '<span>' + escapeHtml(selectedSaveDirectory.name) + '</span>';
     $('saveFolderStatus').classList.remove('default');
   } catch (e) {
     if (e.name !== 'AbortError') alert('Impossibile selezionare la cartella: ' + e.message);
@@ -282,7 +283,7 @@ export async function loadTargetFile(path) {
     $('editorState').innerText = '● LOAD ERROR';
     $('status').className = 'status-bar status-error';
     if (e.message === 'FILE_NOT_FOUND') $('status').innerText = '> FILE NON TROVATO: ' + path;
-    else if (e instanceof TypeError) $('status').innerHTML = '> SERVER LOCALE OFFLINE | Usa <b>📂 Apri File</b> per aprirlo comunque, o <b>📁 Salva Come</b> per crearne uno nuovo.';
+    else if (e instanceof TypeError) $('status').innerHTML = '> SERVER LOCALE OFFLINE | Usa <b>Apri File</b> per aprirlo comunque, o <b>Salva Come</b> per crearne uno nuovo.';
     else $('status').innerText = '> ERRORE APERTURA: ' + e.message;
   }
 }

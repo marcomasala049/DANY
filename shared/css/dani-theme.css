@@ -377,16 +377,20 @@ body.sidebar-expanded .dani-sb-label{opacity:1}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
 
 /* ==========================================================================
-   Form controls.
+   Form controls. Baseline look only (color/border/radius) — sizing
+   (padding/font-size/height) stays with each app's own stylesheet, since
+   the editor/data-analysis/pin-check widget panels are deliberately dense
+   and a blanket comfortable height here would break their grids. Apps
+   that want the spec's ~40-44px "standard form" height (Incoming
+   Inspection's anagrafica, for one) set it themselves, scoped to that form.
    ========================================================================== */
 input[type=text],input[type=number],input[type=email],input[type=search],
 select,textarea,.field-input{
   background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);
-  border-radius:var(--radius-sm);padding:9px 11px;outline:none;font-family:var(--font-body);font-size:.9em;
-  min-height:40px;box-sizing:border-box;
+  border-radius:var(--radius-sm);padding:7px 10px;outline:none;font-family:var(--font-body);font-size:.9em;
+  box-sizing:border-box;
   transition:border-color .15s ease,box-shadow .15s ease;
 }
-textarea{min-height:auto}
 input[type=text]:focus,input[type=number]:focus,input[type=email]:focus,input[type=search]:focus,
 select:focus,textarea:focus,.field-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--focus-ring)}
 input:disabled,select:disabled,textarea:disabled{background:var(--disabled-bg);color:var(--disabled-text);cursor:not-allowed}

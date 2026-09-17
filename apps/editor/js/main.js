@@ -102,7 +102,7 @@ function init() {
     loadTargetFile(targetFilePath);
   } else {
     $('file-label').innerText = 'Nessun file collegato — pronto per creare un .txt';
-    $('status').innerHTML = '> Nessun file aperto | Usa “📁 Salva Come” per crearne uno';
+    $('status').innerHTML = '> Nessun file aperto | Usa “Salva Come” per crearne uno';
   }
 
   renderTodos();

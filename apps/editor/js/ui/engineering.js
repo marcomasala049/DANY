@@ -1,4 +1,5 @@
 import { $ } from '../core/dom-helpers.js';
+import { daniIcon } from '../../../../shared/js/dani-icons.js';
 import {
   calcMotor as computeMotor,
   calcGearbox as computeGearbox,
@@ -12,7 +13,7 @@ function fmt(value, unitLabel) {
 }
 
 function renderWarnings(warnings) {
-  return warnings.map(msg => '<div class="calc-warn">⚠ ' + msg + '</div>').join('');
+  return warnings.map(msg => '<div class="calc-warn">' + daniIcon('warning', { size: 13 }) + '<span>' + msg + '</span></div>').join('');
 }
 
 function renderResultBox(targetId, { warnings, results }) {

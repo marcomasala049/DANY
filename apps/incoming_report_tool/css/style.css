@@ -63,7 +63,7 @@ main{flex:1;min-height:0;position:relative}
 #infoForm{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-bottom:18px}
 .field-row{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center}
 .field-row label{color:var(--text-secondary);font-size:.82em}
-.field-row input{width:100%;font-size:.85em}
+.field-row input{width:100%;font-size:.85em;min-height:42px}
 #infoForm .field-row:last-child{grid-column:1/-1}
 @media(max-width:700px){#infoForm{grid-template-columns:1fr}}
 
