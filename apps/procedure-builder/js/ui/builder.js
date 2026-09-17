@@ -29,6 +29,22 @@ let draftSaveTimer = null;
 export function initBuilder() {
   const restored = restoreDraft();
   if (!restored) { addBuilderRow(); addBuilderRow(); }
+
+  // Any open "Immagine" choice menu (Scatta foto / Carica da galleria)
+  // closes on an outside click, like any other dropdown.
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.builder-img-menu-wrap')) closeAllImageMenus();
+  });
+}
+
+function closeAllImageMenus() {
+  document.querySelectorAll('.builder-img-menu').forEach(m => { m.hidden = true; });
+}
+
+function toggleImageMenu(menu) {
+  const wasHidden = menu.hidden;
+  closeAllImageMenus();
+  menu.hidden = !wasHidden;
 }
 
 function collectBuilderRowEls() {
@@ -132,12 +148,32 @@ export function addBuilderRow(initial) {
   const imageWrap = document.createElement('div');
   imageWrap.className = 'builder-image-wrap';
 
+  const imageMenuWrap = document.createElement('div');
+  imageMenuWrap.className = 'builder-img-menu-wrap';
+
   const imageBtn = document.createElement('button');
   imageBtn.className = 'btn builder-img-btn';
   imageBtn.type = 'button';
   imageBtn.innerHTML = div._imageData
     ? daniIcon('image', { size: 14 }) + '<span>Cambia</span>'
     : daniIcon('image', { size: 14 }) + '<span>Immagine</span>';
+
+  const menu = document.createElement('div');
+  menu.className = 'builder-img-menu';
+  menu.hidden = true;
+
+  const cameraItem = document.createElement('button');
+  cameraItem.type = 'button';
+  cameraItem.className = 'builder-img-menu-item';
+  cameraItem.innerHTML = daniIcon('camera', { size: 15 }) + '<span>Scatta foto</span>';
+
+  const galleryItem = document.createElement('button');
+  galleryItem.type = 'button';
+  galleryItem.className = 'builder-img-menu-item';
+  galleryItem.innerHTML = daniIcon('image', { size: 15 }) + '<span>Carica da galleria</span>';
+
+  menu.append(cameraItem, galleryItem);
+  imageMenuWrap.append(imageBtn, menu);
 
   const thumb = document.createElement('img');
   thumb.className = 'builder-thumb';
@@ -165,12 +201,7 @@ export function addBuilderRow(initial) {
     scheduleDraftSave();
   };
 
-  const imageInput = document.createElement('input');
-  imageInput.type = 'file';
-  imageInput.accept = 'image/*';
-  imageInput.style.display = 'none';
-  imageInput.onchange = () => {
-    const file = imageInput.files[0];
+  function handlePickedFile(file) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
@@ -183,9 +214,30 @@ export function addBuilderRow(initial) {
       scheduleDraftSave();
     };
     reader.readAsDataURL(file);
-  };
-  imageBtn.onclick = () => imageInput.click();
-  imageWrap.append(imageBtn, thumb, removeImgBtn, imageInput);
+  }
+
+  // Two separate inputs: `capture` on the first opens the device camera
+  // directly on phones/tablets (ignored harmlessly on desktop, where it
+  // just opens the normal file picker); the second has no `capture`, so it
+  // always opens the regular photo library / file picker.
+  const cameraInput = document.createElement('input');
+  cameraInput.type = 'file';
+  cameraInput.accept = 'image/*';
+  cameraInput.capture = 'environment';
+  cameraInput.style.display = 'none';
+  cameraInput.onchange = () => handlePickedFile(cameraInput.files[0]);
+
+  const galleryInput = document.createElement('input');
+  galleryInput.type = 'file';
+  galleryInput.accept = 'image/*';
+  galleryInput.style.display = 'none';
+  galleryInput.onchange = () => handlePickedFile(galleryInput.files[0]);
+
+  cameraItem.onclick = () => { closeAllImageMenus(); cameraInput.click(); };
+  galleryItem.onclick = () => { closeAllImageMenus(); galleryInput.click(); };
+  imageBtn.onclick = () => toggleImageMenu(menu);
+
+  imageWrap.append(imageMenuWrap, thumb, removeImgBtn, cameraInput, galleryInput);
 
   const controls = document.createElement('div');
   controls.className = 'builder-controls';
