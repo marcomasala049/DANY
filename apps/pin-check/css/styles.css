@@ -72,6 +72,7 @@ table.sequence-table tr{cursor:pointer}
 table.sequence-table tr:hover{background:var(--row-hover-bg)}
 table.sequence-table tr.selected{background:var(--accent-soft)}
 table.sequence-table .step-del{background:none;border:none;color:var(--danger);font-size:1.05em;line-height:1;padding:2px 4px}
+.result-pass,.result-fail{display:inline-flex;align-items:center;gap:4px}
 .result-pass{color:var(--success);font-weight:700}
 .result-fail{color:var(--danger);font-weight:700}
 .result-pending{color:var(--text-tertiary)}
@@ -91,7 +92,7 @@ table.sequence-table .step-del{background:none;border:none;color:var(--danger);f
 .card{padding:16px;text-align:center}
 .card .n{font-size:2.4em;font-weight:bold}
 .card .lbl{font-size:.7em;color:var(--text-secondary);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
-.card.signed .n{color:var(--accent)}
+.card.signed .n{color:var(--success)}
 .card.skipped .n{color:var(--danger)}
 .card.modified .n{color:var(--text-tertiary)}
 #reportBox{background:var(--panel-bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px;font-size:.76em;white-space:pre-wrap;max-height:400px;overflow:auto;margin-bottom:16px;line-height:1.55;font-family:var(--font-mono)}

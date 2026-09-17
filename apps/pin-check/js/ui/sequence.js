@@ -1,5 +1,6 @@
 import { $ } from '../core/dom-helpers.js';
 import { escapeHtml } from '../../../../shared/js/dom-utils.js';
+import { daniIcon } from '../../../../shared/js/dani-icons.js';
 import { MEASURE_TYPE_LIST, getMeasureType } from '../data/measure-types.js';
 import { findPin } from '../data/connectors.js';
 import { evaluateResult } from '../logic/measurement.js';
@@ -56,8 +57,8 @@ export function addStep() {
 }
 
 function resultBadge(result) {
-  if (result === 'pass') return '<span class="result-pass">PASS</span>';
-  if (result === 'fail') return '<span class="result-fail">FAIL</span>';
+  if (result === 'pass') return '<span class="result-pass">' + daniIcon('pass', { size: 13 }) + '<span>PASS</span></span>';
+  if (result === 'fail') return '<span class="result-fail">' + daniIcon('fail', { size: 13 }) + '<span>FAIL</span></span>';
   return '<span class="result-pending">—</span>';
 }
 
