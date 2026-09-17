@@ -160,10 +160,15 @@ export function drawDataChart() {
     }
   };
 
-  drawSeries(st, '#00ff66', false);
-  if (st2 && st2.vals.length) drawSeries(st2, '#67c7ff', true);
+  const rootStyle = getComputedStyle(document.documentElement);
+  const accent = rootStyle.getPropertyValue('--accent').trim() || '#e0263f';
+  const accent2 = rootStyle.getPropertyValue('--accent-2').trim() || '#ff6b6b';
+  const border = rootStyle.getPropertyValue('--border').trim() || '#2b1517';
 
-  ctx.strokeStyle = '#2a2a2a';
+  drawSeries(st, accent, false);
+  if (st2 && st2.vals.length) drawSeries(st2, accent2, true);
+
+  ctx.strokeStyle = border;
   ctx.strokeRect(0, 0, w, h);
 }
 

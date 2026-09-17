@@ -20,7 +20,7 @@ button{cursor:pointer}
 .tb-field input{background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:4px 6px;font-size:.95em;width:150px;outline:none}
 .tb-field input:focus{border-color:var(--accent)}
 #progressWrap{height:5px;background:var(--panel-glass);position:relative}
-#progressFill{height:100%;background:var(--accent);width:0%;transition:width .25s}
+#progressFill{height:100%;background:linear-gradient(90deg,var(--accent-strong),var(--accent) 60%,var(--accent-2));width:0%;transition:width .35s ease}
 .screen{display:none;padding:22px;padding-bottom:max(22px,env(safe-area-inset-bottom));max-width:1300px;margin:0 auto}
 .screen.active{display:block}
 .muted{color:var(--text-tertiary);font-size:.78em}
@@ -29,15 +29,15 @@ button{cursor:pointer}
 #screenLoad .load-card{max-width:560px;margin:0 auto;padding:28px 26px}
 #screenLoad h2{font-size:1.15em;color:var(--text-primary);font-family:var(--font-display);margin-bottom:6px}
 #screenLoad p{color:var(--text-secondary);font-size:.8em;margin-bottom:20px;line-height:1.6}
-.drop-zone{border:1px dashed var(--border-strong);border-radius:var(--radius-md);padding:22px;margin-bottom:14px;cursor:pointer}
-.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--accent-soft)}
+.drop-zone{border:1px dashed var(--border-strong);border-radius:var(--radius-md);padding:22px;margin-bottom:14px;cursor:pointer;transition:border-color .2s ease,background .2s ease,transform .2s ease}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-2px)}
 .load-actions{display:flex;flex-direction:column;gap:8px;margin-top:6px}
 .load-divider{display:flex;align-items:center;gap:10px;color:var(--text-tertiary);font-size:.68em;margin:16px 0}
 .load-divider::before,.load-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 #resumeBox{display:none;background:var(--accent-soft);border:1px solid var(--border-strong);border-radius:var(--radius-md);padding:12px;margin-bottom:16px;text-align:left;font-size:.78em}
 #resumeBox b{color:var(--accent)}
 .tabbar{display:flex;gap:6px;margin-bottom:14px}
-.tabbtn{background:var(--panel-glass);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:var(--radius-sm) var(--radius-sm) 0 0;padding:7px 14px;font-size:.78em}
+.tabbtn{background:var(--panel-glass);color:var(--text-secondary);border:1px solid var(--border-strong);border-radius:var(--radius-sm) var(--radius-sm) 0 0;padding:7px 14px;font-size:.78em;transition:color .15s ease,border-color .15s ease,background .15s ease}
 .tabbtn.active{color:var(--accent);border-color:var(--accent);background:var(--panel-bg)}
 .pane{display:none}
 .pane.active{display:block}

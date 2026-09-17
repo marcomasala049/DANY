@@ -40,7 +40,7 @@ export function renderProcedure() {
   list.innerHTML = '';
 
   if (!procedureSteps.length) {
-    list.innerHTML = '<li style="color:#444;text-align:center;font-size:.72em;padding:4px">Nessuno step. Aggiungi una procedura di test.</li>';
+    list.innerHTML = '<li style="color:var(--text-tertiary);text-align:center;font-size:.72em;padding:4px">Nessuno step. Aggiungi una procedura di test.</li>';
   }
 
   procedureSteps.forEach((s, i) => {

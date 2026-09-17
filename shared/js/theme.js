@@ -19,7 +19,7 @@ export function getStoredTheme() {
   }
 }
 
-const THEME_COLOR = { dark: '#0c0c0c', light: '#eef1ef' };
+const THEME_COLOR = { dark: '#110808', light: '#fbf4f3' };
 
 export function applyTheme(theme) {
   const resolved = theme === 'light' ? 'light' : 'dark';

@@ -48,7 +48,7 @@ input[type=checkbox]{accent-color:var(--accent);width:14px;height:14px;cursor:po
 .panel-label-row input{width:100%;background:var(--well-bg);color:var(--text-primary);border:1px solid var(--border-strong);border-radius:var(--radius-sm);padding:4px 6px;outline:none;font-size:.9em}
 .panel-label-row input:focus{border-color:var(--accent)}
 
-.btn-primary{display:block;width:100%;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--accent);color:#04150c;font-weight:bold;font-size:.85em;letter-spacing:1px;margin-top:4px;flex-shrink:0}
+.btn-primary{display:block;width:100%;padding:10px;border:none;border-radius:var(--radius-sm);background:var(--accent);color:var(--accent-contrast);font-weight:bold;font-size:.85em;letter-spacing:1px;margin-top:4px;flex-shrink:0}
 .btn-primary:hover:not(:disabled){background:var(--accent-strong)}
 .btn-primary:disabled{background:var(--panel-glass);color:var(--text-tertiary);cursor:not-allowed;border:1px solid var(--border)}
 .btn-ghost{display:block;width:100%;padding:9px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--panel-glass);color:var(--text-primary);font-size:.8em;font-weight:bold;letter-spacing:1px;margin-top:4px;flex-shrink:0}

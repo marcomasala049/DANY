@@ -36,7 +36,7 @@ export function renderTodos() {
   list.innerHTML = '';
 
   if (!todos.length) {
-    list.innerHTML = '<li style="color:#444;text-align:center;font-size:.72em;padding:2px">Nessun promemoria</li>';
+    list.innerHTML = '<li style="color:var(--text-tertiary);text-align:center;font-size:.72em;padding:2px">Nessun promemoria</li>';
     $('todoSummary').innerText = '';
     return;
   }
