@@ -145,13 +145,13 @@ h1,h2,h3{font-family:var(--font-display);color:var(--text-primary);font-weight:7
   background:var(--panel-bg);
   border-bottom:1px solid var(--border);
 }
-.topbar .brand,.brand{display:flex;align-items:center;gap:10px;white-space:nowrap}
-.brand-logo-wrap{
-  width:30px;height:30px;border-radius:9px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(155deg,var(--accent-soft),transparent);
-  border:1px solid var(--border-strong);
-}
-.brand-logo{width:20px;height:20px;border-radius:5px;display:block}
+.topbar .brand,.brand{display:flex;align-items:center;gap:12px;white-space:nowrap}
+/* Leonardo corporate wordmark — the topbar's visible branding. Used as-is
+   (original file, own colors, own proportions): no container/badge, no
+   CSS filter, no recolor. Height-constrained with width:auto so the SVG's
+   own aspect ratio decides the width; never stretched or cropped. */
+.brand-logo-leonardo{height:26px;width:auto;display:block;flex:0 0 auto}
+@media(max-width:560px){.brand-logo-leonardo{height:20px}}
 .brand-word{font-family:var(--font-display);font-weight:700;font-size:1em;letter-spacing:.4px;color:var(--text-primary)}
 .topbar .spacer,.spacer{flex:1}
 

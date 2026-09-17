@@ -13,7 +13,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v11';
+const CACHE_VERSION = 'dani-v12';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 
@@ -137,7 +137,12 @@ const PRECACHE_PATHS = [
   'shared/js/pwa.js',
   'shared/js/theme.js',
   'shared/js/dani-icons.js',
-  'shared/js/sidebar.js'
+  'shared/js/sidebar.js',
+
+  // Shared branding assets — corporate logo (topbar) + app icon source,
+  // both need to be fully available offline like everything else.
+  'shared/assets/branding/logo-leonardo.svg',
+  'shared/assets/branding/logo-dani.png'
 ];
 
 const PRECACHE_URLS = PRECACHE_PATHS.map(p => new URL(p, SCOPE).href);
