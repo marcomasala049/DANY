@@ -62,6 +62,7 @@ export function renderStep() {
   renderLinkedSkipAlert(s);
 
   $('stepTitle').innerText = 'STEP N° ' + s.step;
+  $('stepProgress').innerText = (state.currentIndex + 1) + ' / ' + state.steps.length;
   $('descBody').innerText = s.desc || '—';
   $('expectedBody').innerText = s.expected || '—';
   $('measuredInput').value = s.measured || '';

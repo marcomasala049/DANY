@@ -50,7 +50,7 @@ export function selectSummaryRow(i) {
   selectedSummaryRow = i;
   const s = state.steps[i];
 
-  $('prevTitle').innerText = 'Dettagli Passo N° ' + s.step;
+  $('prevTitle').innerText = '🔎 Dettagli Passo N° ' + s.step;
   $('prevBody').innerText =
     'Descrizione: ' + (s.desc || '—') + '\n\n' +
     'Atteso: ' + (s.expected || '—') + '\n' +

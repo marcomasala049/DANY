@@ -5,9 +5,13 @@
 
 export const WIDGET_VISIBILITY_PREFIX = 'widget_visibility';
 
-/** Strips a trailing " DEG"/" RAD" suffix (the calculator's dynamic title) to get a stable key. */
+/**
+ * Strips a leading decorative icon (widget titles are prefixed with an emoji,
+ * e.g. "🕐 Sistema Orario") and a trailing " DEG"/" RAD" suffix (the
+ * calculator's dynamic title) to get a stable key independent of both.
+ */
 export function widgetKeyFromTitle(title) {
-  return title.replace(/\s+(DEG|RAD)$/, '').trim();
+  return title.replace(/^[^\p{L}]+/u, '').replace(/\s+(DEG|RAD)$/, '').trim();
 }
 
 /** Turns a widget title into a safe localStorage key. */

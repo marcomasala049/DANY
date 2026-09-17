@@ -59,32 +59,32 @@
   <section class="tab-panel active" id="tab-info">
     <form id="infoForm" autocomplete="off" onsubmit="return false;"></form>
     <fieldset class="hw-group">
-      <legend>Modello Hardware</legend>
+      <legend>🔧 Modello Hardware</legend>
       <div id="hwRadios"></div>
     </fieldset>
   </section>
 
   <section class="tab-panel" id="tab-checklist">
     <div class="checklist-header">
-      <span>Controllo da effettuare</span><span>Esito</span>
+      <span>✅ Controllo da effettuare</span><span>Esito</span>
     </div>
     <div id="checklistContainer"></div>
   </section>
 
   <section class="tab-panel" id="tab-decision">
     <fieldset class="decision-group">
-      <legend>Decisione Finale Hardware</legend>
+      <legend>⚖️ Decisione Finale Hardware</legend>
       <div id="decisionRadios"></div>
     </fieldset>
     <label class="field-block">
-      <span>Commenti / Azioni correttive</span>
+      <span>📝 Commenti / Azioni correttive</span>
       <textarea id="comments" rows="14" placeholder="Annotazioni, azioni correttive, note tecniche..."></textarea>
     </label>
   </section>
 
   <section class="tab-panel" id="tab-actions">
     <div class="action-card">
-      <h3>1 · Template Word</h3>
+      <h3>📄 1 · Template Word</h3>
       <p>Carica il template <code>.docx</code> da compilare. Il file deve contenere i tag
       <code>{{PROJECT}}</code>, <code>{{SUPPLIER}}</code>, … (vedi <em>Placeholders</em> sotto).</p>
       <input type="file" id="templateInput" accept=".docx">
@@ -93,12 +93,12 @@
     </div>
 
     <div class="action-card">
-      <h3>2 · Genera</h3>
+      <h3>▶ 2 · Genera</h3>
       <button class="btn-primary big" id="generateBtn">Compila e Scarica Report Word ⬇</button>
     </div>
 
     <div class="action-card">
-      <h3>3 · Placeholders nel template</h3>
+      <h3>🏷️ 3 · Placeholders nel template</h3>
       <p class="hint">Questi sono i tag che il tool cercherà e sostituirà. Copiali nel tuo template Word.</p>
       <div class="tags-grid" id="tagsGrid"></div>
     </div>

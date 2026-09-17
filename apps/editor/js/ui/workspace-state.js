@@ -2,7 +2,7 @@ import { STORAGE_KEY as TODOS_KEY } from './todo.js';
 import { STORAGE_KEY as PINS_KEY } from './pins.js';
 import { STORAGE_KEY as PROCEDURE_KEY } from './procedure.js';
 import { getWidgetEntries, isWidgetVisible } from './widgets.js';
-import { widgetStorageKey } from '../logic/widget-storage-keys.js';
+import { widgetStorageKey, widgetKeyFromTitle } from '../logic/widget-storage-keys.js';
 
 const PERSISTED_KEYS = [TODOS_KEY, PINS_KEY, PROCEDURE_KEY];
 
@@ -16,7 +16,7 @@ export function exportWorkspaceState() {
 
   const collapse = {};
   document.querySelectorAll('.widget-title').forEach(t => {
-    const key = 'widget_' + t.querySelector('.title-text').innerText;
+    const key = 'widget_' + widgetKeyFromTitle(t.querySelector('.title-text').innerText);
     const v = localStorage.getItem(key);
     if (v) collapse[key] = v;
   });

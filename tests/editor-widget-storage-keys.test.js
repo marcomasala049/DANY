@@ -11,6 +11,12 @@ test('widgetKeyFromTitle leaves titles without the suffix untouched', () => {
   assert.equal(widgetKeyFromTitle('Sistema Orario'), 'Sistema Orario');
 });
 
+test('widgetKeyFromTitle strips a leading decorative icon so the key is stable across icon changes', () => {
+  assert.equal(widgetKeyFromTitle('🕐 Sistema Orario'), 'Sistema Orario');
+  assert.equal(widgetKeyFromTitle('⚙️ Engineering Tools'), 'Engineering Tools');
+  assert.equal(widgetKeyFromTitle('🧮 Calcolatrice Scientifica DEG'), 'Calcolatrice Scientifica');
+});
+
 test('widgetStorageKey is deterministic for the same title', () => {
   assert.equal(widgetStorageKey('Sistema Orario'), widgetStorageKey('Sistema Orario'));
 });

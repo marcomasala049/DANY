@@ -123,22 +123,22 @@
     </div>
 
     <div class="exec-head">
-      <h2 id="stepTitle">STEP N° —</h2>
+      <div class="exec-head-title"><span class="step-progress" id="stepProgress"></span><h2 id="stepTitle">STEP N° —</h2></div>
       <button class="btn btn-accent" onclick="openCorrectionModal()">📝 Proponi Modifica Testo</button>
     </div>
 
     <div class="exec-grid">
       <div>
         <div class="panel">
-          <div class="panel-title">Descrizione Operativa</div>
+          <div class="panel-title">📄 Descrizione Operativa</div>
           <div class="panel-body" id="descBody">—</div>
         </div>
         <div class="panel">
-          <div class="panel-title">Valore Atteso / Requisito</div>
+          <div class="panel-title">🎯 Valore Atteso / Requisito</div>
           <div class="panel-body" id="expectedBody">—</div>
         </div>
         <div class="panel">
-          <div class="panel-title">Dati da Riscontrare sul Campo</div>
+          <div class="panel-title">✍️ Dati da Riscontrare sul Campo</div>
           <span class="field-label">Valore Misurato</span>
           <input type="text" class="field-input" id="measuredInput" oninput="onMeasuredChange()">
           <span class="field-label">Aggiungi Nota</span>

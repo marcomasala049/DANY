@@ -1,5 +1,14 @@
 const ChecklistUI = (function(){
 
+  /* Maps a radio value to the row's status stripe class, so a checked
+     answer is also readable as a colored left border on the whole row —
+     not just the small radio label text. */
+  function statusClass(val){
+    if (val === 'Yes') return 'status-yes';
+    if (val === 'No') return 'status-no';
+    return 'status-na';
+  }
+
   function build(){
     const c = document.getElementById('checklistContainer');
     c.innerHTML = '';
@@ -22,6 +31,13 @@ const ChecklistUI = (function(){
            <span>${opt}</span>`;
         opts.appendChild(label);
       });
+
+      opts.addEventListener('change', () => {
+        const sel = opts.querySelector('input:checked');
+        row.classList.remove('status-yes', 'status-no', 'status-na');
+        row.classList.add(statusClass(sel ? sel.value : 'N/A'));
+      });
+      row.classList.add(statusClass('N/A'));
 
       row.appendChild(txt);
       row.appendChild(opts);

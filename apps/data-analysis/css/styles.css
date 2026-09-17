@@ -1,4 +1,4 @@
-/*sera
+/**
  * The plot/FFT canvases and the elements glued directly to them (the
  * tooltip, the canvas containers) are intentionally NOT theme-aware: they
  * stay a fixed dark "scope" surface in both themes, same as the editor's

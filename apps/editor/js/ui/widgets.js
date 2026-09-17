@@ -96,18 +96,20 @@ export function hideAllWidgets() {
   renderWidgetManager();
 }
 
-/** Collapses/expands a widget body and remembers the state (raw title text, matching legacy key). */
+/** Collapses/expands a widget body and remembers the state, keyed by the widget's stable title. */
 export function toggleWidget(titleBarEl) {
   const widget = titleBarEl.closest('.widget');
   const collapsed = widget.classList.toggle('collapsed');
   titleBarEl.querySelector('.collapse-arrow').innerText = collapsed ? '▶' : '▼';
-  localStorage.setItem('widget_' + titleBarEl.querySelector('.title-text').innerText, collapsed ? '1' : '0');
+  const key = widgetKeyFromTitle(titleBarEl.querySelector('.title-text').innerText);
+  localStorage.setItem('widget_' + key, collapsed ? '1' : '0');
 }
 
 /** Re-applies collapsed state saved by toggleWidget() on page load. */
 export function restoreWidgetStates() {
   document.querySelectorAll('.widget-title').forEach(t => {
-    if (localStorage.getItem('widget_' + t.querySelector('.title-text').innerText) === '1') {
+    const key = widgetKeyFromTitle(t.querySelector('.title-text').innerText);
+    if (localStorage.getItem('widget_' + key) === '1') {
       t.closest('.widget').classList.add('collapsed');
       t.querySelector('.collapse-arrow').innerText = '▶';
     }
@@ -117,7 +119,7 @@ export function restoreWidgetStates() {
 export function addHelpButtons() {
   document.querySelectorAll('.widget-title').forEach(t => {
     if (t.querySelector('.help-btn')) return;
-    const key = t.querySelector('.title-text').innerText.replace(/\s+(DEG|RAD)$/, '').trim();
+    const key = widgetKeyFromTitle(t.querySelector('.title-text').innerText);
     const btn = document.createElement('button');
     btn.className = 'help-btn';
     btn.type = 'button';

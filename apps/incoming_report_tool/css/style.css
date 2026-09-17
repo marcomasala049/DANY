@@ -54,19 +54,30 @@ fieldset{border:1px solid var(--border-strong);border-radius:var(--radius-md);
 fieldset legend{padding:0 8px;color:var(--accent);font-size:.8em;
   letter-spacing:1px;font-weight:700;font-family:var(--font-body)}
 .radio-item{display:inline-flex;align-items:center;gap:6px;margin-right:22px;
-  font-size:.85em;cursor:pointer;color:var(--text-secondary)}
+  font-size:.85em;cursor:pointer;color:var(--text-secondary);transition:color .15s ease}
 .radio-item input{accent-color:var(--accent)}
 .radio-item:hover{color:var(--accent)}
 .radio-item.compact{margin-right:8px;font-size:.78em}
 .decision-group .radio-item{display:flex;margin:8px 0}
+
+/* Semantic colors on the checklist's Yes/No/N.A. radios, so a checked
+   answer reads at a glance without following the row across to the label. */
+.radio-item input[value="Yes"]:checked + span{color:var(--accent);font-weight:700}
+.radio-item input[value="No"]:checked + span{color:var(--danger);font-weight:700}
+.radio-item input[value="N/A"]:checked + span{color:var(--text-tertiary);font-weight:600}
 
 /* ---------- Checklist ---------- */
 .checklist-header{display:grid;grid-template-columns:1fr 240px;gap:12px;
   padding:8px;border-bottom:1px solid var(--border);
   font-size:.72em;letter-spacing:1.5px;color:var(--text-tertiary);text-transform:uppercase}
 .checklist-row{display:grid;grid-template-columns:1fr 240px;gap:12px;
-  align-items:center;padding:12px 8px;border-bottom:1px solid var(--border)}
+  align-items:center;padding:12px 8px 12px 14px;border-bottom:1px solid var(--border);
+  border-left:3px solid transparent;transition:border-color .2s ease,background .15s ease}
+.checklist-row:nth-child(even){background:var(--panel-glass)}
 .checklist-row:hover{background:var(--panel-glass-hover)}
+.checklist-row.status-yes{border-left-color:var(--accent)}
+.checklist-row.status-no{border-left-color:var(--danger)}
+.checklist-row.status-na{border-left-color:var(--border-strong)}
 .checklist-text{font-size:.85em;color:var(--text-secondary);line-height:1.4}
 .checklist-opts{display:flex;gap:4px;flex-wrap:wrap}
 
