@@ -13,7 +13,7 @@
  * from a domain root or published under a subfolder, e.g. GitHub Pages'
  * https://user.github.io/DANY/.
  */
-const CACHE_VERSION = 'dani-v13';
+const CACHE_VERSION = 'dani-v14';
 const RUNTIME_CACHE = `${CACHE_VERSION}-runtime`;
 const SCOPE = self.registration.scope;
 
@@ -145,7 +145,7 @@ const PRECACHE_PATHS = [
   'shared/assets/branding/logo-dani.png',
 
   // Home's decorative background illustration.
-  'shared/assets/illustrations/dani-robotic-hands.svg'
+  'shared/assets/illustrations/dani-robotic-hands.webp'
 ];
 
 const PRECACHE_URLS = PRECACHE_PATHS.map(p => new URL(p, SCOPE).href);
