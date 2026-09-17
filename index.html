@@ -106,21 +106,40 @@ main{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align
 .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
 
 main h1.hero-brand{
-  display:flex;align-items:center;justify-content:center;gap:.35em;
+  display:flex;flex-direction:column;align-items:center;
   font-family:var(--font-display);font-weight:800;letter-spacing:1px;color:var(--text-primary);
-  font-size:clamp(2.2em,6vw,3.6em);line-height:1;
+  font-size:clamp(2.6em,7vw,4.2em);line-height:1;
+  gap:.18em;
 }
-.hero-logo-leonardo{height:.72em;width:auto;display:block}
+.hero-logo-leonardo{
+  height:.34em;width:auto;display:block;
+  align-self:flex-start;
+  margin-left:6%;
+}
 .hero-brand-text{display:block}
-@media(max-width:560px){main h1.hero-brand{flex-direction:column;gap:10px}}
 main .subtitle{
   font-family:var(--font-display);font-weight:600;font-size:1.05em;color:var(--text-secondary);
   margin-top:10px;letter-spacing:.2px;
 }
 main .tagline{
   color:var(--text-tertiary);font-size:.92em;max-width:480px;line-height:1.65;
-  margin:16px 0 44px;
 }
+
+.welcome-block{margin:16px 0 44px;min-height:70px;display:flex;flex-direction:column;align-items:center}
+.welcome-text{display:flex;align-items:center;gap:10px}
+.welcome-text b{color:var(--text-secondary);font-weight:700}
+.welcome-change-btn{
+  margin-top:8px;background:none;border:none;padding:2px 4px;
+  color:var(--text-tertiary);font-size:.76em;text-decoration:underline;text-decoration-color:transparent;
+  transition:color .15s ease,text-decoration-color .15s ease;
+}
+.welcome-change-btn:hover{color:var(--accent);text-decoration-color:currentColor}
+.welcome-form-label{
+  display:block;color:var(--text-tertiary);font-size:.82em;line-height:1.65;margin-bottom:10px;
+}
+.welcome-form-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.welcome-form-row input{width:220px;text-align:center}
+.welcome-form-row .btn-primary{padding:9px 20px}
 
 .cards{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;width:100%;max-width:1320px}
 @media(max-width:1150px){.cards{grid-template-columns:repeat(3,minmax(0,1fr));max-width:900px}}
@@ -157,13 +176,6 @@ main .tagline{
 .card-cta svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .card:hover .card-cta{transform:translateX(3px)}
 
-.feature-strip{
-  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 18px;
-  margin-top:40px;color:var(--text-tertiary);font-size:.76em;
-}
-.feature-strip span{display:inline-flex;align-items:center;gap:6px}
-.feature-strip svg{width:14px;height:14px;fill:none;stroke:var(--accent);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-
 footer{
   position:relative;z-index:1;padding:18px;text-align:center;font-size:.72em;color:var(--text-tertiary);
   padding-bottom:max(18px,env(safe-area-inset-bottom));
@@ -190,7 +202,18 @@ footer{
     <span class="hero-brand-text">AIT TOOLS</span>
   </h1>
   <p class="subtitle">Data Analysis &amp; Navigation Interface</p>
-  <p class="tagline">Note di test, procedure guidate e analisi dati in un unico strumento, sempre a portata di mano sul banco di lavoro.</p>
+
+  <div class="welcome-block" id="welcomeBlock">
+    <p class="tagline welcome-text" id="welcomeText" hidden></p>
+    <form class="welcome-form" id="welcomeForm" hidden>
+      <label for="welcomeInput" class="welcome-form-label">Benvenuto — come ti chiami?</label>
+      <div class="welcome-form-row">
+        <input type="text" id="welcomeInput" placeholder="Nome operatore" autocomplete="name">
+        <button type="submit" class="btn-primary">Salva</button>
+      </div>
+    </form>
+    <button type="button" class="welcome-change-btn" id="welcomeChangeBtn" hidden>Non sono io</button>
+  </div>
 
   <nav class="cards">
     <a class="card" href="apps/editor/index.html">
@@ -234,12 +257,6 @@ footer{
       <span class="card-cta" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></span>
     </a>
   </nav>
-
-  <div class="feature-strip">
-    <span><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Funziona offline</span>
-    <span><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>PWA installabile</span>
-    <span><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Nessun account</span>
-  </div>
 </main>
 
 <footer>AIT TOOLS — funziona offline dopo il primo caricamento</footer>
@@ -248,11 +265,49 @@ footer{
 import { registerServiceWorker, initInstallPrompt } from './shared/js/pwa.js';
 import { initTheme } from './shared/js/theme.js';
 import { mountIcons } from './shared/js/dani-icons.js';
+import { getOperatorName, setOperatorName, clearOperatorName } from './shared/js/operator.js';
+import { escapeHtml } from './shared/js/dom-utils.js';
 
 registerServiceWorker();
 initInstallPrompt(document.getElementById('installBtn'));
 initTheme(document.getElementById('themeToggleBtn'));
 mountIcons();
+
+// Welcome message — browsers have no API to read the signed-in Windows
+// account name, so this asks once and remembers the answer (shared with
+// Procedure Runner's own Operatore field via shared/js/operator.js).
+const welcomeText = document.getElementById('welcomeText');
+const welcomeForm = document.getElementById('welcomeForm');
+const welcomeInput = document.getElementById('welcomeInput');
+const welcomeChangeBtn = document.getElementById('welcomeChangeBtn');
+
+function renderWelcome() {
+  const name = getOperatorName();
+  if (name) {
+    welcomeText.innerHTML = 'Benvenuto, <b>' + escapeHtml(name) + '</b>';
+    welcomeText.hidden = false;
+    welcomeForm.hidden = true;
+    welcomeChangeBtn.hidden = false;
+  } else {
+    welcomeText.hidden = true;
+    welcomeForm.hidden = false;
+    welcomeChangeBtn.hidden = true;
+    welcomeInput.value = '';
+    welcomeInput.focus();
+  }
+}
+
+welcomeForm.addEventListener('submit', event => {
+  event.preventDefault();
+  setOperatorName(welcomeInput.value);
+  renderWelcome();
+});
+welcomeChangeBtn.addEventListener('click', () => {
+  clearOperatorName();
+  renderWelcome();
+});
+
+renderWelcome();
 </script>
 </body>
 </html>
