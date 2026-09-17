@@ -2,18 +2,24 @@
 https://marcomasala049.github.io/DANY/
 
 An offline-capable, installable PWA toolkit for engineering/electrical test
-technicians. Four independent, no-build-step web apps plus a small local
+technicians. Five independent, no-build-step web apps plus a small local
 file server:
 
 - **[apps/editor](apps/editor/index.html)** — "Terminal Workspace": a plain-text
-  editor (for test notes/logs) surrounded by widgets a technician needs on
-  the bench — clock, unit converter, scientific + quick calculators, motor /
-  gearbox / voltage-drop / electrical / thermal formulas, a scientific
-  formula library, a TODO list, pinned values, a test-session logger, a
-  threshold monitor, a lightweight test-procedure checklist, a mini CSV
-  data inspector (stats + chart), live editor stats (lines/words/chars +
-  modified/saved status), a Find & Replace widget (Ctrl/Cmd+F), a
-  collapsible widget panel (Ctrl/Cmd+B) and drag-and-drop widget reordering.
+  editor (for test notes/logs) surrounded by a curated set of bench widgets —
+  clock, unit converter, a TODO list, a quick expression calculator, a
+  Find & Replace widget (Ctrl/Cmd+F), a scientific calculator, motor /
+  gearbox / voltage-drop / electrical / thermal engineering tools, a
+  scientific formula library, and a system-status monitor with workspace
+  export/import. The widget panel is both collapsible (Ctrl/Cmd+B) and
+  manually resizable (drag the divider between the editor and the panel;
+  double-click it to reset), with drag-and-drop widget reordering. Opening,
+  saving and creating `.txt` files works fully offline: it uses the File
+  System Access API when the browser supports it (an in-place disk write,
+  no server needed), falls back to a plain file download otherwise, and
+  only uses the local helper server (below) as an optional convenience for
+  a file that was actually launched through it — if that server isn't
+  running, saving/creating a file still works.
 - **[apps/procedure-runner](apps/procedure-runner/index.html)** — "Test
   Procedure Runner": loads a structured test procedure from CSV or XLSX,
   walks an operator through it step by step (sign-off, skip with a reason,
@@ -39,6 +45,18 @@ file server:
   corrective-action notes) that compiles a `.docx` template client-side
   (via docxtemplater/PizZip) into a downloadable Word report, with a
   built-in placeholder reference for the tags the template must contain.
+- **[apps/pin-check](apps/pin-check/index.html)** — "Pin Function Tool": a
+  guided pin-to-pin electrical verification tool for connectors. Pick a
+  connector to open an interactive SVG pinout diagram (hover/click a pin for
+  its number/signal/function/notes); build a test sequence of pin-to-pin
+  checks (Resistance, Voltage or Continuity — easy to extend with more
+  measurement types), each optionally with an expected value and tolerance
+  for an automatic PASS/FAIL; selecting a sequence row highlights exactly
+  the two pins involved on the diagram. Exports the full sequence to XLSX
+  and a text report, both working offline. Connectors are plain data
+  objects (`apps/pin-check/js/data/connectors.js`) — one of three generic
+  pin-layout shapes (`grid`, `dsub`, `circular`) plus a pin list; adding a
+  new connector needs no UI/layout code, just a new entry there.
 - **[server/local-file-server.ps1](server/local-file-server.ps1)** — a
   minimal loopback-only HTTP server (started by
   [open_editor.bat](open_editor.bat)) that lets the editor `GET /load` and
@@ -48,10 +66,11 @@ file server:
 ## Running it
 
 Open `index.html` (the repo root) — a small home screen with a button for
-each of the four apps below. Every app is also plain static HTML on its
+each of the five apps below. Every app is also plain static HTML on its
 own, so `apps/editor/index.html`, `apps/procedure-runner/index.html`,
-`apps/data-analysis/index.html` and `apps/incoming_report_tool/index.html`
-can each be opened directly too; no server or build step required either way.
+`apps/data-analysis/index.html`, `apps/incoming_report_tool/index.html` and
+`apps/pin-check/index.html` can each be opened directly too; no server or
+build step required either way.
 
 To use the editor the way it's meant to be used on Windows (opened on a
 specific `.txt` file, with load/save wired up), drag a `.txt` file onto
@@ -62,7 +81,7 @@ handler for `.txt` files. It starts the local file server on
 ## Project layout
 
 ```
-index.html              home screen — buttons to each of the 4 apps below
+index.html              home screen — buttons to each of the 5 apps below
 manifest.webmanifest     Web App Manifest (name, icons, start_url, ...)
 service-worker.js        app-shell cache — offline support, installability
 icons/                   PWA icons (generated from the app's own ">_" mark)
@@ -91,11 +110,20 @@ apps/
     css/style.css
     js/                config/form/checklist/report/main — plain scripts,
                         no build step, same shared theme as the other apps
+  pin-check/            Pin Function Tool app
+    index.html
+    css/styles.css
+    js/
+      data/            connector + measurement-type definitions (the
+                        extensible part — add a connector here, nothing else)
+      logic/           pure functions — layout math, PASS/FAIL, report/export
+                        row building — no DOM, unit tested
+      ui/              SVG diagram, sequence table, screens, export
 shared/
   css/dani-theme.css    design tokens + chrome components (topbar, buttons,
                         panel/widget shell, modal shell, form controls)
-                        shared by the home screen and all four apps
-  js/                  helpers used by all four apps (dom-utils, pwa.js,
+                        shared by the home screen and all five apps
+  js/                  helpers used by all five apps (dom-utils, pwa.js,
                         theme.js)
 server/
   local-file-server.ps1     used by open_editor.bat (the editor's own /load /save)
@@ -163,7 +191,7 @@ Once published, opening the URL, using the app, and installing it (browser
 menu, or the editor's own "📲 Installa App" button where the browser
 supports it) is all that's needed — no server, no CLI, nothing to install
 beforehand. The app keeps working fully offline after the first successful
-load (all four apps' entire JS/CSS, the manifest and the icons are precached).
+load (all five apps' entire JS/CSS, the manifest and the icons are precached).
 
 **Local-only exception:** the editor's "Salva Modifiche" / "Salva come nuovo
 .txt" *without* picking a folder talks to `server/local-file-server.ps1` on
