@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <script>try{document.documentElement.setAttribute('data-theme',localStorage.getItem('dani_theme')==='dark'?'dark':'light')}catch(e){}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover, interactive-widget=resizes-content">
-<title>DANI</title>
+<title>AIT TOOLS</title>
 <meta name="description" content="Toolkit da banco per tecnici: blocco note di test, runner di procedure CSV/XLSX e analisi dati con grafici e FFT.">
 
 <link rel="manifest" href="manifest.webmanifest">
@@ -105,10 +105,14 @@ main{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align
 }
 .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
 
-main h1{
-  font-family:var(--font-display);font-weight:800;letter-spacing:1px;color:var(--accent);
-  font-size:clamp(2.6em,7vw,4.2em);line-height:1;
+main h1.hero-brand{
+  display:flex;align-items:center;justify-content:center;gap:.35em;
+  font-family:var(--font-display);font-weight:800;letter-spacing:1px;color:var(--text-primary);
+  font-size:clamp(2.2em,6vw,3.6em);line-height:1;
 }
+.hero-logo-leonardo{height:.72em;width:auto;display:block}
+.hero-brand-text{display:block}
+@media(max-width:560px){main h1.hero-brand{flex-direction:column;gap:10px}}
 main .subtitle{
   font-family:var(--font-display);font-weight:600;font-size:1.05em;color:var(--text-secondary);
   margin-top:10px;letter-spacing:.2px;
@@ -171,7 +175,7 @@ footer{
 <div class="topbar">
   <span class="brand">
     <img src="shared/assets/branding/logo-leonardo.svg" alt="Leonardo" class="brand-logo-leonardo">
-    <span class="brand-word">DANI</span>
+    <span class="brand-word">AIT TOOLS</span>
   </span>
   <span class="spacer"></span>
   <button class="btn-bar" id="themeToggleBtn"></button>
@@ -181,7 +185,10 @@ footer{
 <main>
   <img class="home-background-art" src="shared/assets/illustrations/dani-robotic-hands.webp" alt="" aria-hidden="true">
   <span class="eyebrow"><span class="dot"></span>Toolkit da banco per tecnici</span>
-  <h1>DANI</h1>
+  <h1 class="hero-brand">
+    <img src="shared/assets/branding/logo-leonardo.svg" alt="Leonardo" class="hero-logo-leonardo">
+    <span class="hero-brand-text">AIT TOOLS</span>
+  </h1>
   <p class="subtitle">Data Analysis &amp; Navigation Interface</p>
   <p class="tagline">Note di test, procedure guidate e analisi dati in un unico strumento, sempre a portata di mano sul banco di lavoro.</p>
 
@@ -235,7 +242,7 @@ footer{
   </div>
 </main>
 
-<footer>DANI — funziona offline dopo il primo caricamento</footer>
+<footer>AIT TOOLS — funziona offline dopo il primo caricamento</footer>
 
 <script type="module">
 import { registerServiceWorker, initInstallPrompt } from './shared/js/pwa.js';
